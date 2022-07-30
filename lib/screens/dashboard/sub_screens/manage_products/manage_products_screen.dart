@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../components/app_bar_back_button.dart';
-import '../../../components/app_bar_title.dart';
+import '../../../../components/app_bar_back_button.dart';
+import '../../../../components/app_bar_title.dart';
 
 class ManageProductsScreen extends StatelessWidget {
   const ManageProductsScreen({Key? key}) : super(key: key);

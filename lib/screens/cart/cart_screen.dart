@@ -34,13 +34,14 @@ class _CartScreenState extends State<CartScreen> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             leading: widget.back,
             elevation: 0,
             centerTitle: true,
             title: const AppBarTitle(title: 'Cart'),
             actions: [
               IconButton(
-                onPressed: context.read<CartProvider>().cart?.items == null
+                onPressed: context.read<CartProvider>().cart!.items!.isEmpty
                     ? null
                     : () {
                         GlobalMethods.warningDialog(
@@ -50,6 +51,9 @@ class _CartScreenState extends State<CartScreen> {
                             setState(() {
                               _isClearingCart = true;
                             });
+                            if (Navigator.canPop(context)) {
+                              Navigator.pop(context);
+                            }
                             await Provider.of<CartProvider>(context,
                                     listen: false)
                                 .clearCart();
@@ -64,7 +68,7 @@ class _CartScreenState extends State<CartScreen> {
                 tooltip: 'Clear cart',
                 icon: Icon(
                   Icons.delete_forever,
-                  color: context.read<CartProvider>().cart?.items == null
+                  color: context.read<CartProvider>().cart!.items!.isEmpty
                       ? Theme.of(context).iconTheme.color!.withOpacity(0.3)
                       : Theme.of(context).iconTheme.color,
                 ),

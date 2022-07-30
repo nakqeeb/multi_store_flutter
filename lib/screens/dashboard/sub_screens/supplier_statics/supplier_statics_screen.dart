@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../components/app_bar_back_button.dart';
+import '../../../../components/app_bar_title.dart';
 
-import '../../../components/app_bar_back_button.dart';
-import '../../../components/app_bar_title.dart';
-
-class MyStoreScreen extends StatelessWidget {
-  const MyStoreScreen({Key? key}) : super(key: key);
+class SupplierStaticsScreen extends StatelessWidget {
+  const SupplierStaticsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +12,7 @@ class MyStoreScreen extends StatelessWidget {
         elevation: 0,
         leading: const AppBarBackButton(),
         title: const AppBarTitle(
-          title: 'MyStoreScreen',
+          title: 'SupplierStaticsScreen',
         ),
       ),
     );

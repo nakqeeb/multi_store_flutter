@@ -51,6 +51,8 @@ dependencies:
   card_swiper: ^2.0.4
   font_awesome_flutter: ^10.1.0
   badges: ^2.0.3
+  flutter_datetime_picker: ^1.5.1
+  web_socket_channel: ^2.2.0
 
 dev_dependencies:
   flutter_test:

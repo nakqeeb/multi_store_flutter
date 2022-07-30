@@ -66,7 +66,11 @@ class CartProvider with ChangeNotifier {
         currentQtyIndex =
             _cart?.items?.indexWhere((e) => e.cartProduct?.id == productId);
         existingQty = _cart?.items![currentQtyIndex!].quantity;
-        _cart?.items![currentQtyIndex!].quantity = existingQty! + 1;
+        _cart?.items![currentQtyIndex!].quantity =
+            _cart!.items![currentQtyIndex].quantity! >
+                    _cart!.items![currentQtyIndex].cartProduct!.inStock!
+                ? _cart!.items![currentQtyIndex].cartProduct!.inStock!
+                : existingQty! + 1;
       }
       notifyListeners();
       final response = await http.post(
@@ -86,8 +90,13 @@ class CartProvider with ChangeNotifier {
       }
       //final extractedData = json.decode(response.body);
       //print(extractedData);
-      fetchCart();
-      notifyListeners();
+      if (isCartPage) {
+        fetchCart();
+        notifyListeners();
+      } else {
+        await fetchCart();
+        notifyListeners();
+      }
     } catch (err) {
       throw err;
     }

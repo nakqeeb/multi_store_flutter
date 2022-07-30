@@ -117,11 +117,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           backgroundColor:
                               Theme.of(context).colorScheme.primary,
                           child: IconButton(
-                            onPressed: () {
-                              Navigator.canPop(context)
-                                  ? Navigator.pop(context)
-                                  : null;
-                            },
+                            onPressed: _isLoading
+                                ? null
+                                : () {
+                                    Navigator.canPop(context)
+                                        ? Navigator.pop(context)
+                                        : null;
+                                  },
                             icon: Icon(
                               Icons.arrow_back_ios_new,
                               color: Theme.of(context).colorScheme.secondary,
@@ -225,7 +227,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         height: 10,
                       ),
                       Text(
-                        '${widget.product.inStock} pieces available in stock',
+                        widget.product.inStock! <= 0
+                            ? 'Out Of Stock'
+                            : '${widget.product.inStock} pieces available in stock',
                         style: TextStyle(
                           fontSize: 16,
                           color: Theme.of(context)
@@ -273,88 +277,111 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
           bottomSheet: !isCustomerAuth
               ? null
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) => VisitStoreScreen(
-                                    supplier: currentProductSuppliers),
-                              ),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.store,
-                            color: Theme.of(context).colorScheme.primary,
+              : widget.product.inStock! <= 0
+                  ? Container(
+                      width: double.infinity,
+                      height: size.height * 0.057,
+                      color: Theme.of(context).colorScheme.tertiary,
+                      child: const Center(
+                        child: Text(
+                          'OUT OF STOCK',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CartScreen(
-                                  back: AppBarBackButton(),
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (ctx) => VisitStoreScreen(
+                                        supplier: currentProductSuppliers),
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.store,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const CartScreen(
+                                      back: AppBarBackButton(),
+                                    ),
+                                  ),
+                                );
+                              },
+                              tooltip: 'Cart',
+                              icon: Consumer<AuthCustomerProvider>(
+                                builder: (context, auth, child) => Badge(
+                                  badgeColor:
+                                      Theme.of(context).colorScheme.surface,
+                                  badgeContent: !auth.isAuth
+                                      ? const Text('0')
+                                      : Text(cartProvider.cart!.items!.length
+                                          .toString()),
+                                  child: Icon(Icons.shopping_cart,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                                 ),
                               ),
-                            );
-                          },
-                          tooltip: 'Cart',
-                          icon: Consumer<AuthCustomerProvider>(
-                            builder: (context, auth, child) => Badge(
-                              badgeColor: Theme.of(context).colorScheme.surface,
-                              badgeContent: !auth.isAuth
-                                  ? const Text('0')
-                                  : Text(cartProvider.cart!.items!.length
-                                      .toString()),
-                              child: Icon(Icons.shopping_cart,
-                                  color: Theme.of(context).colorScheme.primary),
                             ),
-                          ),
+                          ],
                         ),
+                        DefaultButton(
+                          width: size.width * 0.55,
+                          height: size.height * 0.057,
+                          onPressed: cartProduct?.id != null
+                              ? null
+                              : _isLoading
+                                  ? null
+                                  : () async {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      await cartProvider
+                                          .addToCart(widget.product.id!);
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                    },
+                          color: Theme.of(context).colorScheme.primary,
+                          radius: 15,
+                          widget: _isLoading
+                              ? SpinKitFoldingCube(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 18,
+                                )
+                              : Text(
+                                  cartProduct?.id != null
+                                      ? 'ITEM IN CART'
+                                      : 'ADD TO CART',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                        )
                       ],
                     ),
-                    DefaultButton(
-                      width: size.width * 0.55,
-                      height: size.height * 0.057,
-                      onPressed: cartProduct?.id != null
-                          ? null
-                          : () async {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              await cartProvider.addToCart(widget.product.id!);
-                              setState(() {
-                                _isLoading = false;
-                              });
-                            },
-                      color: Theme.of(context).colorScheme.primary,
-                      radius: 15,
-                      widget: _isLoading
-                          ? SpinKitFoldingCube(
-                              color: Theme.of(context).colorScheme.secondary,
-                              size: 18,
-                            )
-                          : Text(
-                              cartProduct?.id != null
-                                  ? 'ITEM IN CART'
-                                  : 'ADD TO CART',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                    )
-                  ],
-                ),
         ),
       ),
     );

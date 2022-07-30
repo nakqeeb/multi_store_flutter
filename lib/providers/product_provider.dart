@@ -67,7 +67,9 @@ class ProductProvider with ChangeNotifier {
         loadedProducts.add(Product.fromJson(prodData));
       });
       // print(loadedProducts[0].productName);
-      _products = loadedProducts;
+      final List<Product> prods =
+          loadedProducts.where((element) => element.inStock != 0).toList();
+      _products = prods;
       notifyListeners();
     } catch (err) {
       throw err;

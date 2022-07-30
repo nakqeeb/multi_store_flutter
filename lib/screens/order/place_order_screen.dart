@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
+import 'package:multi_store_app/screens/order/payment_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/default_button.dart';
@@ -20,7 +21,6 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
     final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
-    final isAuth = authCustomerProvider.isAuth;
     final name = authCustomerProvider.customer?.name;
     final phone = authCustomerProvider.customer?.phone;
     final address = authCustomerProvider.customer?.address;
@@ -194,13 +194,20 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
               height: size.height * 0.03,
             ),
             DefaultButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => const PaymentScreen(),
+                  ),
+                );
+              },
               height: size.height * 0.06,
               width: size.width * 0.9,
               radius: 15,
               color: Theme.of(context).colorScheme.secondary,
               widget: Text(
-                'Checkout',
+                'Confirm ${cartProvider.totalPrice.toStringAsFixed(2)} USD',
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.secondary,

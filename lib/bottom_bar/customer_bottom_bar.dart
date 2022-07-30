@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 
 class CustomerBottomBar extends StatefulWidget {
+  static String routeName = '/customer_btm_bar';
   const CustomerBottomBar({super.key});
 
   @override

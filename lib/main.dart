@@ -6,6 +6,7 @@ import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
 import 'package:multi_store_app/providers/dark_theme_provider.dart';
+import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/utilities/theme.dart';
 import 'package:provider/provider.dart';
@@ -73,6 +74,16 @@ class _MyAppState extends State<MyApp> {
                   CartProvider(
             customerAuth.token,
             previousCart!.cart,
+          ),
+        ),
+        ChangeNotifierProxyProvider2<AuthCustomerProvider, AuthSupplierProvider,
+            OrderProvider>(
+          create: (_) => OrderProvider(null, []),
+          update: (BuildContext ctx, customerAuth, supplierAuth,
+                  OrderProvider? previousOrders) =>
+              OrderProvider(
+            customerAuth.token ?? supplierAuth.token,
+            previousOrders == null ? [] : previousOrders.orders,
           ),
         ),
         ChangeNotifierProvider(create: (_) => themeChangeProvider),

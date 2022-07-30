@@ -7,11 +7,11 @@ import '../../providers/auth_supplier_provider.dart';
 import '../../providers/dark_theme_provider.dart';
 import '../../services/global_methods.dart';
 import '../welcome/welcome_screen.dart';
-import 'sub_screen/edit_business_screen.dart';
-import 'sub_screen/manage_products_screen.dart';
-import 'sub_screen/supplier_balance_screen.dart';
-import 'sub_screen/supplier_orders_screen.dart';
-import 'sub_screen/supplier_statics_screen.dart';
+import 'sub_screens/edit_business/edit_business_screen.dart';
+import 'sub_screens/manage_products/manage_products_screen.dart';
+import 'sub_screens/supplier_balance/supplier_balance_screen.dart';
+import 'sub_screens/supplier_orders/supplier_orders_screen.dart';
+import 'sub_screens/supplier_statics/supplier_statics_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -65,6 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const AppBarTitle(
           title: 'Dashboard',

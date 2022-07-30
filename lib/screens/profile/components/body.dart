@@ -52,6 +52,7 @@ class Body extends StatelessWidget {
           slivers: [
             SliverAppBar(
               //centerTitle: true,
+              automaticallyImplyLeading: false,
               elevation: 0,
               pinned: true,
               expandedHeight: 140,

@@ -8,7 +8,10 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(elevation: 0, title: const SearchBar()),
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          title: const SearchBar()),
       body: SafeArea(child: Body()),
     );
   }
