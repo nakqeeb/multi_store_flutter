@@ -32,7 +32,7 @@ class DefaultButton extends StatelessWidget {
             color: color,
             borderRadius: BorderRadius.circular(radius),
           ),
-          child: ElevatedButton(
+          child: TextButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

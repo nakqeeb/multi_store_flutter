@@ -9,6 +9,7 @@ import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
+import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
@@ -98,12 +99,13 @@ class _FetchScreenState extends State<FetchScreen> {
         return;
       }
       if (isCusAuth && !isSubAuth) {
+        await Provider.of<CartProvider>(context, listen: false).fetchCart();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => const CustomerBottomBar(),
         ));
         // Create empty cart for the customer if no cart is found
-        await Provider.of<CartProvider>(context, listen: false).fetchCart();
       } else if (isSubAuth && !isCusAuth) {
+        await Provider.of<OrderProvider>(context, listen: false).fetchOrders();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => const SupplierBottomBar(),
         ));

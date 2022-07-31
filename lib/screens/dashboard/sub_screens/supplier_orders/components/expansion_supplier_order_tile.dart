@@ -12,7 +12,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
   const ExpansionSupplierOrderTile({super.key, required this.order});
 
   // https://peaku.co/questions/25591-el-analisis-de-la-fecha-de-mongodb-en-flutter-siempre-falla
-  getFormattedDateFromFormattedString(
+  _getFormattedDateFromFormattedString(
       {required value,
       required String currentFormat,
       required String desiredFormat,
@@ -203,7 +203,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          getFormattedDateFromFormattedString(
+                          _getFormattedDateFromFormattedString(
                                   value: order.orderDate,
                                   currentFormat: "yyyy-MM-ddTHH:mm:ssZ",
                                   desiredFormat: "yyyy-MM-dd HH:mm:ss")
@@ -215,7 +215,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                     ),
                     order.deliveryStatus == 'delivered'
                         ? const Text(
-                            'This order has been already delivered.',
+                            'This order has already been delivered.',
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.teal,
@@ -239,9 +239,8 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                             const Duration(days: 365),
                                           ),
                                           onConfirm: (date) async {
-                                            await orderProvider
-                                                .updateDeliveryDate(
-                                                    order.id, date);
+                                            await orderProvider.updateOrder(
+                                                order.id, 'shipping', date);
                                           },
                                           theme: DatePickerTheme(
                                             backgroundColor: Theme.of(context)
@@ -266,7 +265,10 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                       ),
                                     )
                                   : TextButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        await orderProvider.updateOrder(
+                                            order.id, 'delivered', null);
+                                      },
                                       child: const Text(
                                         'Delivered?',
                                         style: TextStyle(color: Colors.blue),

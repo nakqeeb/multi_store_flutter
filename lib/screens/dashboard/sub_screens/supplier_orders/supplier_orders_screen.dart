@@ -86,7 +86,9 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
         body: TabBarView(children: [
           PreparingOrders(ordersFuture: _ordersFuture),
           ShippingOrders(ordersFuture: _ordersFuture),
-          DeliveredOrders(),
+          DeliveredOrders(
+            ordersFuture: _ordersFuture,
+          ),
         ]),
       ),
     );

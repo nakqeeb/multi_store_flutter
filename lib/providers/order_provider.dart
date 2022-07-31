@@ -80,9 +80,12 @@ class OrderProvider with ChangeNotifier {
   }
 
   // update deliveryDate
-  Future<void> updateDeliveryDate(
-      String? orderId, DateTime deliveryDate) async {
-    final data = {"deliveryDate": deliveryDate.toIso8601String()};
+  Future<void> updateOrder(
+      String? orderId, String deliveryStatus, DateTime? deliveryDate) async {
+    final data = {
+      "deliveryDate": deliveryDate?.toIso8601String(),
+      "deliveryStatus": deliveryStatus
+    };
     final url = Uri.http(API_URL, '/orders/$orderId');
     try {
       final response = await http.put(

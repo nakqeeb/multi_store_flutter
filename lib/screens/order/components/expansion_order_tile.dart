@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:multi_store_app/models/order.dart';
 
 import '../../../services/utils.dart';
@@ -6,6 +7,24 @@ import '../../../services/utils.dart';
 class ExpansionOrderTile extends StatelessWidget {
   final Order order;
   const ExpansionOrderTile({super.key, required this.order});
+
+  // https://peaku.co/questions/25591-el-analisis-de-la-fecha-de-mongodb-en-flutter-siempre-falla
+  _getFormattedDateFromFormattedString(
+      {required value,
+      required String currentFormat,
+      required String desiredFormat,
+      isUtc = false}) {
+    DateTime? dateTime = DateTime.now();
+    if (value != null || value.isNotEmpty) {
+      try {
+        dateTime =
+            DateFormat(currentFormat).parse(value, isUtc = true).toLocal();
+      } catch (e) {
+        print("$e");
+      }
+    }
+    return dateTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,8 +192,9 @@ class ExpansionOrderTile extends StatelessWidget {
                     ),
                     order.deliveryStatus == 'shipping'
                         ? Text(
-                            'Estimated Delivey Date: ${order.deliveryDate}',
-                            style: const TextStyle(fontSize: 15),
+                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.blue),
                           )
                         : const SizedBox.shrink(), // const Text(''),
                     order.deliveryStatus == 'delivered' &&

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../../../models/order.dart';
-import '../../../../../../providers/order_provider.dart';
 import '../../../../../error/error_screen.dart';
 import '../expansion_supplier_order_tile.dart';
 
 class ShippingOrders extends StatefulWidget {
-  final Future<List<Order>>? ordersFuture;
-  const ShippingOrders({super.key, this.ordersFuture});
+  Future<List<Order>> ordersFuture;
+  ShippingOrders({super.key, required this.ordersFuture});
 
   @override
   State<ShippingOrders> createState() => _ShippingOrdersState();
