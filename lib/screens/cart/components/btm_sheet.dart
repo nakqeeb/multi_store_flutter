@@ -42,7 +42,9 @@ class BTMSheet extends StatelessWidget {
                   },
             height: size.height * 0.057,
             width: size.width * 0.45,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            color: total == 0.0
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                : Theme.of(context).colorScheme.primary,
             radius: 10,
             widget: Text(
               'Checkout',

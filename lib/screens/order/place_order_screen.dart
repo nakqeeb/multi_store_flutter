@@ -96,98 +96,140 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: ListView.builder(
-                  itemCount: cartItems?.length,
-                  itemBuilder: (ctx, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: size.width * 0.9,
-                      height: size.height * 0.13,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                            width: 1,
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                bottomLeft: Radius.circular(15)),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: 'images/inapp/spinner.gif',
-                              image: cartItems![index]
-                                  .cartProduct!
-                                  .productImages![0],
-                              height: double.infinity,
-                              width: size.width * 0.20,
-                              fit: BoxFit.cover,
-                            ),
+                    itemCount: cartItems?.length,
+                    itemBuilder: (ctx, index) {
+                      final isOnSale =
+                          cartItems![index].cartProduct!.discount! > 0;
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: size.width * 0.9,
+                          height: size.height * 0.13,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                                width: 1,
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
-                          Column(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              SizedBox(
-                                width: size.width * 0.60,
-                                child: Text(
-                                  cartItems[index]
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15)),
+                                child: FadeInImage.assetNetwork(
+                                  placeholder: 'images/inapp/spinner.gif',
+                                  image: cartItems[index]
                                       .cartProduct!
-                                      .productName
-                                      .toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                      .productImages![0],
+                                  height: double.infinity,
+                                  width: size.width * 0.20,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                              const Spacer(),
-                              SizedBox(
-                                width: size.width * 0.60,
-                                child: Row(
-                                  children: [
-                                    Text(
+                              Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.60,
+                                    child: Text(
                                       cartItems[index]
                                           .cartProduct!
-                                          .price!
-                                          .toStringAsFixed(2),
+                                          .productName
+                                          .toString(),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
                                       style: const TextStyle(
-                                        fontSize: 17,
+                                        fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const Spacer(),
-                                    Text(
-                                      'x ${cartItems[index].quantity}',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  ),
+                                  const Spacer(),
+                                  SizedBox(
+                                    width: size.width * 0.60,
+                                    child: Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              cartItems[index]
+                                                  .cartProduct!
+                                                  .price!
+                                                  .toStringAsFixed(2),
+                                              style: isOnSale
+                                                  ? TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                          .withOpacity(0.7),
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      decoration: TextDecoration
+                                                          .lineThrough)
+                                                  : const TextStyle(
+                                                      color: Colors.indigo,
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            isOnSale
+                                                ? Text(
+                                                    ((1 -
+                                                                (cartItems[index]
+                                                                        .cartProduct!
+                                                                        .discount! /
+                                                                    100)) *
+                                                            cartItems[index]
+                                                                .cartProduct!
+                                                                .price!)
+                                                        .toStringAsFixed(2),
+                                                    style: const TextStyle(
+                                                      color: Colors.indigo,
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  )
+                                                : const SizedBox.shrink(),
+                                          ],
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          'x ${cartItems[index].quantity}',
+                                          style: const TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      width: 15,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                ],
+                              )
                             ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                          ),
+                        ),
+                      );
+                    }),
               ),
             ),
             SizedBox(
@@ -210,7 +252,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                 'Confirm ${cartProvider.totalPrice.toStringAsFixed(2)} USD',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             )

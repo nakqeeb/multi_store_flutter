@@ -69,6 +69,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           .cartProduct;
     }
     print("This is product in cart ${cartProduct?.productName}");
+    final isOnSale = widget.product.discount! > 0;
     return Material(
       // Material to not prevent notification bar to has a black background color
       color: Theme.of(context).colorScheme.surface,
@@ -177,12 +178,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                               Text(
                                 widget.product.price!.toStringAsFixed(2),
-                                style: const TextStyle(
-                                  color: Colors.redAccent,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: isOnSale
+                                    ? TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary
+                                            .withOpacity(0.5),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.lineThrough)
+                                    : const TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                               ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              isOnSale
+                                  ? Text(
+                                      ((1 - (widget.product.discount! / 100)) *
+                                              widget.product.price!)
+                                          .toStringAsFixed(2),
+                                      style: const TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
                             ],
                           ),
                           // necessary to use ? instead of ! to avoid the error when guest or customer is useing the app instead of supplier

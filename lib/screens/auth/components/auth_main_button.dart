@@ -27,7 +27,7 @@ class AuthMainButton extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 18,
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
       ),

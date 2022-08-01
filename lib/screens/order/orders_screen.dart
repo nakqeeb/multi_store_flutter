@@ -44,6 +44,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 size: 35,
               );
             } else if (snapshot.connectionState == ConnectionState.done) {
+              List<Order> orders = snapshot.data!.reversed.toList();
               if (snapshot.hasError) {
                 return const ErrorScreen(
                     title: 'Opps! Something went wrong',
@@ -52,7 +53,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (ctx, index) {
-                    return ExpansionOrderTile(order: snapshot.data![index]);
+                    return ExpansionOrderTile(order: orders[index]);
                   },
                 );
               } else if (snapshot.data!.isEmpty) {

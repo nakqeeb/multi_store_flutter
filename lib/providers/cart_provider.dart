@@ -25,7 +25,13 @@ class CartProvider with ChangeNotifier {
     var total = 0.0;
     if (_cart?.items != null) {
       for (var item in _cart!.items!.toList()) {
-        total += item.quantity! * item.cartProduct!.price!;
+        if (item.cartProduct!.discount! > 0) {
+          total += item.quantity! *
+              ((1 - (item.cartProduct!.discount! / 100)) *
+                  item.cartProduct!.price!);
+        } else {
+          total += item.quantity! * item.cartProduct!.price!;
+        }
       }
     }
     return total;

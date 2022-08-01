@@ -118,10 +118,11 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
               Text(
                 order.deliveryStatus.toString(),
                 style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withOpacity(0.7)),
+                    color: order.deliveryStatus == 'preparing'
+                        ? Colors.amber
+                        : order.deliveryStatus == 'shipping'
+                            ? Colors.indigoAccent
+                            : Colors.green),
               )
             ],
           ),
@@ -189,8 +190,13 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                         ),
                         Text(
                           '${order.deliveryStatus}',
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.green),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: order.deliveryStatus == 'preparing'
+                                  ? Colors.amber
+                                  : order.deliveryStatus == 'shipping'
+                                      ? Colors.indigoAccent
+                                      : Colors.green),
                         ),
                       ],
                     ),

@@ -17,15 +17,16 @@ class CartItems extends StatelessWidget {
       child: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
           return ListView.builder(
-              itemCount: cartProvider.cart!.items!.length,
-              itemBuilder: (context, index) {
-                final cartItem = cartProvider.cart!.items![index];
-                return CartItemTile(
-                  key: ValueKey(cartItem.id),
-                  cartItem: cartItem,
-                  // cart: context.read<Cart>(),
-                );
-              });
+            itemCount: cartProvider.cart!.items!.length,
+            itemBuilder: (context, index) {
+              final cartItem = cartProvider.cart!.items![index];
+              return CartItemTile(
+                key: ValueKey(cartItem.id),
+                cartItem: cartItem,
+                // cart: context.read<Cart>(),
+              );
+            },
+          );
         },
       ),
     );

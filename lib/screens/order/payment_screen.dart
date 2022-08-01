@@ -25,7 +25,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedValue = 1;
   bool _isLoading = false;
 
-  Future<void> placeOrder(List<CartItem>? cartItems) async {
+  Future<void> _placeOrder(List<CartItem>? cartItems) async {
     for (var item in cartItems!) {
       final newOrder = {
         "supplier": item.cartProduct?.supplier,
@@ -295,7 +295,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                               if (Navigator.canPop(context)) {
                                                 Navigator.pop(context);
                                               }
-                                              await placeOrder(cartItems);
+                                              await _placeOrder(cartItems);
                                               setState(() {
                                                 _isLoading = false;
                                               });
@@ -305,7 +305,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                             radius: 15,
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .secondary,
+                                                .primary,
                                             widget: Text(
                                               'Confirm ${totalPaid.toStringAsFixed(2)} USD',
                                               style: TextStyle(

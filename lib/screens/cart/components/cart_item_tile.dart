@@ -19,6 +19,7 @@ class _CartItemTileState extends State<CartItemTile> {
   bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
+    final isOnSale = widget.cartItem.cartProduct!.discount! > 0;
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Card(
@@ -54,13 +55,45 @@ class _CartItemTileState extends State<CartItemTile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          widget.cartItem.cartProduct!.price!
-                              .toStringAsFixed(2),
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary),
+                        Row(
+                          children: [
+                            Text(
+                              widget.cartItem.cartProduct!.price!
+                                  .toStringAsFixed(2),
+                              style: isOnSale
+                                  ? TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                          .withOpacity(0.7),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      decoration: TextDecoration.lineThrough)
+                                  : const TextStyle(
+                                      color: Colors.indigo,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            isOnSale
+                                ? Text(
+                                    ((1 -
+                                                (widget.cartItem.cartProduct!
+                                                        .discount! /
+                                                    100)) *
+                                            widget.cartItem.cartProduct!.price!)
+                                        .toStringAsFixed(2),
+                                    style: const TextStyle(
+                                      color: Colors.indigo,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ],
                         ),
                         _isLoading
                             ? Container(

@@ -33,6 +33,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   late int _quantity;
   late String _proName;
   late String _proDesc;
+  int? _discount = 0;
   Category? _mainCategValue;
   Subcategory? _subCategValue;
   List<Subcategory> _subCategList = [];
@@ -154,7 +155,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
         productDescription: _proDesc,
         price: _price,
         inStock: _quantity,
-        discount: 0,
+        discount: _discount,
         productImages: _imagesUrlList,
         mainCategory: _mainCategValue!.id,
         subCategory: _subCategValue!.id,
@@ -315,43 +316,86 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       thickness: 1.5,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: SizedBox(
-                      width: size.width * 0.38,
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter the price';
-                          } else if (value.isValidPrice() != true) {
-                            return 'Invalid price';
-                          }
-                          return null;
-                        },
-                        /* onChanged: (value) {
-                          // I check here to avoid the error because we parse the value to double and when we empty the text field the application will carsh
-                          // another approach to solve this error is by useing onSaved instead of onChanged
-                          if (value.isNotEmpty) {
-                            _price = double.parse(value);
-                          }
-                        }, */
-                        onSaved: (value) {
-                          _price = double.parse(value!);
-                        },
-                        keyboardType: TextInputType
-                            .number, // this will convert the keyboard to number but still you will be able to add characters along with the numbers
-                        inputFormatters: [
-                          //FilteringTextInputFormatter.digitsOnly, // found the solution in stackoverflow
-                          // r'(^\d*\.?\d{0,2})' working fine
-                          FilteringTextInputFormatter.allow(RegExp(
-                              r'^([1-9][0-9]*)([\.]{0,1})([0-9]{0,2})')) // I added this regExp for number with decimal point
-                        ],
-                        decoration: textFormDecoration(context).copyWith(
-                          labelText: 'Price',
-                          hintText: 'Price.. \$',
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          width: size.width * 0.38,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter the price';
+                              } else if (value.isValidPrice() != true) {
+                                return 'Invalid price';
+                              }
+                              return null;
+                            },
+                            /* onChanged: (value) {
+                              // I check here to avoid the error because we parse the value to double and when we empty the text field the application will carsh
+                              // another approach to solve this error is by useing onSaved instead of onChanged
+                              if (value.isNotEmpty) {
+                                _price = double.parse(value);
+                              }
+                            }, */
+                            onSaved: (value) {
+                              _price = double.parse(value!);
+                            },
+                            keyboardType: TextInputType
+                                .number, // this will convert the keyboard to number but still you will be able to add characters along with the numbers
+                            inputFormatters: [
+                              //FilteringTextInputFormatter.digitsOnly, // found the solution in stackoverflow
+                              // r'(^\d*\.?\d{0,2})' working fine
+                              FilteringTextInputFormatter.allow(RegExp(
+                                  r'^([1-9][0-9]*)([\.]{0,1})([0-9]{0,2})')) // I added this regExp for number with decimal point
+                            ],
+                            decoration: textFormDecoration(context).copyWith(
+                              labelText: 'Price',
+                              hintText: 'Price.. \$',
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SizedBox(
+                          width: size.width * 0.38,
+                          child: TextFormField(
+                            maxLength: 2,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return null;
+                              } else if (value.isValidDiscount() != true) {
+                                return 'Invalid discount';
+                              }
+                              return null;
+                            },
+                            /* onChanged: (value) {
+                              // I check here to avoid the error because we parse the value to double and when we empty the text field the application will carsh
+                              // another approach to solve this error is by useing onSaved instead of onChanged
+                              if (value.isNotEmpty) {
+                                _price = double.parse(value);
+                              }
+                            }, */
+                            onSaved: (value) {
+                              _discount = int.parse(value!);
+                            },
+                            keyboardType: TextInputType
+                                .number, // this will convert the keyboard to number but still you will be able to add characters along with the numbers
+                            inputFormatters: [
+                              //FilteringTextInputFormatter.digitsOnly, // found the solution in stackoverflow
+                              // r'(^\d*\.?\d{0,2})' working fine
+                              FilteringTextInputFormatter.allow(RegExp(
+                                  r'^([1-9][0-9]*)([\.]{0,1})([0-9]{0,2})')) // I added this regExp for number with decimal point
+                            ],
+                            decoration: textFormDecoration(context).copyWith(
+                              labelText: 'Discount',
+                              hintText: 'discount.. %',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8),
@@ -525,8 +569,8 @@ extension PriceValidator on String {
   }
 }
 
-/* extension DiscountValidator on String {
+extension DiscountValidator on String {
   bool isValidDiscount() {
     return RegExp(r'^([0-9]*)$').hasMatch(this);
   }
-} */
+}
