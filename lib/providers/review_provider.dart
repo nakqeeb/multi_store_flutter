@@ -48,7 +48,6 @@ class ReviewProvider with ChangeNotifier {
         url,
         headers: {
           'Content-type': 'application/json',
-          'Authorization': 'Bearer ${authToken!}',
         },
       );
       var responseData = json.decode(response.body);

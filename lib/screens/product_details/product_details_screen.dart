@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -10,6 +11,8 @@ import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
+import 'package:multi_store_app/screens/product_details/components/average_rating_bar.dart';
+import 'package:multi_store_app/screens/product_details/components/show_reviews.dart';
 import 'package:multi_store_app/screens/stores/visit_store_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -163,6 +166,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 15, 5, 0),
+                        child: AverageRatingBar(
+                            productId: widget.product.id.toString()),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -273,6 +281,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                      ),
+                      ExpandableTheme(
+                        data: ExpandableThemeData(
+                          iconColor: Theme.of(context).colorScheme.primary,
+                          iconSize: 24,
+                          iconPadding:
+                              const EdgeInsets.fromLTRB(10, 20, 10, 10),
+                        ),
+                        child: ShowReviews(
+                          productId: widget.product.id!,
                         ),
                       ),
                       similarProducts.isNotEmpty

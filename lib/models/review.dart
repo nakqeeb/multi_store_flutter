@@ -4,7 +4,7 @@ class Review {
   String? id;
   Customer? customer;
   String? productId;
-  double? rating;
+  num? rating;
   String? comment;
   String? createdAt;
   String? updatedAt;
