@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/models/cart.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
@@ -12,8 +13,15 @@ import 'package:multi_store_app/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/cart_provider.dart';
+import 'providers/review_provider.dart';
+import 'utilities/global_variables.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = stripePublishableKey;
+  Stripe.merchantIdentifier = 'merchant.flutter.stripe.test';
+  Stripe.urlScheme = 'flutterstripe';
+  await Stripe.instance.applySettings();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -84,6 +92,15 @@ class _MyAppState extends State<MyApp> {
               OrderProvider(
             customerAuth.token ?? supplierAuth.token,
             previousOrders == null ? [] : previousOrders.orders,
+          ),
+        ),
+        ChangeNotifierProxyProvider<AuthCustomerProvider, ReviewProvider>(
+          create: (_) => ReviewProvider(null, []),
+          update: (BuildContext ctx, customerAuth,
+                  ReviewProvider? previousOrders) =>
+              ReviewProvider(
+            customerAuth.token,
+            previousOrders!.reviews,
           ),
         ),
         ChangeNotifierProvider(create: (_) => themeChangeProvider),

@@ -65,7 +65,7 @@ class OrderProvider with ChangeNotifier {
       }
       final List<Order> loadedOrders = [];
       responseData['orders'].forEach((orderData) {
-        //print(prodData);
+        //print(orderData);
         loadedOrders.add(Order.fromJson(orderData));
       });
       /* loadedOrders.sort((a, b) {
@@ -79,7 +79,7 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  // update deliveryDate
+  // update deliveryDate and deliveryStatus
   Future<void> updateOrder(
       String? orderId, String deliveryStatus, DateTime? deliveryDate) async {
     final data = {
@@ -99,6 +99,33 @@ class OrderProvider with ChangeNotifier {
       if (response.statusCode >= 400) {
         notifyListeners();
         throw HttpException('Could not update deliveryDate.');
+      }
+      //final extractedData = json.decode(response.body);
+      //print(extractedData);
+
+      notifyListeners();
+    } catch (err) {
+      print(err);
+      throw err;
+    }
+  }
+
+  // set orderReview feild to true
+  Future<void> updateOrderReview(String? orderId, bool orderReview) async {
+    final data = {'orderReview': orderReview};
+    final url = Uri.http(API_URL, '/orders/orderreview/$orderId');
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer ${authToken!}',
+        },
+        body: json.encode(data),
+      );
+      if (response.statusCode >= 400) {
+        notifyListeners();
+        throw HttpException('Could not update orderReview.');
       }
       //final extractedData = json.decode(response.body);
       //print(extractedData);

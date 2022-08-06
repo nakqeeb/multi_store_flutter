@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/order.dart';
@@ -17,10 +19,11 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  Future<List<Order>>? _orders;
+  //Future<List<Order>>? _orders;
+
   @override
   void initState() {
-    _orders = Provider.of<OrderProvider>(context, listen: false).fetchOrders();
+    //_orders = Provider.of<OrderProvider>(context, listen: false).fetchOrders();
     super.initState();
   }
 
@@ -35,15 +38,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Order>>(
-          future: _orders,
-          builder: (context, snapshot) {
+      body: StreamBuilder<List<Order>>(
+          // future: _orders,
+          stream: Stream.fromFuture(
+              Provider.of<OrderProvider>(context, listen: false).fetchOrders()),
+          builder: (context, AsyncSnapshot<List<Order>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
+              //print('this is snapshot1 ${snapshot.data}');
               return SpinKitFadingFour(
                 color: Theme.of(context).colorScheme.secondary,
                 size: 35,
               );
-            } else if (snapshot.connectionState == ConnectionState.done) {
+            } else if (snapshot.connectionState == ConnectionState.active ||
+                snapshot.connectionState == ConnectionState.done) {
+              print('this is snapshot2 ${snapshot.data}');
               List<Order> orders = snapshot.data!.reversed.toList();
               if (snapshot.hasError) {
                 return const ErrorScreen(
@@ -53,7 +61,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (ctx, index) {
-                    return ExpansionOrderTile(order: orders[index]);
+                    return ExpansionOrderTile(order: snapshot.data![index]);
                   },
                 );
               } else if (snapshot.data!.isEmpty) {

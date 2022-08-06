@@ -127,4 +127,15 @@ class ProductProvider with ChangeNotifier {
       throw err;
     }
   }
+
+  List<Product> searchQuery(String searchText) {
+    List<Product> searchList = _products
+        .where(
+          (element) => element.productName!.toLowerCase().contains(
+                searchText.toLowerCase(),
+              ),
+        )
+        .toList();
+    return searchList;
+  }
 }

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_store_app/models/order.dart';
+import 'package:multi_store_app/providers/order_provider.dart';
+import 'package:multi_store_app/screens/order/components/review_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../../../services/utils.dart';
 
-class ExpansionOrderTile extends StatelessWidget {
+class ExpansionOrderTile extends StatefulWidget {
   final Order order;
   const ExpansionOrderTile({super.key, required this.order});
 
+  @override
+  State<ExpansionOrderTile> createState() => _ExpansionOrderTileState();
+}
+
+class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
   // https://peaku.co/questions/25591-el-analisis-de-la-fecha-de-mongodb-en-flutter-siempre-falla
   _getFormattedDateFromFormattedString(
       {required value,
@@ -46,7 +54,7 @@ class ExpansionOrderTile extends StatelessWidget {
               children: [
                 FadeInImage.assetNetwork(
                   placeholder: 'images/inapp/spinner.gif',
-                  image: order.product!.productImages![0],
+                  image: widget.order.product!.productImages![0],
                   height: double.infinity,
                   width: size.width * 0.20,
                   fit: BoxFit.cover,
@@ -61,7 +69,7 @@ class ExpansionOrderTile extends StatelessWidget {
                       SizedBox(
                         width: size.width * 0.60,
                         child: Text(
-                          order.product!.productName.toString(),
+                          widget.order.product!.productName.toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(
@@ -76,7 +84,7 @@ class ExpansionOrderTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              order.product!.price!.toStringAsFixed(2),
+                              widget.order.product!.price!.toStringAsFixed(2),
                               style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -84,7 +92,7 @@ class ExpansionOrderTile extends StatelessWidget {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             Text(
-                              'x ${order.orderQuantity}',
+                              'x ${widget.order.orderQuantity}',
                               style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -112,11 +120,11 @@ class ExpansionOrderTile extends StatelessWidget {
                         .withOpacity(0.7)),
               ),
               Text(
-                order.deliveryStatus.toString(),
+                widget.order.deliveryStatus.toString(),
                 style: TextStyle(
-                  color: order.deliveryStatus == 'preparing'
+                  color: widget.order.deliveryStatus == 'preparing'
                       ? Colors.amber
-                      : order.deliveryStatus == 'shipping'
+                      : widget.order.deliveryStatus == 'shipping'
                           ? Colors.indigoAccent
                           : Colors.green,
                 ),
@@ -128,7 +136,7 @@ class ExpansionOrderTile extends StatelessWidget {
               //height: 230,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: order.deliveryStatus == 'delivered'
+                color: widget.order.deliveryStatus == 'delivered'
                     ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
                     : Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(15),
@@ -139,25 +147,25 @@ class ExpansionOrderTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${order.customer?.name}',
+                      'Name: ${widget.order.customer?.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${order.customer?.phone}',
+                      'Phone No: ${widget.order.customer?.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Email: ${order.customer?.email}',
+                      'Email: ${widget.order.customer?.email}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Address: ${order.customer?.address}',
+                      'Address: ${widget.order.customer?.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
@@ -171,7 +179,7 @@ class ExpansionOrderTile extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${order.paymentStatus}',
+                          '${widget.order.paymentStatus}',
                           style: const TextStyle(
                               fontSize: 15, color: Colors.purple),
                         ),
@@ -186,29 +194,60 @@ class ExpansionOrderTile extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${order.deliveryStatus}',
+                          '${widget.order.deliveryStatus}',
                           style: TextStyle(
                             fontSize: 15,
-                            color: order.deliveryStatus == 'preparing'
+                            color: widget.order.deliveryStatus == 'preparing'
                                 ? Colors.amber
-                                : order.deliveryStatus == 'shipping'
+                                : widget.order.deliveryStatus == 'shipping'
                                     ? Colors.indigoAccent
                                     : Colors.green,
                           ),
                         ),
                       ],
                     ),
-                    order.deliveryStatus == 'shipping'
+                    widget.order.deliveryStatus == 'shipping'
                         ? Text(
-                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: widget.order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
                             style: const TextStyle(
                                 fontSize: 15, color: Colors.blue),
                           )
                         : const SizedBox.shrink(), // const Text(''),
-                    order.deliveryStatus == 'delivered' &&
-                            order.orderReview == false
+                    widget.order.deliveryStatus == 'delivered' &&
+                            widget.order.orderReview == false
                         ? TextButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .surface
+                                    .withAlpha(230),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(15),
+                                      topRight: Radius.circular(15)),
+                                ),
+                                builder: (ctx) => SingleChildScrollView(
+                                  child: Padding(
+                                    // added to show the model when above the keyboard
+                                    padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(ctx)
+                                            .viewInsets
+                                            .bottom),
+                                    child: SizedBox(
+                                      height: size.height * 0.4,
+                                      child: ReviewWidget(order: widget.order),
+                                    ),
+                                  ),
+                                ),
+                              ).then((value) {
+                                setState(() {
+                                  widget.order.orderReview = value;
+                                });
+                              });
+                            },
                             child: const Text(
                               'Write Review',
                               style: TextStyle(
@@ -217,8 +256,8 @@ class ExpansionOrderTile extends StatelessWidget {
                             ),
                           )
                         : const SizedBox.shrink(), // const Text(''),
-                    order.deliveryStatus == 'delivered' &&
-                            order.orderReview == true
+                    widget.order.deliveryStatus == 'delivered' &&
+                            widget.order.orderReview == true
                         ? Row(
                             children: const [
                               Icon(

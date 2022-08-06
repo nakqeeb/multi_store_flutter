@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -5,12 +7,13 @@ import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
-import 'package:multi_store_app/services/global_methods.dart';
+import 'package:multi_store_app/utilities/global_variables.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:http/http.dart' as http;
 
 import '../../components/default_button.dart';
 import '../../models/cart_item.dart';
-import '../../models/order.dart';
 import '../../providers/cart_provider.dart';
 import '../../services/utils.dart';
 
@@ -259,7 +262,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   DefaultButton(
                     onPressed: _isLoading
                         ? null
-                        : () {
+                        : () async {
                             print(_selectedValue);
                             if (_selectedValue == 1) {
                               showModalBottomSheet(
@@ -322,6 +325,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               );
                             } else if (_selectedValue == 2) {
                               print('Visa');
+                              int payment = totalPaid.round();
+                              int pay = payment * 100;
+                              await makePayment(cartItems!, pay.toString());
                             } else if (_selectedValue == 3) {
                               print('PayPal');
                             }
@@ -350,5 +356,82 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ],
       ),
     );
+  }
+
+  Map<String, dynamic>? paymentIntentData;
+  Future<void> makePayment(List<CartItem> cartItems, String total) async {
+    try {
+      paymentIntentData = await createPaymentIntent(total, 'INR');
+      await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+              paymentIntentClientSecret: paymentIntentData!['client_secret'],
+              applePay: const PaymentSheetApplePay(merchantCountryCode: 'IN'),
+              googlePay: const PaymentSheetGooglePay(
+                  merchantCountryCode: 'IN', testEnv: true),
+              merchantDisplayName: 'Yafey'));
+
+      await displayPaymentSheet(cartItems);
+    } catch (e) {
+      print('exception:$e');
+    }
+  }
+
+  displayPaymentSheet(List<CartItem> cartItems) async {
+    try {
+      await Stripe.instance
+          .presentPaymentSheet(
+              parameters: PresentPaymentSheetParameters(
+        clientSecret: paymentIntentData!['client_secret'],
+        confirmPayment: true,
+      ))
+          .then((value) async {
+        paymentIntentData = null;
+        print('paid');
+        for (var item in cartItems) {
+          final newOrder = {
+            "supplier": item.cartProduct?.supplier,
+            "product": item.cartProduct?.id,
+            "orderQuantity": item.quantity,
+            "orderPrice": item.quantity! * item.cartProduct!.price!.toDouble(),
+            "deliveryDate": '',
+            "orderDate": DateTime.now().toIso8601String(),
+            "paymentStatus": 'paid online'
+          };
+          await context.read<OrderProvider>().placeOrder(newOrder);
+        }
+        await context.read<CartProvider>().clearCart();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (ctx) => const CustomerBottomBar(),
+          ),
+        );
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  createPaymentIntent(String total, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': total,
+        'currency': currency,
+        'payment_method_types[]': 'card'
+      };
+      print(body);
+
+      var response = await http.post(
+          Uri.parse('https://api.stripe.com/v1/payment_intents'),
+          body: body,
+          headers: {
+            'Authorization': 'Bearer $stripeSecretKey',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
