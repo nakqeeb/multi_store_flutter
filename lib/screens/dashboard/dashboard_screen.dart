@@ -94,6 +94,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 subtitle: 'Do you really want to sign out?',
                 fct: () async {
                   await authSupplierProvider.logout();
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

@@ -198,6 +198,13 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                       ? Colors.indigoAccent
                                       : Colors.green),
                         ),
+                        order.deliveryStatus == 'shipping'
+                            ? Text(
+                                'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.blue),
+                              )
+                            : const SizedBox.shrink(),
                       ],
                     ),
                     Row(

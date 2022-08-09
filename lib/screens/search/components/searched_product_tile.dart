@@ -18,7 +18,7 @@ class SearchedProductTile extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      ProductDetailsScreen(product: product)));
+                      ProductDetailsScreen(productId: product.id!)));
         },
         borderRadius: BorderRadius.circular(12),
         child: Container(

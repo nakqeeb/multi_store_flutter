@@ -39,41 +39,47 @@ class _CartScreenState extends State<CartScreen> {
             elevation: 0,
             centerTitle: true,
             title: const AppBarTitle(title: 'Cart'),
-            actions: [
-              IconButton(
-                onPressed: context.read<CartProvider>().cart!.items!.isEmpty
-                    ? null
-                    : () {
-                        GlobalMethods.warningDialog(
-                          title: 'Clear Cart',
-                          subtitle: 'Are you sure to clear the cart?',
-                          fct: () async {
-                            setState(() {
-                              _isClearingCart = true;
-                            });
-                            if (Navigator.canPop(context)) {
-                              Navigator.pop(context);
-                            }
-                            await Provider.of<CartProvider>(context,
-                                    listen: false)
-                                .clearCart();
+            actions: isCustomerAuth
+                ? [
+                    IconButton(
+                      onPressed:
+                          context.read<CartProvider>().cart!.items!.isEmpty
+                              ? null
+                              : () {
+                                  GlobalMethods.warningDialog(
+                                    title: 'Clear Cart',
+                                    subtitle: 'Are you sure to clear the cart?',
+                                    fct: () async {
+                                      setState(() {
+                                        _isClearingCart = true;
+                                      });
+                                      if (Navigator.canPop(context)) {
+                                        Navigator.pop(context);
+                                      }
+                                      await Provider.of<CartProvider>(context,
+                                              listen: false)
+                                          .clearCart();
 
-                            setState(() {
-                              _isClearingCart = false;
-                            });
-                          },
-                          context: context,
-                        );
-                      },
-                tooltip: 'Clear cart',
-                icon: Icon(
-                  Icons.delete_forever,
-                  color: context.read<CartProvider>().cart!.items!.isEmpty
-                      ? Theme.of(context).iconTheme.color!.withOpacity(0.3)
-                      : Theme.of(context).iconTheme.color,
-                ),
-              )
-            ],
+                                      setState(() {
+                                        _isClearingCart = false;
+                                      });
+                                    },
+                                    context: context,
+                                  );
+                                },
+                      tooltip: 'Clear cart',
+                      icon: Icon(
+                        Icons.delete_forever,
+                        color: context.read<CartProvider>().cart!.items!.isEmpty
+                            ? Theme.of(context)
+                                .iconTheme
+                                .color!
+                                .withOpacity(0.3)
+                            : Theme.of(context).iconTheme.color,
+                      ),
+                    )
+                  ]
+                : [],
           ),
           body: _isClearingCart
               ? GlobalMethods.loadingScreen()

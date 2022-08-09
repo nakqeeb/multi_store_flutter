@@ -116,6 +116,9 @@ class _SupplierSignupScreenState extends State<SupplierSignupScreen> {
             title: 'Success',
             subtitle: 'Account is created successfully.',
             fct: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

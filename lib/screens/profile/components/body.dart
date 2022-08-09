@@ -214,6 +214,9 @@ class Body extends StatelessWidget {
                                   subtitle: 'You need to login first',
                                   btnTitle: 'Login',
                                   fct: () {
+                                    if (Navigator.canPop(context)) {
+                                      Navigator.pop(context);
+                                    }
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -262,6 +265,9 @@ class Body extends StatelessWidget {
                                   subtitle: 'You need to login first',
                                   btnTitle: 'Login',
                                   fct: () {
+                                    if (Navigator.canPop(context)) {
+                                      Navigator.pop(context);
+                                    }
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -407,6 +413,10 @@ class Body extends StatelessWidget {
                                         fct: () async {
                                           await authCustomerProvider.logout();
                                           cartProvider.cart?.items?.clear();
+
+                                          if (Navigator.canPop(context)) {
+                                            Navigator.pop(context);
+                                          }
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(

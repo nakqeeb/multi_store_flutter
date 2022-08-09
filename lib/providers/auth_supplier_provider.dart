@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +40,7 @@ class AuthSupplierProvider with ChangeNotifier {
       "password": password,
       "storeLogoUrl": newSupplier.storeLogoUrl,
       "phone": newSupplier.phone,
+      "coverImageUrl": newSupplier.coverImageUrl,
       "isActivated": newSupplier.isActivated
     };
     // print(supplierData);
@@ -107,6 +109,9 @@ class AuthSupplierProvider with ChangeNotifier {
     // print(extractedsupplierData);
     _token = extractedsupplierData['token'];
     _supplier = Supplier.fromJson(extractedsupplierData['supplier']);
+    await fetchSupplierById(_supplier!.id
+        .toString()); // the supplier data in SharedPreferences might be old (the info might be old) so I have to fetch it again from the database once we call autologin
+
     //print(_supplier!.email);
     //print(_supplier!.profileImageUrl);
     notifyListeners();
@@ -122,6 +127,7 @@ class AuthSupplierProvider with ChangeNotifier {
     // prefs.clear(); // this will clear all SharedPreferences keys including the theme key
   }
 
+  // fetch all suppliers
   Future<List<Supplier>> fetchSuppliers() async {
     final url = Uri.http(API_URL, '/suppliers');
     try {
@@ -144,8 +150,56 @@ class AuthSupplierProvider with ChangeNotifier {
       // print(loadedSuppliers[0].productName);
       _suppliers = loadedSuppliers;
       notifyListeners();
-      return loadedSuppliers; // return it to use this method in Future.builder()
+      return loadedSuppliers; // return it to use this method in FutureBuilder()
     } catch (err) {
+      throw err;
+    }
+  }
+
+  // fetch single supplier by id
+  Future<Supplier> fetchSupplierById(String supplierId) async {
+    final url = Uri.http(API_URL, '/suppliers/$supplierId');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      );
+      var responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      Supplier loadedSupplier = Supplier.fromJson(responseData['supplier']);
+      _supplier = loadedSupplier;
+      notifyListeners();
+      return loadedSupplier; // return it to use this method in FutureBuilder()
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // update supplier store info
+  Future<void> updateStoreInfo(Supplier updatedSupplier) async {
+    final url = Uri.http(API_URL, '/suppliers');
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+        body: json.encode(updatedSupplier),
+      );
+      if (response.statusCode >= 400) {
+        notifyListeners();
+        throw HttpException('Could not update store information.');
+      }
+      await fetchSupplierById(_supplier!.id.toString());
+      notifyListeners();
+    } catch (err) {
+      print(err);
       throw err;
     }
   }

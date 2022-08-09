@@ -362,6 +362,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                           width: size.width * 0.38,
                           child: TextFormField(
                             maxLength: 2,
+                            initialValue: _discount.toString(),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return null;

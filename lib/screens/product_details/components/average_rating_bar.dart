@@ -44,7 +44,7 @@ class _AverageRatingBarState extends State<AverageRatingBar> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? SpinKitDoubleBounce(
+        ? SpinKitDancingSquare(
             color: Theme.of(context).colorScheme.secondary,
             size: 25,
           )

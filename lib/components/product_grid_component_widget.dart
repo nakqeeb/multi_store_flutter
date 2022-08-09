@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
+import 'package:multi_store_app/screens/edit_product/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/product_details/product_details_screen.dart';
 
 class ProductGridComponentWidget extends StatefulWidget {
-  const ProductGridComponentWidget({super.key, required this.product});
-  final Product product;
+  Product product;
+  ProductGridComponentWidget({super.key, required this.product});
 
   @override
   State<ProductGridComponentWidget> createState() =>
@@ -26,7 +27,7 @@ class _ProductGridComponentWidgetState
           context,
           MaterialPageRoute(
             builder: (context) => ProductDetailsScreen(
-              product: widget.product,
+              productId: widget.product.id!,
             ),
           ),
         );
@@ -117,7 +118,21 @@ class _ProductGridComponentWidgetState
                           // necessary to use ? instead of ! to avoid the error when guest or customer is useing the app instead of supplier
                           widget.product.supplier == supplier?.id
                               ? IconButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    final respose = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProductScreen(
+                                          productId: widget.product.id!,
+                                        ),
+                                      ),
+                                    );
+                                    if (respose != null) {
+                                      setState(() {
+                                        widget.product = respose;
+                                      });
+                                    }
+                                  },
                                   icon: const Icon(
                                     Icons.edit,
                                     color: Colors.red,

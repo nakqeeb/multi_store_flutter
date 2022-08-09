@@ -17,6 +17,7 @@ class StoresScreen extends StatefulWidget {
 
 class _StoresScreenState extends State<StoresScreen> {
   Future<List<Supplier>>? _suppliers;
+  Supplier? _tempSupplier;
   @override
   void initState() {
     _suppliers = Provider.of<AuthSupplierProvider>(context, listen: false)
@@ -54,15 +55,20 @@ class _StoresScreenState extends State<StoresScreen> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (ctx, index) {
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (ctx) => VisitStoreScreen(
-                            supplier: snapshot.data![index],
+                            supplier: snapshot.data![index].id == null
+                                ? _tempSupplier!
+                                : snapshot.data![index],
                           ),
                         ),
-                      );
+                      ).then((value) => setState(() {
+                            _tempSupplier = snapshot.data![index];
+                            snapshot.data![index] = value;
+                          }));
                     },
                     child: Column(
                       children: [
@@ -80,7 +86,7 @@ class _StoresScreenState extends State<StoresScreen> {
                                 height: 48,
                                 width: 100,
                                 child: Hero(
-                                  tag: snapshot.data![index].id as String,
+                                  tag: snapshot.data![index].id.toString(),
                                   child: FadeInImage.assetNetwork(
                                     placeholder: 'images/inapp/spinner.gif',
                                     image: snapshot.data![index].storeLogoUrl!,
@@ -93,6 +99,8 @@ class _StoresScreenState extends State<StoresScreen> {
                         ),
                         Text(
                           snapshot.data![index].storeName.toString(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                               fontSize: 26, fontFamily: 'AkayaTelivigala'),
                         ),

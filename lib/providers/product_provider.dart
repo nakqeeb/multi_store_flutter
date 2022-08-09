@@ -9,12 +9,17 @@ import '../models/http_exception.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _products = [];
+  late Product _product;
   final String? authToken;
 
   ProductProvider(this.authToken, this._products);
 
   List<Product> get products {
     return [..._products];
+  }
+
+  Product get product {
+    return _product;
   }
 
   set setProduct(Product newProduct) {
@@ -76,6 +81,28 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchProductsById(String prodId) async {
+    final url = Uri.http(API_URL, '/products/$prodId');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      );
+      var responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      // print(loadedProducts[0].productName);
+      _product = Product.fromJson(responseData['product']);
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
   Future<void> fetchProductsByCategoryId(String catId) async {
     final url = Uri.http(API_URL, '/products/category/$catId');
     try {
@@ -113,10 +140,10 @@ class ProductProvider with ChangeNotifier {
         },
       );
       var responseData = json.decode(response.body);
-      if (responseData['success'] == false) {
+      /* if (responseData['success'] == false) {
         notifyListeners();
         throw HttpException(responseData['message']);
-      }
+      } */
       final List<Product> loadedProducts = [];
       responseData['supplierProducts'].forEach((prodData) {
         loadedProducts.add(Product.fromJson(prodData));
@@ -124,6 +151,7 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
       return loadedProducts;
     } catch (err) {
+      print(err);
       throw err;
     }
   }
@@ -137,5 +165,28 @@ class ProductProvider with ChangeNotifier {
         )
         .toList();
     return searchList;
+  }
+
+  Future<void> updateProduct(String prodId, Map updatedProduct) async {
+    final url = Uri.http(API_URL, '/products/$prodId');
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: json.encode(updatedProduct),
+      );
+      if (response.statusCode >= 400) {
+        notifyListeners();
+        throw HttpException('Could not update this product.');
+      }
+      await fetchProductsById(prodId);
+      notifyListeners();
+    } catch (err) {
+      print(err);
+      throw err;
+    }
   }
 }

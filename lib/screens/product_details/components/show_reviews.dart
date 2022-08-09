@@ -34,7 +34,7 @@ class _ShowReviewsState extends State<ShowReviews> {
         future: _futureReviews,
         builder: (context, AsyncSnapshot<List<Review>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return SpinKitDoubleBounce(
+            return SpinKitDancingSquare(
               color: Theme.of(context).colorScheme.secondary,
               size: 35,
             );
