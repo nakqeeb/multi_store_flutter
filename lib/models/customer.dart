@@ -52,7 +52,6 @@ class Customer {
   String? email;
   String? profileImageUrl;
   String? phone;
-  String? address;
   Cart? cart;
   String? createdAt;
   String? updatedAt;
@@ -63,7 +62,6 @@ class Customer {
     this.email,
     this.profileImageUrl,
     this.phone,
-    this.address,
     this.cart,
     this.createdAt,
     this.updatedAt,
@@ -76,7 +74,6 @@ class Customer {
     email = json['email'];
     profileImageUrl = json['profileImageUrl'];
     phone = json['phone'];
-    address = json['address'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
   }
@@ -91,7 +88,6 @@ class Customer {
     data['email'] = email;
     data['profileImageUrl'] = profileImageUrl;
     data['phone'] = phone;
-    data['address'] = address;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     return data;

@@ -119,7 +119,7 @@ class _ProductGridComponentWidgetState
                           widget.product.supplier == supplier?.id
                               ? IconButton(
                                   onPressed: () async {
-                                    final respose = await Navigator.push(
+                                    final response = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => EditProductScreen(
@@ -127,9 +127,11 @@ class _ProductGridComponentWidgetState
                                         ),
                                       ),
                                     );
-                                    if (respose != null) {
+                                    if (response == 'deleted') {
+                                      return;
+                                    } else if (response != null) {
                                       setState(() {
-                                        widget.product = respose;
+                                        widget.product = response;
                                       });
                                     }
                                   },

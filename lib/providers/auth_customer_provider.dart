@@ -34,7 +34,6 @@ class AuthCustomerProvider with ChangeNotifier {
       "password": password,
       "profileImageUrl": newCustomer.profileImageUrl,
       "phone": newCustomer.phone,
-      "address": newCustomer.address
     };
     // print(customerData);
     final url = Uri.http(API_URL, '/customers/signup');

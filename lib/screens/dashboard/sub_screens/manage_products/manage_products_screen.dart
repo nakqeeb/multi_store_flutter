@@ -22,7 +22,7 @@ class _ManageProductsScreenState extends State<ManageProductsScreen> {
   @override
   void initState() {
     _supplierProducts = Provider.of<ProductProvider>(context, listen: false)
-        .productsBySupplierId(
+        .fetchProductsBySupplierId(
             Provider.of<AuthSupplierProvider>(context, listen: false)
                 .supplier!
                 .id!);

@@ -105,7 +105,6 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
             name: _name,
             email: _email,
             profileImageUrl: _profileImageUrl,
-            address: '',
             phone: '',
           );
           await Provider.of<AuthCustomerProvider>(context, listen: false)

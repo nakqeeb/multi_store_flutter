@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/models/cart.dart';
+import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
@@ -101,6 +102,15 @@ class _MyAppState extends State<MyApp> {
               ReviewProvider(
             customerAuth.token,
             previousOrders!.reviews,
+          ),
+        ),
+        ChangeNotifierProxyProvider<AuthCustomerProvider, AddressProvider>(
+          create: (_) => AddressProvider(null, []),
+          update: (BuildContext ctx, customerAuth,
+                  AddressProvider? previousaddresses) =>
+              AddressProvider(
+            customerAuth.token,
+            previousaddresses!.addresses,
           ),
         ),
         ChangeNotifierProvider(create: (_) => themeChangeProvider),

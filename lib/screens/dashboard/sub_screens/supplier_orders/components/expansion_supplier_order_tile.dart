@@ -50,7 +50,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
               children: [
                 FadeInImage.assetNetwork(
                   placeholder: 'images/inapp/spinner.gif',
-                  image: order.product!.productImages![0],
+                  image: order.productImage.toString(),
                   height: double.infinity,
                   width: size.width * 0.20,
                   fit: BoxFit.cover,
@@ -65,7 +65,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                       SizedBox(
                         width: size.width * 0.60,
                         child: Text(
-                          order.product!.productName.toString(),
+                          order.productName.toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(
@@ -80,7 +80,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              order.product!.price!.toStringAsFixed(2),
+                              order.productPrice!.toStringAsFixed(2),
                               style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -105,16 +105,26 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
             ),
           ),
           subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'See more...',
+                'Total Price:',
                 style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withOpacity(0.7)),
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(
+                width: 15,
+              ),
+              Text(
+                order.orderPrice!.toStringAsFixed(2),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
               Text(
                 order.deliveryStatus.toString(),
                 style: TextStyle(
@@ -159,12 +169,12 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                         fontSize: 15,
                       ),
                     ),
-                    Text(
+                    /* Text(
                       'Address: ${order.customer?.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
-                    ),
+                    ), */
                     Row(
                       children: [
                         const Text(
@@ -198,15 +208,15 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                       ? Colors.indigoAccent
                                       : Colors.green),
                         ),
-                        order.deliveryStatus == 'shipping'
-                            ? Text(
-                                'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
-                                style: const TextStyle(
-                                    fontSize: 15, color: Colors.blue),
-                              )
-                            : const SizedBox.shrink(),
                       ],
                     ),
+                    order.deliveryStatus == 'shipping'
+                        ? Text(
+                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.blue),
+                          )
+                        : const SizedBox.shrink(),
                     Row(
                       children: [
                         const Text(

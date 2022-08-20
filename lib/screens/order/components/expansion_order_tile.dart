@@ -54,7 +54,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
               children: [
                 FadeInImage.assetNetwork(
                   placeholder: 'images/inapp/spinner.gif',
-                  image: widget.order.product!.productImages![0],
+                  image: widget.order.productImage.toString(),
                   height: double.infinity,
                   width: size.width * 0.20,
                   fit: BoxFit.cover,
@@ -69,7 +69,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                       SizedBox(
                         width: size.width * 0.60,
                         child: Text(
-                          widget.order.product!.productName.toString(),
+                          widget.order.productName.toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(
@@ -84,7 +84,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.order.product!.price!.toStringAsFixed(2),
+                              widget.order.productPrice!.toStringAsFixed(2),
                               style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -109,16 +109,26 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
             ),
           ),
           subtitle: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'See more...',
+                'Total Price:',
                 style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withOpacity(0.7)),
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(
+                width: 15,
+              ),
+              Text(
+                widget.order.orderPrice!.toStringAsFixed(2),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
               Text(
                 widget.order.deliveryStatus.toString(),
                 style: TextStyle(
@@ -164,12 +174,12 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                         fontSize: 15,
                       ),
                     ),
-                    Text(
+                    /* Text(
                       'Address: ${widget.order.customer?.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
-                    ),
+                    ), */
                     Row(
                       children: [
                         const Text(

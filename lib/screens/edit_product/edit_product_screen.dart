@@ -181,6 +181,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       await Provider.of<ProductProvider>(context, listen: false)
           .updateProduct(widget.productId, updatedProduct);
 
+      // to pass it back to previous screen
       _updatedProduct = Product(
         id: widget.productId,
         productName: updatedProduct['productName'],
@@ -209,6 +210,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Future<void> _uploadProduct() async {
     await uploadImages().whenComplete(() async => await uploadData());
+  }
+
+  Future<void> _deleteProduct() async {
+    GlobalMethods.loadingDialog(title: 'Deleteing...', context: context);
+    for (var image in _imagesUrlList) {
+      try {
+        await FirebaseStorage.instance.refFromURL(image).delete();
+      } catch (err) {
+        print(err);
+      }
+    }
+
+    await Provider.of<ProductProvider>(context, listen: false)
+        .deleteProduct(widget.productId);
+
+    Navigator.pop(context);
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -253,6 +274,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
           title: const AppBarTitle(
             title: 'Edit Product',
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.delete_forever),
+              color: Colors.red,
+              tooltip: 'delete',
+              onPressed: () async {
+                await GlobalMethods.warningDialog(
+                    title: 'Delete $_proName',
+                    subtitle:
+                        'Are you sure that you want to delete this product? ',
+                    fct: () async {
+                      await _deleteProduct();
+                    },
+                    context: context);
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context, 'deleted');
+                }
+              },
+            )
+          ],
         ),
         body: _isinit
             ? SpinKitDoubleBounce(
@@ -684,42 +725,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               DefaultButton(
                                 onPressed: () async {
                                   // show the loading dialog
-                                  showDialog(
-                                      // The user CANNOT close this dialog  by pressing outsite it
-                                      barrierDismissible: false,
-                                      context: context,
-                                      builder: (_) {
-                                        return Dialog(
-                                          // The background color
-                                          // backgroundColor: Colors.white,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 20),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                SpinKitDoubleBounce(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  size: 45,
-                                                ),
-                                                const SizedBox(
-                                                  height: 15,
-                                                ),
-                                                // Some text
-                                                const Text(
-                                                  'Updating...',
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      });
+                                  GlobalMethods.loadingDialog(
+                                      title: 'Updating...', context: context);
                                   await _uploadProduct();
                                   // Close the dialog programmatically
                                   Navigator.pop(context);

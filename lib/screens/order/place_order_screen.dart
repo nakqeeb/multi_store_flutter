@@ -23,7 +23,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
     final name = authCustomerProvider.customer?.name;
     final phone = authCustomerProvider.customer?.phone;
-    final address = authCustomerProvider.customer?.address;
+    //final address = authCustomerProvider.customer?.address;
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.cart?.items;
 
@@ -70,12 +70,12 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                       const SizedBox(
                         height: 7,
                       ),
-                      Text(
+                      /* Text(
                         'Address: $address',
                         style: TextStyle(
                             fontSize: 18,
                             color: Theme.of(context).colorScheme.secondary),
-                      ),
+                      ), */
                     ],
                   ),
                 ),

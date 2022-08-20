@@ -254,7 +254,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 supplier?.id == _product.supplier
                                     ? IconButton(
                                         onPressed: () async {
-                                          final respose = await Navigator.push(
+                                          final response = await Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
@@ -263,9 +263,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               ),
                                             ),
                                           );
-                                          if (respose != null) {
+                                          if (response == 'deleted') {
+                                            Navigator.pop(context);
+                                          } else {
                                             setState(() {
-                                              _product = respose;
+                                              _product = response;
                                             });
                                           }
                                         },

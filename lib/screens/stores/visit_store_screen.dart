@@ -30,7 +30,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
   void initState() {
     _supplier = widget.supplier;
     _supplierProducts = Provider.of<ProductProvider>(context, listen: false)
-        .productsBySupplierId(widget.supplier.id.toString());
+        .fetchProductsBySupplierId(widget.supplier.id.toString());
     super.initState();
   }
 

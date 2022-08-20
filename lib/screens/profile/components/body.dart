@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/fetch_screen.dart';
+import 'package:multi_store_app/screens/address/address_screen.dart';
 import 'package:multi_store_app/screens/wishlist/wishlist_screen.dart';
 import 'package:multi_store_app/models/customer.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
@@ -30,7 +31,6 @@ class Body extends StatelessWidget {
         Customer(
           name: 'Guest',
           email: '',
-          address: '',
           phone: '',
         );
     // to clear _cart when logout
@@ -350,9 +350,16 @@ class Body extends StatelessWidget {
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const AddressScreen()));
+                                  },
                                   icon: Icons.location_pin,
                                   title: 'Address',
-                                  subtitle: customer.address,
+                                  // subtitle: customer.address,
                                 ),
                               ],
                             ),

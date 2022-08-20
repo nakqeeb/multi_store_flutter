@@ -33,8 +33,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final newOrder = {
         "supplier": item.cartProduct?.supplier,
         "product": item.cartProduct?.id,
+        "productName": item.cartProduct?.productName,
+        "productImage": item.cartProduct?.productImages![0],
+        "productPrice": item.cartProduct?.price,
         "orderQuantity": item.quantity,
         "orderPrice": item.quantity! * item.cartProduct!.price!.toDouble(),
+        "paymentStatus": 'cash on delivery',
         "deliveryDate": '',
         "orderDate": DateTime.now().toIso8601String()
       };
@@ -391,11 +395,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
           final newOrder = {
             "supplier": item.cartProduct?.supplier,
             "product": item.cartProduct?.id,
+            "productName": item.cartProduct?.productName,
+            "productImage": item.cartProduct?.productImages![0],
+            "productPrice": item.cartProduct?.price,
             "orderQuantity": item.quantity,
             "orderPrice": item.quantity! * item.cartProduct!.price!.toDouble(),
+            "paymentStatus": 'paid by VISA',
             "deliveryDate": '',
-            "orderDate": DateTime.now().toIso8601String(),
-            "paymentStatus": 'paid online'
+            "orderDate": DateTime.now().toIso8601String()
           };
           await context.read<OrderProvider>().placeOrder(newOrder);
         }

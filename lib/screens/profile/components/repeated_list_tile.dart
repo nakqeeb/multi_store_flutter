@@ -21,7 +21,7 @@ class RepeatedListTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon),
         title: Text(title!),
-        subtitle: isSettings ? Text(subtitle!) : null,
+        //subtitle: isSettings ? Text(subtitle!) : null,
         trailing: isSettings ? null : const Icon(Icons.keyboard_arrow_right),
       ),
     );

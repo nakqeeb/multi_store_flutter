@@ -7,6 +7,9 @@ class Order {
   Customer? customer;
   Product? product;
   Supplier? supplier;
+  String? productName;
+  String? productImage;
+  num? productPrice;
   int? orderQuantity;
   num? orderPrice;
   String? deliveryStatus;
@@ -22,6 +25,9 @@ class Order {
       this.customer,
       this.product,
       this.supplier,
+      this.productName,
+      this.productImage,
+      this.productPrice,
       this.orderQuantity,
       this.orderPrice,
       this.deliveryStatus,
@@ -40,6 +46,9 @@ class Order {
         json['product'] != null ? Product.fromJson(json['product']) : null;
     supplier =
         json['supplier'] != null ? Supplier.fromJson(json['supplier']) : null;
+    productName = json['productName'];
+    productImage = json['productImage'];
+    productPrice = json['productPrice'];
     orderQuantity = json['orderQuantity'];
     orderPrice = json['orderPrice'];
     deliveryStatus = json['deliveryStatus'];
@@ -63,6 +72,9 @@ class Order {
     if (supplier != null) {
       data['supplier'] = supplier!.toJson();
     }
+    data['productName'] = productName;
+    data['productImage'] = productImage;
+    data['productPrice'] = productPrice;
     data['orderQuantity'] = orderQuantity;
     data['orderPrice'] = orderPrice;
     data['deliveryStatus'] = deliveryStatus;

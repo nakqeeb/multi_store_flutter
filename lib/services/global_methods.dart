@@ -142,6 +142,43 @@ class GlobalMethods {
     );
   }
 
+  static Future<void> loadingDialog({
+    required String title,
+    required BuildContext context,
+  }) {
+    return showDialog(
+        // The user CANNOT close this dialog  by pressing outsite it
+        barrierDismissible: false,
+        context: context,
+        builder: (_) {
+          return Dialog(
+            // The background color
+            // backgroundColor: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SpinKitDoubleBounce(
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: 45,
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  // Some text
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   static Widget loadingScreen() {
     return Stack(
       children: [

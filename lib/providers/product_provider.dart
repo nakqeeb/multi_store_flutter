@@ -27,6 +27,17 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<Product> searchQuery(String searchText) {
+    List<Product> searchList = _products
+        .where(
+          (element) => element.productName!.toLowerCase().contains(
+                searchText.toLowerCase(),
+              ),
+        )
+        .toList();
+    return searchList;
+  }
+
   Future<void> addProduct(Product newProduct) async {
     final url = Uri.http(API_URL, '/products');
     try {
@@ -130,7 +141,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Product>> productsBySupplierId(String id) async {
+  Future<List<Product>> fetchProductsBySupplierId(String id) async {
     final url = Uri.http(API_URL, '/products/supplierproducts/$id');
     try {
       var response = await http.get(
@@ -140,10 +151,10 @@ class ProductProvider with ChangeNotifier {
         },
       );
       var responseData = json.decode(response.body);
-      /* if (responseData['success'] == false) {
+      if (responseData['success'] == false) {
         notifyListeners();
         throw HttpException(responseData['message']);
-      } */
+      }
       final List<Product> loadedProducts = [];
       responseData['supplierProducts'].forEach((prodData) {
         loadedProducts.add(Product.fromJson(prodData));
@@ -154,17 +165,6 @@ class ProductProvider with ChangeNotifier {
       print(err);
       throw err;
     }
-  }
-
-  List<Product> searchQuery(String searchText) {
-    List<Product> searchList = _products
-        .where(
-          (element) => element.productName!.toLowerCase().contains(
-                searchText.toLowerCase(),
-              ),
-        )
-        .toList();
-    return searchList;
   }
 
   Future<void> updateProduct(String prodId, Map updatedProduct) async {
@@ -183,6 +183,36 @@ class ProductProvider with ChangeNotifier {
         throw HttpException('Could not update this product.');
       }
       await fetchProductsById(prodId);
+      notifyListeners();
+    } catch (err) {
+      print(err);
+      throw err;
+    }
+  }
+
+  Future<void> deleteProduct(String prodId) async {
+    final url = Uri.http(API_URL, '/products/$prodId');
+    try {
+      final existingProductIndex =
+          _products.indexWhere((prod) => prod.id == prodId);
+      // var existingProduct = _products[existingProductIndex]; // this is Max code
+      Product? existingProduct = _products[
+          existingProductIndex]; // this is to avoid error (A value of type 'Null' can't be assigned to a variable of type 'Product'.) in this line >> existingProduct = null;
+      _products.removeAt(existingProductIndex);
+      notifyListeners();
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode >= 400) {
+        _products.insert(existingProductIndex, existingProduct);
+        notifyListeners();
+        throw HttpException('Could not delete this product.');
+      }
+      existingProduct = null;
       notifyListeners();
     } catch (err) {
       print(err);
