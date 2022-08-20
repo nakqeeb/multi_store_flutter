@@ -6,6 +6,7 @@ import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/screens/address/components/address_tile.dart';
+import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
 import '../error/error_screen.dart';
@@ -65,17 +66,17 @@ class _AddressScreenState extends State<AddressScreen> {
                 return ListView.builder(
                   itemCount: addresses.length,
                   itemBuilder: (context, index) => AddressTile(
-                    onPressed: () {
+                    onPressed: () async {
+                      GlobalMethods.loadingDialog(
+                          title: 'Setting default...', context: context);
                       if (addresses[index].customerId ==
                           authCustomerProvider.customer!.id) {
                         for (int i = 0; i < addresses.length; i++) {
-                          addressProvider.updateAddress(
+                          await addressProvider.updateAddress(
                               addresses[i].id.toString(), {'isDefault': false});
-                          setState(() {
-                            addresses[i].isDefault = false;
-                          });
+                          addresses[i].isDefault = false;
                         }
-                        addressProvider.fetchAddresses().then((value) {
+                        await addressProvider.fetchAddresses().then((value) {
                           if (value[index].id == addresses[index].id) {
                             addressProvider.updateAddress(
                                 addresses[index].id.toString(),
@@ -83,10 +84,12 @@ class _AddressScreenState extends State<AddressScreen> {
                           }
                         });
                       }
-
                       setState(() {
                         addresses[index].isDefault = true;
                       });
+
+                      // Close the dialog programmatically
+                      Navigator.pop(context);
                     },
                     name: addresses[index].name.toString(),
                     phone: addresses[index].phone.toString(),
