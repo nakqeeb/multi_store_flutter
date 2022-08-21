@@ -157,29 +157,47 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${widget.order.customer?.name}',
+                      'Name: ${widget.order.address?.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${widget.order.customer?.phone}',
+                      'Phone No: ${widget.order.address?.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Email: ${widget.order.customer?.email}',
+                      'Address: ${widget.order.address?.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
-                    /* Text(
-                      'Address: ${widget.order.customer?.address}',
+                    Text(
+                      'Landmark: ${widget.order.address?.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
-                    ), */
+                    ),
+                    Text(
+                      'State: ${widget.order.address?.state}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'City: ${widget.order.address?.city}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'Pincode: ${widget.order.address?.pincode}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
                     Row(
                       children: [
                         const Text(

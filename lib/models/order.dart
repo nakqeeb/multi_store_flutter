@@ -1,3 +1,5 @@
+import 'package:multi_store_app/models/address.dart';
+
 import 'customer.dart';
 import 'product.dart';
 import 'supplier.dart';
@@ -7,6 +9,7 @@ class Order {
   Customer? customer;
   Product? product;
   Supplier? supplier;
+  Address? address;
   String? productName;
   String? productImage;
   num? productPrice;
@@ -40,12 +43,16 @@ class Order {
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
-    customer =
-        json['customer'] != null ? Customer.fromJson(json['customer']) : null;
+    customer = json['customerId'] != null
+        ? Customer.fromJson(json['customerId'])
+        : null;
     product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
-    supplier =
-        json['supplier'] != null ? Supplier.fromJson(json['supplier']) : null;
+        json['productId'] != null ? Product.fromJson(json['productId']) : null;
+    supplier = json['supplierId'] != null
+        ? Supplier.fromJson(json['supplierId'])
+        : null;
+    address =
+        json['addressId'] != null ? Address.fromJson(json['addressId']) : null;
     productName = json['productName'];
     productImage = json['productImage'];
     productPrice = json['productPrice'];
@@ -64,13 +71,16 @@ class Order {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['_id'] = id;
     if (customer != null) {
-      data['customer'] = customer!.toJson();
+      data['customerId'] = customer!.toJson();
     }
     if (product != null) {
-      data['product'] = product!.toJson();
+      data['productId'] = product!.toJson();
     }
     if (supplier != null) {
-      data['supplier'] = supplier!.toJson();
+      data['supplierId'] = supplier!.toJson();
+    }
+    if (address != null) {
+      data['addressId'] = address!.toJson();
     }
     data['productName'] = productName;
     data['productImage'] = productImage;

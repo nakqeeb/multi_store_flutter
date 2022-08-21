@@ -328,7 +328,6 @@ class Body extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Container(
-                            height: 260,
                             decoration: BoxDecoration(
                               color: isDarkTheme
                                   ? const Color(0xFF758699)
@@ -360,7 +359,11 @@ class Body extends StatelessWidget {
                                   icon: Icons.location_pin,
                                   title: 'Address',
                                   // subtitle: customer.address,
+                                  isSettings: true,
                                 ),
+                                const SizedBox(
+                                  height: 5,
+                                )
                               ],
                             ),
                           ),
@@ -370,7 +373,6 @@ class Body extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Container(
-                            height: 355,
                             decoration: BoxDecoration(
                               color: isDarkTheme
                                   ? const Color(0xFF758699)
@@ -382,21 +384,21 @@ class Body extends StatelessWidget {
                                 RepeatedListTile(
                                   title: 'Edit Profile',
                                   icon: Icons.edit,
-                                  isSettings: false,
+                                  isSettings: true,
                                   onPressed: () {},
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
                                   title: 'Change Password',
                                   icon: Icons.lock,
-                                  isSettings: false,
+                                  isSettings: true,
                                   onPressed: () {},
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
                                   title: 'Change Language',
                                   icon: Icons.language,
-                                  isSettings: false,
+                                  isSettings: true,
                                   onPressed: () {
                                     //authCustomerProvider.tryAutoLogin();
                                   },
@@ -409,7 +411,7 @@ class Body extends StatelessWidget {
                                 RepeatedListTile(
                                   title: isAuth ? 'Logout' : 'Login',
                                   icon: Icons.logout,
-                                  isSettings: false,
+                                  isSettings: true,
                                   onPressed: () {
                                     if (isAuth) {
                                       GlobalMethods.warningDialog(

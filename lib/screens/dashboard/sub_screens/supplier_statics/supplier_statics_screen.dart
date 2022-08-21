@@ -48,7 +48,7 @@ class SupplierStaticsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       StaticsWidget(
-                        label: 'SOULD OUT',
+                        label: 'SOLD OUT',
                         value: orders.length,
                         decimal: 0,
                       ),

@@ -275,7 +275,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GoogleFacebookLogIn(
+                    /* GoogleFacebookLogIn(
                       label: 'Google',
                       onPresssed: () {},
                       child: const Image(
@@ -286,7 +286,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                       onPresssed: () {},
                       child: const Image(
                           image: AssetImage('images/inapp/facebook.jpg')),
-                    ),
+                    ), */
                     _isLoading
                         ? const CircularProgressIndicator()
                         : GoogleFacebookLogIn(

@@ -18,7 +18,8 @@ import '../../providers/cart_provider.dart';
 import '../../services/utils.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key});
+  final String addressId;
+  const PaymentScreen({super.key, required this.addressId});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -31,11 +32,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _placeOrder(List<CartItem>? cartItems) async {
     for (var item in cartItems!) {
       final newOrder = {
-        "supplier": item.cartProduct?.supplier,
-        "product": item.cartProduct?.id,
-        "productName": item.cartProduct?.productName,
-        "productImage": item.cartProduct?.productImages![0],
-        "productPrice": item.cartProduct?.price,
+        "supplierId": item.cartProduct!.supplier,
+        "addressId": widget.addressId,
+        "productId": item.cartProduct!.id,
+        "productName": item.cartProduct!.productName,
+        "productImage": item.cartProduct!.productImages![0],
+        "productPrice": item.cartProduct!.price,
         "orderQuantity": item.quantity,
         "orderPrice": item.quantity! * item.cartProduct!.price!.toDouble(),
         "paymentStatus": 'cash on delivery',
@@ -393,11 +395,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
         print('paid');
         for (var item in cartItems) {
           final newOrder = {
-            "supplier": item.cartProduct?.supplier,
-            "product": item.cartProduct?.id,
-            "productName": item.cartProduct?.productName,
-            "productImage": item.cartProduct?.productImages![0],
-            "productPrice": item.cartProduct?.price,
+            "supplierId": item.cartProduct!.supplier,
+            "addressId": widget.addressId,
+            "productId": item.cartProduct!.id,
+            "productName": item.cartProduct!.productName,
+            "productImage": item.cartProduct!.productImages![0],
+            "productPrice": item.cartProduct!.price,
             "orderQuantity": item.quantity,
             "orderPrice": item.quantity! * item.cartProduct!.price!.toDouble(),
             "paymentStatus": 'paid by VISA',

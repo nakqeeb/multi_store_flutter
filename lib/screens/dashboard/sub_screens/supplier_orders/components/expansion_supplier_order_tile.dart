@@ -152,29 +152,47 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${order.customer?.name}',
+                      'Name: ${order.address?.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${order.customer?.phone}',
+                      'Phone No: ${order.address?.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Email: ${order.customer?.email}',
+                      'Address: ${order.address?.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
-                    /* Text(
-                      'Address: ${order.customer?.address}',
+                    Text(
+                      'Landmark: ${order.address?.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
-                    ), */
+                    ),
+                    Text(
+                      'State: ${order.address?.state}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'City: ${order.address?.city}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      'Pincode: ${order.address?.pincode}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
                     Row(
                       children: [
                         const Text(

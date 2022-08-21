@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import 'models/cart.dart';
 import 'models/customer.dart';
+import 'providers/address_provider.dart';
 import 'screens/error/error_screen.dart';
 
 // we need to set it in the main.dart as a home instead of BottomBarScreen()
@@ -100,6 +101,8 @@ class _FetchScreenState extends State<FetchScreen> {
       }
       if (isCusAuth && !isSubAuth) {
         await Provider.of<CartProvider>(context, listen: false).fetchCart();
+        await Provider.of<AddressProvider>(context, listen: false)
+            .fetchAddresses();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => const CustomerBottomBar(),
         ));

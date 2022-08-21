@@ -11,7 +11,7 @@ class RepeatedListTile extends StatelessWidget {
     this.subtitle,
     required this.icon,
     this.onPressed,
-    this.isSettings = true,
+    this.isSettings = false,
   }) : super(key: key);
 
   @override
@@ -21,8 +21,8 @@ class RepeatedListTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon),
         title: Text(title!),
-        //subtitle: isSettings ? Text(subtitle!) : null,
-        trailing: isSettings ? null : const Icon(Icons.keyboard_arrow_right),
+        subtitle: isSettings ? null : Text(subtitle!),
+        trailing: isSettings ? const Icon(Icons.keyboard_arrow_right) : null,
       ),
     );
   }

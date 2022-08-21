@@ -5,7 +5,7 @@ import 'package:multi_store_app/services/global_methods.dart';
 class AddressTile extends StatelessWidget {
   final String name, phone, address, landmark, city, state, pincode;
   final bool isDefault;
-  final Function() onPressed;
+  final VoidCallback onPressed;
   const AddressTile({
     Key? key,
     required this.onPressed,
@@ -24,14 +24,16 @@ class AddressTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
-        onTap: onPressed,
+        onTap: isDefault == true ? null : onPressed,
         borderRadius: const BorderRadius.all(
           Radius.circular(15),
         ),
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            color: isDefault == true
+                ? Theme.of(context).colorScheme.tertiary.withOpacity(0.5)
+                : Theme.of(context).colorScheme.primary.withOpacity(0.5),
             borderRadius: const BorderRadius.all(
               Radius.circular(15),
             ),
