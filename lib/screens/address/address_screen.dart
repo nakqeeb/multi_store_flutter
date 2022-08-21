@@ -6,6 +6,7 @@ import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/screens/address/components/address_tile.dart';
+import 'package:multi_store_app/screens/address/edit_address_screen.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
@@ -54,7 +55,12 @@ class _AddressScreenState extends State<AddressScreen> {
             ),
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EditAddressScreen()));
+                },
                 icon: Icon(
                   Icons.add,
                   color: Theme.of(context).colorScheme.secondary,
