@@ -1,18 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/components/default_button.dart';
+import 'package:multi_store_app/models/address.dart';
+import 'package:multi_store_app/providers/address_provider.dart';
+import 'package:multi_store_app/services/global_methods.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/utils.dart';
 
 class EditAddressScreen extends StatefulWidget {
-  const EditAddressScreen({super.key});
+  AddressData? address;
+  EditAddressScreen({super.key, this.address});
 
   @override
   State<EditAddressScreen> createState() => _EditAddressScreenState();
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? _name, _phone, _pincode, _address, _landmark, _city, _state;
+  bool _isInit = true;
+
+  Future<void> _editAddress() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      GlobalMethods.loadingDialog(title: 'Adding...', context: context);
+      if (widget.address == null) {
+        AddressData newAddress = AddressData(
+          name: _name!.trim(),
+          phone: _phone,
+          pincode: _pincode,
+          address: _address!.trim(),
+          landmark: _landmark!.trim(),
+          city: _city!.trim(),
+          state: _state!.trim(),
+          isDefault: false,
+        );
+        await Provider.of<AddressProvider>(context, listen: false)
+            .addAddress(newAddress);
+      } else {
+        Map updatedAddress = {
+          'name': _name!.trim(),
+          'phone': _phone,
+          'pincode': _pincode,
+          'address': _address!.trim(),
+          'landmark': _landmark!.trim(),
+          'city': _city!.trim(),
+          'state': _state!.trim(),
+        };
+        await Provider.of<AddressProvider>(context, listen: false)
+            .updateAddress(widget.address!.id.toString(), updatedAddress);
+      }
+      Navigator.pop(context);
+      Navigator.canPop(context) ? Navigator.pop(context, true) : null;
+    }
+  }
+
+  @override
+  void didChangeDependencies() async {
+    if (_isInit) {
+      if (widget.address == null) {
+        _isInit = false;
+        return;
+      }
+      _name = widget.address?.name;
+      _phone = widget.address?.phone;
+      _pincode = widget.address?.pincode;
+      _address = widget.address?.address;
+      _landmark = widget.address?.landmark;
+      _city = widget.address?.city;
+      _state = widget.address?.state;
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
@@ -25,6 +88,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       ),
       body: SingleChildScrollView(
         child: Form(
+          key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
@@ -32,13 +96,16 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: TextFormField(
+                    initialValue: _name,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'full name is required';
                       }
                       return null;
                     },
-                    onSaved: (value) {},
+                    onSaved: (value) {
+                      _name = value!;
+                    },
                     decoration: textFormDecoration(context).copyWith(
                       labelText: 'Full Name',
                       hintText: 'Enter your full name',
@@ -53,11 +120,20 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: TextFormField(
+                          initialValue: _phone,
                           keyboardType: TextInputType.number,
                           validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Phone is required';
+                            }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            _phone = value!;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           decoration: textFormDecoration(context).copyWith(
                             labelText: 'Phone',
                             hintText: 'Enter your phone',
@@ -70,6 +146,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: TextFormField(
+                          initialValue: _pincode,
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -77,7 +154,12 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            _pincode = value!;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           decoration: textFormDecoration(context).copyWith(
                             labelText: 'Pincode',
                             hintText: 'Enter pincode',
@@ -95,14 +177,16 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: TextFormField(
-                          keyboardType: TextInputType.number,
+                          initialValue: _state,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'State is required.';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            _state = value!;
+                          },
                           decoration: textFormDecoration(context).copyWith(
                             labelText: 'State',
                             hintText: 'Enter State',
@@ -115,14 +199,16 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: TextFormField(
-                          keyboardType: TextInputType.number,
+                          initialValue: _city,
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'city is required.';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            _city = value!;
+                          },
                           decoration: textFormDecoration(context).copyWith(
                             labelText: 'City',
                             hintText: 'Enter city',
@@ -135,15 +221,17 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: TextFormField(
+                    initialValue: _address,
                     maxLines: 3,
-                    keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'address is required.';
                       }
                       return null;
                     },
-                    onSaved: (value) {},
+                    onSaved: (value) {
+                      _address = value!;
+                    },
                     decoration: textFormDecoration(context).copyWith(
                       labelText: 'Address, House No, Building Name',
                       hintText: 'Enter Address',
@@ -153,15 +241,17 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: TextFormField(
+                    initialValue: _landmark,
                     maxLines: 2,
-                    keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'landmark is required.';
                       }
                       return null;
                     },
-                    onSaved: (value) {},
+                    onSaved: (value) {
+                      _landmark = value!;
+                    },
                     decoration: textFormDecoration(context).copyWith(
                       labelText: 'Landmark, Road Name, Area',
                       hintText: 'Enter Landmark',
@@ -171,7 +261,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 70, 8, 8),
                   child: DefaultButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await _editAddress();
+                    },
                     height: size.height * 0.05,
                     width: size.width * 0.7,
                     radius: 15,

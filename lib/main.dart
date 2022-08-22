@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/models/cart.dart';
+import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
@@ -16,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/review_provider.dart';
 import 'utilities/global_variables.dart';
+import 'models/address.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,13 +107,11 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         ChangeNotifierProxyProvider<AuthCustomerProvider, AddressProvider>(
-          create: (_) => AddressProvider(null, []),
+          create: (_) => AddressProvider(null, [], AddressData()),
           update: (BuildContext ctx, customerAuth,
                   AddressProvider? previousaddresses) =>
-              AddressProvider(
-            customerAuth.token,
-            previousaddresses!.addresses,
-          ),
+              AddressProvider(customerAuth.token, previousaddresses!.addresses,
+                  previousaddresses.address!),
         ),
         ChangeNotifierProvider(create: (_) => themeChangeProvider),
       ],

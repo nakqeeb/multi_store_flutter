@@ -9,7 +9,7 @@ class Order {
   Customer? customer;
   Product? product;
   Supplier? supplier;
-  Address? address;
+  AddressData? address;
   String? productName;
   String? productImage;
   num? productPrice;
@@ -51,8 +51,9 @@ class Order {
     supplier = json['supplierId'] != null
         ? Supplier.fromJson(json['supplierId'])
         : null;
-    address =
-        json['addressId'] != null ? Address.fromJson(json['addressId']) : null;
+    address = json['addressId'] != null
+        ? AddressData.fromJson(json['addressId'])
+        : null;
     productName = json['productName'];
     productImage = json['productImage'];
     productPrice = json['productPrice'];

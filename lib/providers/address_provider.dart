@@ -8,16 +8,21 @@ import '../models/http_exception.dart';
 import '../utilities/global_variables.dart';
 
 class AddressProvider with ChangeNotifier {
-  List<Address> _addresses = [];
+  List<AddressData> _addresses = [];
+  AddressData _address;
   final String? authToken;
 
-  AddressProvider(this.authToken, this._addresses);
+  AddressProvider(this.authToken, this._addresses, this._address);
 
-  List<Address> get addresses {
+  List<AddressData> get addresses {
     return [..._addresses];
   }
 
-  Future<void> addAddress(Address newAddress) async {
+  AddressData? get address {
+    return _address;
+  }
+
+  Future<void> addAddress(AddressData newAddress) async {
     final url = Uri.http(API_URL, '/addresses');
     try {
       final response = await http.post(
@@ -39,7 +44,7 @@ class AddressProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Address>> fetchAddresses() async {
+  Future<List<AddressData>> fetchAddresses() async {
     final url = Uri.http(API_URL, '/addresses');
     try {
       final response = await http.get(
@@ -54,13 +59,39 @@ class AddressProvider with ChangeNotifier {
         notifyListeners();
         throw HttpException(responseData['message']);
       }
-      final List<Address> loadedAddresses = [];
+      final List<AddressData> loadedAddresses = [];
       responseData['addresses'].forEach((addressData) {
-        loadedAddresses.add(Address.fromJson(addressData));
+        loadedAddresses.add(AddressData.fromJson(addressData));
       });
       _addresses = loadedAddresses;
       notifyListeners();
       return loadedAddresses; // return it to use this method in Future.builder()
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<AddressData> fetchAddressById(String addressId) async {
+    final url = Uri.http(API_URL, '/addresses/$addressId');
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer ${authToken!}',
+        },
+      );
+      var responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      print(
+          'This name is ${AddressData.fromJson(responseData['address']).name}');
+      AddressData loadedAddress = AddressData.fromJson(responseData['address']);
+      _address = loadedAddress;
+      notifyListeners();
+      return loadedAddress;
     } catch (err) {
       throw err;
     }
@@ -77,10 +108,12 @@ class AddressProvider with ChangeNotifier {
         },
         body: json.encode(updatedAddress),
       );
+      print(response.statusCode);
       if (response.statusCode >= 400) {
         notifyListeners();
         throw HttpException('Could not update this address.');
       }
+      fetchAddressById(addressId);
       notifyListeners();
     } catch (err) {
       print(err);
@@ -89,11 +122,11 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> deleteAddress(String addressId) async {
-    final url = Uri.http(API_URL, '/addresses');
+    final url = Uri.http(API_URL, '/addresses/$addressId');
     try {
       final existingAddressIndex =
           _addresses.indexWhere((ad) => ad.id == addressId);
-      Address? existingAddress = _addresses[
+      AddressData? existingAddress = _addresses[
           existingAddressIndex]; // this is to avoid error (A value of type 'Null' can't be assigned to a variable of type 'Address'.) in this line >> existingAddress = null;
       _addresses.removeAt(existingAddressIndex);
       notifyListeners();

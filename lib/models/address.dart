@@ -1,4 +1,4 @@
-class Address {
+class AddressData {
   String? id;
   String? customerId;
   String? name;
@@ -12,7 +12,7 @@ class Address {
   String? createdAt;
   String? updatedAt;
 
-  Address(
+  AddressData(
       {this.id,
       this.customerId,
       this.name,
@@ -26,7 +26,7 @@ class Address {
       this.createdAt,
       this.updatedAt});
 
-  Address.fromJson(Map<String, dynamic> json) {
+  AddressData.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
     customerId = json['customerId'];
     name = json['name'];

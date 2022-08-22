@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
@@ -20,7 +19,7 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  late Future<List<Address>> _futureAddresses;
+  late Future<List<AddressData>> _futureAddresses;
   @override
   void initState() {
     _futureAddresses =
@@ -55,11 +54,14 @@ class _AddressScreenState extends State<AddressScreen> {
             ),
             actions: [
               IconButton(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final response = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EditAddressScreen()));
+                          builder: (context) => EditAddressScreen()));
+                  if (response == true) {
+                    _futureAddresses = addressProvider.fetchAddresses();
+                  }
                 },
                 icon: Icon(
                   Icons.add,
@@ -69,7 +71,7 @@ class _AddressScreenState extends State<AddressScreen> {
               )
             ],
           ),
-          body: FutureBuilder<List<Address>>(
+          body: FutureBuilder<List<AddressData>>(
             future: _futureAddresses,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -83,10 +85,15 @@ class _AddressScreenState extends State<AddressScreen> {
                       title: 'Opps! Something went wrong',
                       subTitle: 'Please try to reload the application!');
                 } else if (snapshot.data!.isNotEmpty) {
-                  List<Address> addresses = snapshot.data!;
+                  List<AddressData> addresses = snapshot.data!;
                   return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    shrinkWrap: true,
                     itemCount: addresses.length,
                     itemBuilder: (context, index) => AddressTile(
+                      key: ValueKey(addresses[index].id.toString()),
+                      addressId: addresses[index].id.toString(),
+                      isDefault: addresses[index].isDefault!,
                       onPressed: () async {
                         GlobalMethods.loadingDialog(
                             title: 'Setting default...', context: context);
@@ -98,17 +105,9 @@ class _AddressScreenState extends State<AddressScreen> {
                                 {'isDefault': false});
                             addresses[i].isDefault = false;
                           }
-                          await addressProvider
-                              .fetchAddresses()
-                              .then((value) async {
-                            if (value[index].id == addresses[index].id) {
-                              await addressProvider.updateAddress(
-                                  addresses[index].id.toString(),
-                                  {'isDefault': true});
-
-                              await addressProvider.fetchAddresses();
-                            }
-                          });
+                          await addressProvider.updateAddress(
+                              addresses[index].id.toString(),
+                              {'isDefault': true});
                         }
                         setState(() {
                           addresses[index].isDefault = true;
@@ -117,14 +116,6 @@ class _AddressScreenState extends State<AddressScreen> {
                         // Close the dialog programmatically
                         Navigator.pop(context);
                       },
-                      name: addresses[index].name.toString(),
-                      phone: addresses[index].phone.toString(),
-                      address: addresses[index].address.toString(),
-                      landmark: addresses[index].landmark.toString(),
-                      city: addresses[index].city.toString(),
-                      state: addresses[index].state.toString(),
-                      pincode: addresses[index].pincode.toString(),
-                      isDefault: addresses[index].isDefault as bool,
                     ),
                   );
                 } else if (snapshot.data!.isEmpty) {
