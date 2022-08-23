@@ -152,43 +152,43 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${order.address?.name}',
+                      'Name: ${order.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${order.address?.phone}',
+                      'Phone No: ${order.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Address: ${order.address?.address}',
+                      'Address: ${order.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Landmark: ${order.address?.landmark}',
+                      'Landmark: ${order.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'State: ${order.address?.state}',
+                      'State: ${order.state}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'City: ${order.address?.city}',
+                      'City: ${order.city}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Pincode: ${order.address?.pincode}',
+                      'Pincode: ${order.pincode}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),

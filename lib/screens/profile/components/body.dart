@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
-import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/screens/address/address_screen.dart';
+import 'package:multi_store_app/screens/change_language/change_language_screen.dart';
 import 'package:multi_store_app/screens/wishlist/wishlist_screen.dart';
 import 'package:multi_store_app/models/customer.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
@@ -13,6 +13,7 @@ import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/dark_theme_provider.dart';
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 import '../../order/orders_screen.dart';
 import 'profile_header_label.dart';
@@ -23,6 +24,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
     final size = Utils(context).getScreenSize;
     final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
@@ -85,7 +87,8 @@ class Body extends StatelessWidget {
                         ),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 25, left: 30),
+                        padding:
+                            const EdgeInsets.only(top: 25, left: 30, right: 30),
                         child: Row(children: [
                           /* CircleAvatar(
                             radius: 50,
@@ -122,7 +125,7 @@ class Body extends StatelessWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 25),
+                            padding: const EdgeInsets.only(left: 25, right: 25),
                             child: Text(
                               customer.name!.toUpperCase(),
                               style: const TextStyle(
@@ -156,10 +159,15 @@ class Body extends StatelessWidget {
                             color: isDarkTheme
                                 ? const Color(0xFF475461)
                                 : const Color(0xFFaad4f1),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              bottomLeft: Radius.circular(30),
-                            ),
+                            borderRadius: isArabic
+                                ? const BorderRadius.only(
+                                    topRight: Radius.circular(30),
+                                    bottomRight: Radius.circular(30),
+                                  )
+                                : const BorderRadius.only(
+                                    topLeft: Radius.circular(30),
+                                    bottomLeft: Radius.circular(30),
+                                  ),
                           ),
                           child: TextButton(
                             onPressed: () {
@@ -174,11 +182,16 @@ class Body extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all(
-                                const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    bottomLeft: Radius.circular(30),
-                                  ),
+                                RoundedRectangleBorder(
+                                  borderRadius: isArabic
+                                      ? const BorderRadius.only(
+                                          topRight: Radius.circular(30),
+                                          bottomRight: Radius.circular(30),
+                                        )
+                                      : const BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30),
+                                        ),
                                 ),
                               ),
                             ),
@@ -244,10 +257,15 @@ class Body extends StatelessWidget {
                             color: isDarkTheme
                                 ? const Color(0xFF475461)
                                 : const Color(0xFFaad4f1),
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                            ),
+                            borderRadius: isArabic
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(30),
+                                    bottomLeft: Radius.circular(30),
+                                  )
+                                : const BorderRadius.only(
+                                    topRight: Radius.circular(30),
+                                    bottomRight: Radius.circular(30),
+                                  ),
                           ),
                           child: TextButton(
                             onPressed: () {
@@ -281,11 +299,16 @@ class Body extends StatelessWidget {
                             },
                             style: ButtonStyle(
                               shape: MaterialStateProperty.all(
-                                const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(30),
-                                    bottomRight: Radius.circular(30),
-                                  ),
+                                RoundedRectangleBorder(
+                                  borderRadius: isArabic
+                                      ? const BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30),
+                                        )
+                                      : const BorderRadius.only(
+                                          topRight: Radius.circular(30),
+                                          bottomRight: Radius.circular(30),
+                                        ),
                                 ),
                               ),
                             ),
@@ -400,7 +423,11 @@ class Body extends StatelessWidget {
                                   icon: Icons.language,
                                   isSettings: true,
                                   onPressed: () {
-                                    //authCustomerProvider.tryAutoLogin();
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ChangeLanguageScreen(),
+                                    ));
                                   },
                                 ),
                                 listDivider(),
@@ -429,7 +456,8 @@ class Body extends StatelessWidget {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (ctx) => WelcomeScreen(),
+                                              builder: (ctx) =>
+                                                  const WelcomeScreen(),
                                             ),
                                           );
                                         },

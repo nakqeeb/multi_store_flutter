@@ -278,8 +278,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (ctx) =>
-                            PaymentScreen(addressId: _address!.id.toString()),
+                        builder: (ctx) => PaymentScreen(address: _address!),
                       ),
                     );
                   },

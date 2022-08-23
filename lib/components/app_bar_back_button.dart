@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/locale_provider.dart';
 
 class AppBarBackButton extends StatelessWidget {
   const AppBarBackButton({
@@ -7,9 +10,10 @@ class AppBarBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return IconButton(
       icon: Icon(
-        Icons.arrow_back_ios_new,
+        isArabic ? Icons.arrow_back_ios : Icons.arrow_back_ios_new,
         color: Theme.of(context).iconTheme.color,
       ),
       onPressed: () {

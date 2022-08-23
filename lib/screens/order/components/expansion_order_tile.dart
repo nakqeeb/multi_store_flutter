@@ -157,43 +157,43 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${widget.order.address?.name}',
+                      'Name: ${widget.order.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${widget.order.address?.phone}',
+                      'Phone No: ${widget.order.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Address: ${widget.order.address?.address}',
+                      'Address: ${widget.order.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Landmark: ${widget.order.address?.landmark}',
+                      'Landmark: ${widget.order.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'State: ${widget.order.address?.state}',
+                      'State: ${widget.order.state}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'City: ${widget.order.address?.city}',
+                      'City: ${widget.order.city}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Pincode: ${widget.order.address?.pincode}',
+                      'Pincode: ${widget.order.pincode}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),

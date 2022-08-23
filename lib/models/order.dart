@@ -9,7 +9,14 @@ class Order {
   Customer? customer;
   Product? product;
   Supplier? supplier;
-  AddressData? address;
+  String? addressId;
+  String? name;
+  String? phone;
+  String? pincode;
+  String? address;
+  String? landmark;
+  String? city;
+  String? state;
   String? productName;
   String? productImage;
   num? productPrice;
@@ -28,6 +35,14 @@ class Order {
       this.customer,
       this.product,
       this.supplier,
+      this.addressId,
+      this.name,
+      this.phone,
+      this.pincode,
+      this.address,
+      this.landmark,
+      this.city,
+      this.state,
       this.productName,
       this.productImage,
       this.productPrice,
@@ -51,9 +66,14 @@ class Order {
     supplier = json['supplierId'] != null
         ? Supplier.fromJson(json['supplierId'])
         : null;
-    address = json['addressId'] != null
-        ? AddressData.fromJson(json['addressId'])
-        : null;
+    addressId = json['addressId'];
+    name = json['name'];
+    phone = json['phone'];
+    pincode = json['pincode'];
+    address = json['address'];
+    landmark = json['landmark'];
+    city = json['city'];
+    state = json['state'];
     productName = json['productName'];
     productImage = json['productImage'];
     productPrice = json['productPrice'];
@@ -80,9 +100,14 @@ class Order {
     if (supplier != null) {
       data['supplierId'] = supplier!.toJson();
     }
-    if (address != null) {
-      data['addressId'] = address!.toJson();
-    }
+    data['addressId'] = addressId;
+    data['name'] = name;
+    data['phone'] = phone;
+    data['pincode'] = pincode;
+    data['address'] = address;
+    data['landmark'] = landmark;
+    data['city'] = city;
+    data['state'] = state;
     data['productName'] = productName;
     data['productImage'] = productImage;
     data['productPrice'] = productPrice;
