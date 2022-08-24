@@ -2,6 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:multi_store_app/components/default_button.dart';
@@ -19,6 +20,7 @@ import 'package:provider/provider.dart';
 import '../../components/app_bar_back_button.dart';
 import '../../components/product_grid_component_widget.dart';
 import '../../models/supplier.dart';
+import '../../providers/locale_provider.dart';
 import '../../services/utils.dart';
 import '../cart/cart_screen.dart';
 import '../edit_product/edit_product_screen.dart';
@@ -66,6 +68,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     final productProvider = Provider.of<ProductProvider>(context);
     List<Product> allProducts = productProvider.products;
     final cartProvider = Provider.of<CartProvider>(context);
@@ -145,7 +149,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                             Positioned(
                               top: 20,
-                              left: 15,
+                              left: isArabic ? null : 15,
+                              right: isArabic ? 15 : null,
                               child: CircleAvatar(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.primary,
@@ -158,7 +163,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               : null;
                                         },
                                   icon: Icon(
-                                    Icons.arrow_back_ios_new,
+                                    isArabic
+                                        ? Icons.arrow_back_ios
+                                        : Icons.arrow_back_ios_new,
                                     color:
                                         Theme.of(context).colorScheme.secondary,
                                   ),
@@ -167,7 +174,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                             Positioned(
                               top: 20,
-                              right: 15,
+                              right: isArabic ? null : 15,
+                              left: isArabic ? 15 : null,
                               child: CircleAvatar(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.primary,
@@ -207,9 +215,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    const Text(
-                                      'USD ',
-                                      style: TextStyle(
+                                    Text(
+                                      '${appLocale!.usd} ',
+                                      style: const TextStyle(
                                         color: Colors.redAccent,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
@@ -271,7 +279,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             });
                                           }
                                         },
-                                        tooltip: 'Edit',
+                                        tooltip: appLocale.edit,
                                         icon: const Icon(
                                           Icons.edit,
                                           color: Colors.red,
@@ -298,7 +306,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 );
                               },
                               child: Text(
-                                'Seller: ${currentProductSuppliers.storeName}',
+                                '${appLocale.seller}: ${currentProductSuppliers.storeName}',
                                 style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.blueAccent,
@@ -310,8 +318,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                             Text(
                               _product.inStock! <= 0
-                                  ? 'Out Of Stock'
-                                  : '${_product.inStock} pieces available in stock',
+                                  ? appLocale.out_of_stock
+                                  : '${_product.inStock} ${appLocale.pieces_available}',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Theme.of(context)
@@ -320,8 +328,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     .withOpacity(0.7),
                               ),
                             ),
-                            const ProductDetailsHeaderLabel(
-                              label: 'Item Description',
+                            ProductDetailsHeaderLabel(
+                              label: appLocale.item_description,
                             ),
                             Text(
                               _product.productDescription.toString(),
@@ -347,8 +355,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                             ),
                             similarProducts.isNotEmpty
-                                ? const ProductDetailsHeaderLabel(
-                                    label: 'Similar Items',
+                                ? ProductDetailsHeaderLabel(
+                                    label: appLocale.similar_items,
                                   )
                                 : Container(),
                             MasonryGridView.count(
@@ -378,10 +386,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             width: double.infinity,
                             height: size.height * 0.057,
                             color: Theme.of(context).colorScheme.tertiary,
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'OUT OF STOCK',
-                                style: TextStyle(
+                                appLocale.out_of_stock,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
                                 ),
@@ -425,7 +433,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                       );
                                     },
-                                    tooltip: 'Cart',
+                                    tooltip: appLocale.cart,
                                     icon: Consumer<AuthCustomerProvider>(
                                       builder: (context, auth, child) => Badge(
                                         badgeColor: Theme.of(context)
@@ -473,8 +481,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       )
                                     : Text(
                                         cartProduct?.id != null
-                                            ? 'ITEM IN CART'
-                                            : 'ADD TO CART',
+                                            ? appLocale.item_in_cart
+                                            : appLocale.add_to_cart,
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Theme.of(context)

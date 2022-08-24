@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:provider/provider.dart';
@@ -27,12 +28,13 @@ class _StoresScreenState extends State<StoresScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: const AppBarTitle(
-          title: 'Stores',
+        title: AppBarTitle(
+          title: appLocale!.stores,
         ),
       ),
       body: FutureBuilder<List<Supplier>>(

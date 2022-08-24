@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/locale_provider.dart';
 import 'components/body.dart';
 import 'components/repeated_tab.dart';
 import '../../components/search_bar.dart';
@@ -28,11 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _tabMaker() {
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     _tabs.clear();
     _categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     for (var i = 0; i < _categoryProvider!.categories.length; i++) {
       _tabs.add(RepeatedTab(
-          label: _categoryProvider!.categories[i].enName.toString()));
+          label: isArabic
+              ? _categoryProvider!.categories[i].arName.toString()
+              : _categoryProvider!.categories[i].enName.toString()));
     }
     return _tabs;
   }

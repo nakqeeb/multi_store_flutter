@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/screens/address/edit_address_screen.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
+import '../../../providers/locale_provider.dart';
 import '../../error/error_screen.dart';
 import 'custome_widget.dart';
 
@@ -38,6 +38,8 @@ class _AddressTileState extends State<AddressTile> {
   @override
   Widget build(BuildContext context) {
     final addressProvider = Provider.of<AddressProvider>(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     return FutureBuilder<AddressData>(
         future: _futureAddress,
         builder: (context, snapshot) {
@@ -45,7 +47,8 @@ class _AddressTileState extends State<AddressTile> {
             return ListTile(
               leading: const CustomWidget.circular(height: 64, width: 64),
               title: Align(
-                alignment: Alignment.centerLeft,
+                alignment:
+                    isArabic ? Alignment.centerRight : Alignment.centerLeft,
                 child: CustomWidget.rectangular(
                   height: 16,
                   width: MediaQuery.of(context).size.width * 0.3,
@@ -55,9 +58,9 @@ class _AddressTileState extends State<AddressTile> {
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
-              return const ErrorScreen(
-                  title: 'Opps! Something went wrong',
-                  subTitle: 'Please try to reload the application!');
+              return ErrorScreen(
+                  title: appLocale!.opps_went_wrong,
+                  subTitle: appLocale.try_to_reload_app);
             } else if (snapshot.data != null) {
               AddressData address = snapshot.data!;
               print(address.name);
@@ -69,7 +72,7 @@ class _AddressTileState extends State<AddressTile> {
                     Radius.circular(15),
                   ),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: widget.isDefault == true
                           ? Theme.of(context)
@@ -85,89 +88,91 @@ class _AddressTileState extends State<AddressTile> {
                       ),
                     ),
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                address.name!.toUpperCase().toString(),
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              const Spacer(),
-                              widget.isDefault == true
-                                  ? const Icon(Icons.home)
-                                  : const SizedBox.shrink(),
-                              DropdownButton<String>(
-                                icon: const Icon(Icons.more_vert),
-                                underline: const SizedBox.shrink(),
-                                isDense: true,
-                                dropdownColor:
-                                    Theme.of(context).colorScheme.primary,
-                                items: <String>['Edit', 'Delete']
-                                    .map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (theValue) async {
-                                  if (theValue == 'Edit') {
-                                    final response = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditAddressScreen(
-                                                  address: address,
-                                                )));
-                                    if (response == true) {
-                                      _futureAddress =
-                                          addressProvider.fetchAddressById(
-                                              address.id.toString());
-                                    }
-                                  } else if (theValue == 'Delete') {
-                                    GlobalMethods.warningDialog(
-                                      title: 'Delete address',
-                                      subtitle:
-                                          'Do you really want to delete this address?',
-                                      fct: () async {
-                                        await addressProvider
-                                            .deleteAddress(widget.addressId);
-                                      },
-                                      context: context,
-                                    );
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.pop(context);
-                                    }
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              address.name!.toUpperCase().toString(),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const Spacer(),
+                            widget.isDefault == true
+                                ? const Icon(Icons.home)
+                                : const SizedBox.shrink(),
+                            DropdownButton<String>(
+                              icon: const Icon(Icons.more_vert),
+                              underline: const SizedBox.shrink(),
+                              isDense: true,
+                              dropdownColor:
+                                  Theme.of(context).colorScheme.primary,
+                              items: <String>[appLocale!.edit, appLocale.delete]
+                                  .map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (theValue) async {
+                                if (theValue == appLocale.edit) {
+                                  final response = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditAddressScreen(
+                                                address: address,
+                                              )));
+                                  if (response == true) {
+                                    _futureAddress =
+                                        addressProvider.fetchAddressById(
+                                            address.id.toString());
                                   }
-                                },
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                              '${address.address}, ${address.landmark}, ${address.city}, ${address.state} - ${address.pincode}',
-                              style: const TextStyle(fontSize: 16)),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            address.phone.toString(),
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          )
-                        ]),
+                                } else if (theValue == appLocale.delete) {
+                                  GlobalMethods.warningDialog(
+                                    title: appLocale.delete_address,
+                                    subtitle: appLocale.do_you_delete_address,
+                                    btnTitle: appLocale.yes,
+                                    cancelBtn: appLocale.cancel,
+                                    fct: () async {
+                                      await addressProvider
+                                          .deleteAddress(widget.addressId);
+                                    },
+                                    context: context,
+                                  );
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            '${address.address} - ${address.landmark} - ${address.city} - ${address.state} - ${address.pincode}',
+                            style: const TextStyle(fontSize: 16)),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          address.phone.toString(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
             } else if (snapshot.data == null) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'You have not added any address yet!',
+                  appLocale!.no_address_yet,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Acme',
@@ -176,11 +181,11 @@ class _AddressTileState extends State<AddressTile> {
                 ),
               );
             } else {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No addresses loaded!',
+                  appLocale!.no_addresses_loaded,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Acme',

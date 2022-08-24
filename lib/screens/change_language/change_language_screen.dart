@@ -11,14 +11,14 @@ class ChangeLanguageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appLocal = AppLocalizations.of(context);
+    final appLocale = AppLocalizations.of(context);
     final localeProvider = Provider.of<LocaleProvider>(context);
     final locale = localeProvider.locale ?? const Locale('en');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: AppBarTitle(title: appLocal!.change_language),
+        title: AppBarTitle(title: appLocale!.change_language),
         leading: const AppBarBackButton(),
       ),
       body: Column(

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
-import 'package:multi_store_app/services/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'category_view.dart';

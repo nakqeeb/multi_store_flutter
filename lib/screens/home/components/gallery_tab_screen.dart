@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:multi_store_app/components/product_grid_component_widget.dart';
 import 'package:multi_store_app/models/product.dart';
@@ -42,12 +43,13 @@ class _GalleryTabScreenState extends State<GalleryTabScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return _products.isEmpty
-        ? const Center(
+        ? Center(
             child: Text(
-              'This category \n\n has no items yet!',
+              appLocale!.category_no_item,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Acme',

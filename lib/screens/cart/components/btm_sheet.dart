@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/screens/order/place_order_screen.dart';
 import 'package:provider/provider.dart';
@@ -10,13 +11,14 @@ class BTMSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     var total = context.watch<CartProvider>().totalPrice;
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(
         children: [
           Text(
-            'Total: \$ ',
+            '${appLocale!.total}: \$ ',
             style: TextStyle(
                 fontSize: 18, color: Theme.of(context).colorScheme.primary),
           ),
@@ -47,7 +49,7 @@ class BTMSheet extends StatelessWidget {
                 : Theme.of(context).colorScheme.primary,
             radius: 10,
             widget: Text(
-              'Checkout',
+              appLocale.checkout,
               style: TextStyle(
                 fontSize: 18,
                 color: Theme.of(context).colorScheme.secondary,

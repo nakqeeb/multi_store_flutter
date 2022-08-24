@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/providers/dark_theme_provider.dart';
 import 'package:multi_store_app/services/utils.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ class SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -44,7 +46,7 @@ class SearchBar extends StatelessWidget {
               ),
             ),
             Text(
-              'What are you looking for?',
+              appLocale!.what_looking_for,
               style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).textTheme.bodyText1!.color),
@@ -61,9 +63,9 @@ class SearchBar extends StatelessWidget {
                     : const Color(0xFF758699),
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Search',
+                  appLocale.search,
                 ),
               ),
             )

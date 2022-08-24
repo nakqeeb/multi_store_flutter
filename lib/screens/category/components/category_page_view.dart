@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/models/category.dart';
+import 'package:provider/provider.dart';
 
 import '../../../components/categ_widgets.dart';
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 
 class CategoryPageView extends StatelessWidget {
@@ -11,6 +13,7 @@ class CategoryPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: Stack(
@@ -25,10 +28,12 @@ class CategoryPageView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CategHeaderLabel(
-                    headerLabel: category.enName.toString(),
+                    headerLabel: isArabic
+                        ? category.arName.toString()
+                        : category.enName.toString(),
                   ),
                   SizedBox(
-                    height: size.height * 0.68,
+                    height: size.height * 0.6,
                     child: GridView.count(
                       mainAxisSpacing: 70,
                       crossAxisSpacing: 15,
@@ -41,9 +46,11 @@ class CategoryPageView extends StatelessWidget {
                               category.subcategories![index].id.toString(),
                           assetName: category.subcategories![index].imageUrl
                               .toString(),
-                          subcategLabel: category
-                              .subcategories![index].enSubName
-                              .toString(),
+                          subcategLabel: isArabic
+                              ? category.subcategories![index].arSubName
+                                  .toString()
+                              : category.subcategories![index].enSubName
+                                  .toString(),
                         );
                       }),
                     ),
@@ -56,7 +63,9 @@ class CategoryPageView extends StatelessWidget {
             bottom: 0,
             right: 0,
             child: SliderBar(
-              maincategName: category.enName.toString(),
+              maincategName: isArabic
+                  ? category.arName.toString()
+                  : category.enName.toString(),
             ),
           ),
         ],

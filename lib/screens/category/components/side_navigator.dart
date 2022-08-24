@@ -4,6 +4,7 @@ import 'package:multi_store_app/providers/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/category_provider.dart';
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 
 class SideNavigator extends StatefulWidget {
@@ -26,6 +27,7 @@ class _SideNavigatorState extends State<SideNavigator> {
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
     final categories = Provider.of<CategoryProvider>(context).categories;
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return SizedBox(
       height: size.height -
           (kToolbarHeight +
@@ -52,7 +54,9 @@ class _SideNavigatorState extends State<SideNavigator> {
                 children: [
                   // Icon(widget.items[index].icon),
                   Text(
-                    categories[index].enName.toString(),
+                    isArabic
+                        ? categories[index].arName.toString()
+                        : categories[index].enName.toString(),
                     textAlign: TextAlign.center,
                   ),
                 ],

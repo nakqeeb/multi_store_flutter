@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/components/default_button.dart';
@@ -79,12 +80,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         leading: const AppBarBackButton(),
-        title: const AppBarTitle(title: 'Edit Address'),
+        title: AppBarTitle(title: appLocale!.edit_ddress),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -99,7 +101,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     initialValue: _name,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'full name is required';
+                        return appLocale.fullname_required;
                       }
                       return null;
                     },
@@ -107,8 +109,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       _name = value!;
                     },
                     decoration: textFormDecoration(context).copyWith(
-                      labelText: 'Full Name',
-                      hintText: 'Enter your full name',
+                      labelText: appLocale.full_name,
+                      hintText: appLocale.enter_full_name,
                     ),
                   ),
                 ),
@@ -124,7 +126,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Phone is required';
+                              return appLocale.phone_required;
                             }
                             return null;
                           },
@@ -135,8 +137,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'Phone',
-                            hintText: 'Enter your phone',
+                            labelText: appLocale.phone,
+                            hintText: appLocale.enter_phone,
                           ),
                         ),
                       ),
@@ -150,7 +152,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'pincode is required.';
+                              return appLocale.pincode_required;
                             }
                             return null;
                           },
@@ -161,8 +163,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'Pincode',
-                            hintText: 'Enter pincode',
+                            labelText: appLocale.pincode,
+                            hintText: appLocale.enter_pincode,
                           ),
                         ),
                       ),
@@ -180,7 +182,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           initialValue: _state,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'State is required.';
+                              return appLocale.province_required;
                             }
                             return null;
                           },
@@ -188,8 +190,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             _state = value!;
                           },
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'State',
-                            hintText: 'Enter State',
+                            labelText: appLocale.province,
+                            hintText: appLocale.enter_province,
                           ),
                         ),
                       ),
@@ -202,7 +204,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           initialValue: _city,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'city is required.';
+                              return appLocale.city_required;
                             }
                             return null;
                           },
@@ -210,8 +212,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             _city = value!;
                           },
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'City',
-                            hintText: 'Enter city',
+                            labelText: appLocale.city,
+                            hintText: appLocale.enter_city,
                           ),
                         ),
                       ),
@@ -225,7 +227,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     maxLines: 3,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'address is required.';
+                        return appLocale.address_required;
                       }
                       return null;
                     },
@@ -233,8 +235,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       _address = value!;
                     },
                     decoration: textFormDecoration(context).copyWith(
-                      labelText: 'Address, House No, Building Name',
-                      hintText: 'Enter Address',
+                      labelText: appLocale.address_house_building,
+                      hintText: appLocale.enter_address,
                     ),
                   ),
                 ),
@@ -245,7 +247,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     maxLines: 2,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'landmark is required.';
+                        return appLocale.landmark_required;
                       }
                       return null;
                     },
@@ -253,8 +255,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       _landmark = value!;
                     },
                     decoration: textFormDecoration(context).copyWith(
-                      labelText: 'Landmark, Road Name, Area',
-                      hintText: 'Enter Landmark',
+                      labelText: appLocale.landmark_road_area,
+                      hintText: appLocale.enter_landmark,
                     ),
                   ),
                 ),
@@ -264,20 +266,20 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     onPressed: () async {
                       await _editAddress();
                     },
-                    height: size.height * 0.05,
+                    height: size.height * 0.06,
                     width: size.width * 0.7,
                     radius: 15,
                     color: Theme.of(context).colorScheme.secondary,
                     widget: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.save),
-                        SizedBox(
+                      children: [
+                        const Icon(Icons.save),
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
-                          'Save Address',
-                          style: TextStyle(
+                          appLocale.save_address,
+                          style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.2),

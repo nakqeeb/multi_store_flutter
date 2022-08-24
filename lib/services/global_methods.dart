@@ -26,6 +26,7 @@ class GlobalMethods {
     required String title,
     required String subtitle,
     String btnTitle = 'OK',
+    String cancelBtn = 'Cancel',
     required Function fct,
     required BuildContext context,
   }) async {
@@ -56,9 +57,9 @@ class GlobalMethods {
                   Navigator.pop(context);
                 }
               },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(fontSize: 18),
+              child: Text(
+                cancelBtn,
+                style: const TextStyle(fontSize: 18),
               ),
             ),
             TextButton(
@@ -82,6 +83,8 @@ class GlobalMethods {
   static Future<void> successSignupDialog({
     required String title,
     required String subtitle,
+    String doneBtn = 'Login now',
+    String cancelBtn = 'Cancel',
     required Function fct,
     required BuildContext context,
   }) async {
@@ -119,18 +122,18 @@ class GlobalMethods {
                   Navigator.pop(context);
                 }
               },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(fontSize: 18),
+              child: Text(
+                cancelBtn,
+                style: const TextStyle(fontSize: 18),
               ),
             ),
             TextButton(
               onPressed: () {
                 fct();
               },
-              child: const Text(
-                'Login now',
-                style: TextStyle(
+              child: Text(
+                doneBtn,
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.green,
                 ),

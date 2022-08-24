@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/screens/address/address_screen.dart';
 import 'package:multi_store_app/screens/change_language/change_language_screen.dart';
@@ -25,15 +26,16 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
     final size = Utils(context).getScreenSize;
     final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
     final isAuth = authCustomerProvider.isAuth;
     final customer = authCustomerProvider.customer ??
         Customer(
-          name: 'Guest',
-          email: '',
-          phone: '',
+          name: appLocale!.guest,
+          email: null,
+          phone: null,
         );
     // to clear _cart when logout
     final cartProvider = Provider.of<CartProvider>(context);
@@ -69,7 +71,7 @@ class Body extends StatelessWidget {
                       duration: const Duration(milliseconds: 500),
                       opacity: constraints.biggest.height <= 120 ? 1 : 0,
                       child: Text(
-                        'Account',
+                        appLocale!.profile,
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     ),
@@ -200,7 +202,7 @@ class Body extends StatelessWidget {
                               width: size.width * 0.2,
                               child: Center(
                                   child: Text(
-                                'Cart',
+                                appLocale!.cart,
                                 style: Theme.of(context).textTheme.headline6,
                               )),
                             ),
@@ -223,9 +225,10 @@ class Body extends StatelessWidget {
                                 );
                               } else {
                                 GlobalMethods.warningDialog(
-                                  title: 'Login',
-                                  subtitle: 'You need to login first',
-                                  btnTitle: 'Login',
+                                  title: appLocale.login,
+                                  subtitle: appLocale.login_first,
+                                  btnTitle: appLocale.login,
+                                  cancelBtn: appLocale.cancel,
                                   fct: () {
                                     if (Navigator.canPop(context)) {
                                       Navigator.pop(context);
@@ -246,7 +249,7 @@ class Body extends StatelessWidget {
                               width: size.width * 0.2,
                               child: Center(
                                   child: Text(
-                                'Orders',
+                                appLocale.orders,
                                 style: Theme.of(context).textTheme.headline6,
                               )),
                             ),
@@ -279,9 +282,10 @@ class Body extends StatelessWidget {
                                 );
                               } else {
                                 GlobalMethods.warningDialog(
-                                  title: 'Login',
-                                  subtitle: 'You need to login first',
-                                  btnTitle: 'Login',
+                                  title: appLocale.login,
+                                  subtitle: appLocale.login_first,
+                                  btnTitle: appLocale.login,
+                                  cancelBtn: appLocale.cancel,
                                   fct: () {
                                     if (Navigator.canPop(context)) {
                                       Navigator.pop(context);
@@ -317,7 +321,7 @@ class Body extends StatelessWidget {
                               width: size.width * 0.2,
                               child: Center(
                                 child: Text(
-                                  'Wishlist',
+                                  appLocale.wishlist,
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
@@ -345,8 +349,8 @@ class Body extends StatelessWidget {
                                     'images/inapp/logo_light.png'),
                           ),
                         ),
-                        const ProfileHeaderLabel(
-                          headerLabel: '  Account Info  ',
+                        ProfileHeaderLabel(
+                          headerLabel: '  ${appLocale.account_info}  ',
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),
@@ -361,28 +365,50 @@ class Body extends StatelessWidget {
                               children: [
                                 RepeatedListTile(
                                   icon: Icons.email,
-                                  title: 'Email Address',
+                                  title: appLocale.email_address,
                                   subtitle: customer.email,
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
                                   icon: Icons.phone,
-                                  title: 'Phone No',
+                                  title: appLocale.phone,
                                   subtitle: customer.phone,
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
                                   onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const AddressScreen()));
+                                    if (isAuth) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const AddressScreen()));
+                                    } else {
+                                      GlobalMethods.warningDialog(
+                                        title: appLocale.login,
+                                        subtitle: appLocale.login_first,
+                                        btnTitle: appLocale.login,
+                                        cancelBtn: appLocale.cancel,
+                                        fct: () {
+                                          if (Navigator.canPop(context)) {
+                                            Navigator.pop(context);
+                                          }
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (ctx) =>
+                                                  const WelcomeScreen(),
+                                            ),
+                                          );
+                                        },
+                                        context: context,
+                                      );
+                                    }
                                   },
                                   icon: Icons.location_pin,
-                                  title: 'Address',
+                                  title: appLocale.address_book,
                                   // subtitle: customer.address,
-                                  isSettings: true,
+                                  isClickable: true,
                                 ),
                                 const SizedBox(
                                   height: 5,
@@ -391,8 +417,8 @@ class Body extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const ProfileHeaderLabel(
-                            headerLabel: '  Account Settings  '),
+                        ProfileHeaderLabel(
+                            headerLabel: '  ${appLocale.account_settings}  '),
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Container(
@@ -405,23 +431,23 @@ class Body extends StatelessWidget {
                             child: Column(
                               children: [
                                 RepeatedListTile(
-                                  title: 'Edit Profile',
+                                  title: appLocale.edit_profile,
                                   icon: Icons.edit,
-                                  isSettings: true,
+                                  isClickable: true,
                                   onPressed: () {},
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
-                                  title: 'Change Password',
+                                  title: appLocale.change_password,
                                   icon: Icons.lock,
-                                  isSettings: true,
+                                  isClickable: true,
                                   onPressed: () {},
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
-                                  title: 'Change Language',
+                                  title: appLocale.change_language,
                                   icon: Icons.language,
-                                  isSettings: true,
+                                  isClickable: true,
                                   onPressed: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
@@ -436,16 +462,19 @@ class Body extends StatelessWidget {
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
-                                  title: isAuth ? 'Logout' : 'Login',
+                                  title: isAuth
+                                      ? appLocale.logout
+                                      : appLocale.login,
                                   icon: Icons.logout,
-                                  isSettings: true,
+                                  isClickable: true,
                                   onPressed: () {
                                     if (isAuth) {
                                       GlobalMethods.warningDialog(
                                         context: context,
-                                        title: 'Sign out',
-                                        subtitle:
-                                            'Do you really want to sign out?',
+                                        title: appLocale.logout,
+                                        subtitle: appLocale.are_you_sure_logout,
+                                        btnTitle: appLocale.yes,
+                                        cancelBtn: appLocale.cancel,
                                         fct: () async {
                                           await authCustomerProvider.logout();
                                           cartProvider.cart?.items?.clear();

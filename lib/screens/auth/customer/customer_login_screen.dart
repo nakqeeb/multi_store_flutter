@@ -1,21 +1,14 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
 import 'package:multi_store_app/fetch_screen.dart';
-import 'package:multi_store_app/models/customer.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/screens/auth/customer/customer_signup_screen.dart';
-import 'package:multi_store_app/screens/home/home_screen.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
-import '../../../providers/cart_provider.dart';
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 import '../components/auth_header.dart';
 import '../components/auth_main_button.dart';
@@ -39,6 +32,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
   bool _isPasswordVisible = false;
 
   void login() async {
+    final appLocale = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;
     });
@@ -50,7 +44,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
         if (connectivityResult != ConnectivityResult.mobile &&
             connectivityResult != ConnectivityResult.wifi) {
           GlobalMethods.showSnackBar(
-              context, _scaffoldKey, 'Please check your internet connection.');
+              context, _scaffoldKey, appLocale!.noInternet);
           return;
         }
         // if there is internet then login
@@ -76,7 +70,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
     } else {
       print('Not valid');
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'Please fill all fields');
+          context, _scaffoldKey, appLocale!.fill_all_fields);
       setState(() {
         _isLoading = false;
       });
@@ -86,6 +80,8 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return ScaffoldMessenger(
       // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
       key: _scaffoldKey,
@@ -102,7 +98,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      const AuthHeader(label: 'Login'),
+                      AuthHeader(label: appLocale!.login),
                       const SizedBox(
                         height: 50,
                       ),
@@ -112,9 +108,9 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Email address is required';
+                              return appLocale.email_is_required;
                             } else if (value.isValidEmail() == false) {
-                              return 'Invalid email';
+                              return appLocale.invalid_email;
                             } else if (value.isValidEmail() == true) {
                               return null;
                             }
@@ -124,8 +120,8 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                             _email = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Email Address',
-                            hintText: 'Enter your email',
+                            labelText: appLocale.email,
+                            hintText: appLocale.enter_email,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -162,9 +158,9 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                           obscureText: _isPasswordVisible ? false : true,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Password field can not be empty';
+                              return appLocale.password_no_empty;
                             } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters long';
+                              return appLocale.password_six_char;
                             }
                             return null;
                           },
@@ -172,8 +168,8 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                             _password = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Password',
-                            hintText: 'Enter your password',
+                            labelText: appLocale.password,
+                            hintText: appLocale.enter_password,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -220,11 +216,13 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         ),
                       ),
                       Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: isArabic
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            'Forget password?',
+                            appLocale.forgotPassword,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.secondary,
                               fontSize: 18,
@@ -234,8 +232,8 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         ),
                       ),
                       HaveAccount(
-                        titleLabel: 'Don\'t have account?',
-                        btnLabel: 'Sign Up',
+                        titleLabel: appLocale.haveNoAccountYet,
+                        btnLabel: appLocale.signup,
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
@@ -251,7 +249,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                               size: 35,
                             )
                           : AuthMainButton(
-                              label: 'Login',
+                              label: appLocale.login,
                               onPressed: () {
                                 login();
                               },

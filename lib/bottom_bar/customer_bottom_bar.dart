@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/screens/cart/cart_screen.dart';
 import 'package:multi_store_app/screens/category/category_screen.dart';
 import 'package:multi_store_app/screens/home/home_screen.dart';
@@ -28,22 +29,23 @@ class _CustomerBottomBarState extends State<CustomerBottomBar> {
   ];
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       body: _tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: appLocale!.home,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Category',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.search),
+            label: appLocale.category,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.shop),
-            label: 'Stores',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.shop),
+            label: appLocale.stores,
           ),
           BottomNavigationBarItem(
             icon: Consumer<CartProvider>(
@@ -52,14 +54,14 @@ class _CustomerBottomBarState extends State<CustomerBottomBar> {
                 badgeContent: cartProvider.cart?.items == null
                     ? const Text('0')
                     : Text(cartProvider.cart!.items!.length.toString()),
-                child: const Icon(Icons.shop),
+                child: const Icon(Icons.shopping_cart),
               ),
             ),
-            label: 'Cart',
+            label: appLocale.cart,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: appLocale.profile,
           ),
         ],
         onTap: (int index) {

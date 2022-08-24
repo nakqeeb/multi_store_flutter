@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
 import 'package:multi_store_app/components/default_button.dart';
@@ -9,7 +10,9 @@ import 'package:multi_store_app/screens/auth/customer/customer_signup_screen.dar
 import 'package:multi_store_app/screens/auth/supplier/supplier_login_screen.dart';
 import 'package:multi_store_app/screens/auth/supplier/supplier_signup_screen.dart';
 import 'package:multi_store_app/screens/welcome/components/animated_logo.dart';
+import 'package:provider/provider.dart';
 
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 import 'google_facebook_login.dart';
 
@@ -53,6 +56,8 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -72,12 +77,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
             AnimatedTextKit(
               animatedTexts: [
                 ColorizeAnimatedText(
-                  'WELCOME',
+                  appLocale!.welcome,
                   textStyle: textStyle,
                   colors: textColors,
                 ),
                 ColorizeAnimatedText(
-                  'Mono Store',
+                  appLocale.app_name,
                   textStyle: textStyle,
                   colors: textColors,
                 )
@@ -102,32 +107,38 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     fontFamily: 'Acme'),
                 child: AnimatedTextKit(
                   animatedTexts: [
-                    RotateAnimatedText('Buy'),
-                    RotateAnimatedText('Shop'),
-                    RotateAnimatedText('Mono Store'),
+                    RotateAnimatedText(appLocale.buy),
+                    RotateAnimatedText(appLocale.shop),
+                    RotateAnimatedText(appLocale.app_name),
                   ],
                   repeatForever: true,
                 ),
               ),
             ),
             Align(
-              alignment: Alignment.centerRight,
+              alignment:
+                  isArabic ? Alignment.centerLeft : Alignment.centerRight,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.white38,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        bottomLeft: Radius.circular(50),
-                      ),
+                      borderRadius: isArabic
+                          ? const BorderRadius.only(
+                              topRight: Radius.circular(50),
+                              bottomRight: Radius.circular(50),
+                            )
+                          : const BorderRadius.only(
+                              topLeft: Radius.circular(50),
+                              bottomLeft: Radius.circular(50),
+                            ),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
                       child: Text(
-                        'Suppliers only',
-                        style: TextStyle(
+                        appLocale.suppliers_only,
+                        style: const TextStyle(
                           color: Color(0xFF79f7fb),
                           fontSize: 26,
                           fontWeight: FontWeight.w600,
@@ -141,12 +152,17 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   Container(
                     height: 60,
                     width: size.width * 0.9,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.white38,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        bottomLeft: Radius.circular(50),
-                      ),
+                      borderRadius: isArabic
+                          ? const BorderRadius.only(
+                              topRight: Radius.circular(50),
+                              bottomRight: Radius.circular(50),
+                            )
+                          : const BorderRadius.only(
+                              topLeft: Radius.circular(50),
+                              bottomLeft: Radius.circular(50),
+                            ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -164,12 +180,13 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                             );
                           },
                           height: size.height * 0.06,
-                          width: size.width * 0.25,
+                          width:
+                              isArabic ? size.width * 0.3 : size.width * 0.25,
                           radius: 50,
                           color: const Color(0xFF79f7fb),
-                          widget: const Text(
-                            'Login',
-                            style: TextStyle(
+                          widget: Text(
+                            appLocale.login,
+                            style: const TextStyle(
                               fontSize: 18,
                               color: Color(0xFF1c2732),
                             ),
@@ -188,9 +205,9 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                           width: size.width * 0.25,
                           radius: 50,
                           color: const Color(0xFF79f7fb),
-                          widget: const Text(
-                            'Sign up',
-                            style: TextStyle(
+                          widget: Text(
+                            appLocale.signup,
+                            style: const TextStyle(
                               fontSize: 18,
                               color: Color(0xFF1c2732),
                             ),
@@ -203,16 +220,22 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
               ),
             ),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment:
+                  isArabic ? Alignment.centerRight : Alignment.centerLeft,
               child: Container(
                 height: 60,
                 width: size.width * 0.9,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white38,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
-                    bottomRight: Radius.circular(50),
-                  ),
+                  borderRadius: isArabic
+                      ? const BorderRadius.only(
+                          topLeft: Radius.circular(50),
+                          bottomLeft: Radius.circular(50),
+                        )
+                      : const BorderRadius.only(
+                          topRight: Radius.circular(50),
+                          bottomRight: Radius.circular(50),
+                        ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -227,12 +250,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                         );
                       },
                       height: size.height * 0.06,
-                      width: size.width * 0.25,
+                      width: isArabic ? size.width * 0.30 : size.width * 0.25,
                       radius: 50,
                       color: const Color(0xFF79f7fb),
-                      widget: const Text(
-                        'Login',
-                        style: TextStyle(
+                      widget: Text(
+                        appLocale.login,
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Color(0xFF1c2732),
                         ),
@@ -251,9 +274,9 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                       width: size.width * 0.25,
                       radius: 50,
                       color: const Color(0xFF79f7fb),
-                      widget: const Text(
-                        'Sign up',
-                        style: TextStyle(
+                      widget: Text(
+                        appLocale.signup,
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Color(0xFF1c2732),
                         ),
@@ -290,7 +313,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                     _isLoading
                         ? const CircularProgressIndicator()
                         : GoogleFacebookLogIn(
-                            label: 'Guest',
+                            label: appLocale.guest,
                             onPresssed: () async {
                               setState(() {
                                 _isLoading = true;
@@ -308,7 +331,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                                   _isLoading = false;
                                 });
                                 Fluttertoast.showToast(
-                                    msg: "Check your Internet connection",
+                                    msg: appLocale.noInternet,
                                     toastLength: Toast.LENGTH_LONG,
                                     gravity: ToastGravity.CENTER,
                                     timeInSecForIosWeb: 1,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/models/address.dart';
@@ -9,6 +10,7 @@ import 'package:multi_store_app/screens/address/edit_address_screen.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/locale_provider.dart';
 import '../error/error_screen.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -30,6 +32,8 @@ class _AddressScreenState extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     final addressProvider = Provider.of<AddressProvider>(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
     return WillPopScope(
       onWillPop: () async {
@@ -40,12 +44,12 @@ class _AddressScreenState extends State<AddressScreen> {
           appBar: AppBar(
             elevation: 0,
             centerTitle: true,
-            title: const AppBarTitle(
-              title: 'Address Book',
+            title: AppBarTitle(
+              title: appLocale!.address_book,
             ),
             leading: IconButton(
               icon: Icon(
-                Icons.arrow_back_ios_new,
+                isArabic ? Icons.arrow_back_ios : Icons.arrow_back_ios_new,
                 color: Theme.of(context).iconTheme.color,
               ),
               onPressed: () {
@@ -67,7 +71,7 @@ class _AddressScreenState extends State<AddressScreen> {
                   Icons.add,
                   color: Theme.of(context).colorScheme.secondary,
                 ),
-                tooltip: 'Add address',
+                tooltip: appLocale.add_address,
               )
             ],
           ),
@@ -81,9 +85,9 @@ class _AddressScreenState extends State<AddressScreen> {
                 );
               } else if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
-                  return const ErrorScreen(
-                      title: 'Opps! Something went wrong',
-                      subTitle: 'Please try to reload the application!');
+                  return ErrorScreen(
+                      title: appLocale.opps_went_wrong,
+                      subTitle: appLocale.try_to_reload_app);
                 } else if (snapshot.data!.isNotEmpty) {
                   List<AddressData> addresses = snapshot.data!;
                   return ListView.builder(
@@ -96,7 +100,7 @@ class _AddressScreenState extends State<AddressScreen> {
                       isDefault: addresses[index].isDefault!,
                       onPressed: () async {
                         GlobalMethods.loadingDialog(
-                            title: 'Setting default...', context: context);
+                            title: appLocale.set_default, context: context);
                         if (addresses[index].customerId ==
                             authCustomerProvider.customer!.id) {
                           for (int i = 0; i < addresses.length; i++) {
@@ -119,11 +123,11 @@ class _AddressScreenState extends State<AddressScreen> {
                     ),
                   );
                 } else if (snapshot.data!.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'You have not added any address yet!',
+                      appLocale.no_address_yet,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',
@@ -132,11 +136,11 @@ class _AddressScreenState extends State<AddressScreen> {
                     ),
                   );
                 } else {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No addresses loaded!',
+                      appLocale.no_addresses_loaded,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',

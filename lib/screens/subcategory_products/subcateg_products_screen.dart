@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../../components/product_grid_component_widget.dart';
 import '../../models/category.dart';
 import '../../models/product.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../providers/product_provider.dart';
 
 class SubCategoryProductsScreen extends StatefulWidget {
@@ -61,18 +63,28 @@ class _SubCategoryProductsScreenState extends State<SubCategoryProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final categoryProvider = Provider.of<CategoryProvider>(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     List<Category> categories = categoryProvider.categories;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         title: AppBarTitle(
-            title: categories
-                .firstWhere((element) => element.id == widget.maincategId)
-                .subcategories!
-                .firstWhere((element) => element.id == widget.subcategId)
-                .enSubName
-                .toString()),
+          title: isArabic
+              ? categories
+                  .firstWhere((element) => element.id == widget.maincategId)
+                  .subcategories!
+                  .firstWhere((element) => element.id == widget.subcategId)
+                  .arSubName
+                  .toString()
+              : categories
+                  .firstWhere((element) => element.id == widget.maincategId)
+                  .subcategories!
+                  .firstWhere((element) => element.id == widget.subcategId)
+                  .enSubName
+                  .toString(),
+        ),
         leading: const AppBarBackButton(),
       ),
       body: _isLoading
@@ -81,11 +93,11 @@ class _SubCategoryProductsScreenState extends State<SubCategoryProductsScreen> {
               size: 35,
             )
           : _products.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'This category \n\n has no items yet!',
+                    appLocale!.category_no_item,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',

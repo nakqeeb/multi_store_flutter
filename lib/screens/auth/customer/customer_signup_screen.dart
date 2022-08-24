@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_store_app/models/customer.dart';
@@ -76,6 +77,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
   }
 
   void signup() async {
+    final appLocale = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;
     });
@@ -87,8 +89,8 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
           // check if the user is not connected to mobile network and wifi.
           if (connectivityResult != ConnectivityResult.mobile &&
               connectivityResult != ConnectivityResult.wifi) {
-            GlobalMethods.showSnackBar(context, _scaffoldKey,
-                'Please check your internet connection.');
+            GlobalMethods.showSnackBar(
+                context, _scaffoldKey, appLocale!.noInternet);
             return;
           }
           // if there is internet then signup
@@ -112,8 +114,10 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
 
           GlobalMethods.successSignupDialog(
             context: context,
-            title: 'Success',
-            subtitle: 'Account is created successfully.',
+            title: appLocale!.success,
+            subtitle: appLocale.account_created,
+            doneBtn: appLocale.login_now,
+            cancelBtn: appLocale.cancel,
             fct: () {
               if (Navigator.canPop(context)) {
                 Navigator.pop(context);
@@ -141,7 +145,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
         }
       } else {
         GlobalMethods.showSnackBar(
-            context, _scaffoldKey, 'Please pick an image');
+            context, _scaffoldKey, appLocale!.pick_image);
         setState(() {
           _isLoading = false;
         });
@@ -149,7 +153,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
     } else {
       print('Not valid');
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'Please fill all fields');
+          context, _scaffoldKey, appLocale!.fill_all_fields);
       setState(() {
         _isLoading = false;
       });
@@ -159,6 +163,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     return ScaffoldMessenger(
       // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
       key: _scaffoldKey,
@@ -175,7 +180,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      const AuthHeader(label: 'Sign Up'),
+                      AuthHeader(label: appLocale!.signup),
                       Row(
                         children: [
                           Padding(
@@ -254,7 +259,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                         child: TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter your name';
+                              return appLocale.name_no_empty;
                             }
                             return null;
                           },
@@ -262,8 +267,8 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                             _name = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Full Name',
-                            hintText: 'Enter your full name',
+                            labelText: appLocale.full_name,
+                            hintText: appLocale.enter_full_name,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -300,9 +305,9 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Email address is required';
+                              return appLocale.email_is_required;
                             } else if (value.isValidEmail() == false) {
-                              return 'Invalid email';
+                              return appLocale.invalid_email;
                             } else if (value.isValidEmail() == true) {
                               return null;
                             }
@@ -312,8 +317,8 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                             _email = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Email Address',
-                            hintText: 'Enter your email',
+                            labelText: appLocale.email,
+                            hintText: appLocale.enter_email,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -350,9 +355,9 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                           obscureText: _isPasswordVisible ? false : true,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Password field can not be empty';
+                              return appLocale.password_no_empty;
                             } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters long';
+                              return appLocale.password_six_char;
                             }
                             return null;
                           },
@@ -360,8 +365,8 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                             _password = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Password',
-                            hintText: 'Enter your password',
+                            labelText: appLocale.password,
+                            hintText: appLocale.enter_password,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -408,8 +413,8 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                         ),
                       ),
                       HaveAccount(
-                        titleLabel: 'Already have account?',
-                        btnLabel: 'Login',
+                        titleLabel: appLocale.alreadyHaveAccount,
+                        btnLabel: appLocale.login,
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
@@ -425,7 +430,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
                               size: 35,
                             )
                           : AuthMainButton(
-                              label: 'Sign up',
+                              label: appLocale.signup,
                               onPressed: () {
                                 signup();
                               },

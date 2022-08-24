@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/screens/search/components/searched_product_tile.dart';
@@ -18,6 +19,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
+    final appLocale = AppLocalizations.of(context);
     final productProvider = Provider.of<ProductProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -40,18 +42,18 @@ class _SearchScreenState extends State<SearchScreen> {
           ? Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
+                children: [
+                  const Icon(
                     Icons.search,
                     size: 20,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    'Search for the product.',
+                    appLocale!.search_for_product,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ],
               ),

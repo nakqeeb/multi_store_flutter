@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/screens/cart/components/btm_sheet.dart';
@@ -25,6 +25,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     final isDarkTheme = Provider.of<DarkThemeProvider>(context).isDarkTheme;
     final isCustomerAuth = context.read<AuthCustomerProvider>().isAuth;
+    final appLocale = AppLocalizations.of(context);
     // Wrap by material to show notification bar when navigate to CartScreen from "Cart" button in ProfileScreen
     // without Material, when navigate from Cart button, the noti bar will be showing as black
     return Material(
@@ -38,7 +39,7 @@ class _CartScreenState extends State<CartScreen> {
             leading: widget.back,
             elevation: 0,
             centerTitle: true,
-            title: const AppBarTitle(title: 'Cart'),
+            title: AppBarTitle(title: appLocale!.cart),
             actions: isCustomerAuth
                 ? [
                     IconButton(
@@ -47,7 +48,7 @@ class _CartScreenState extends State<CartScreen> {
                               ? null
                               : () {
                                   GlobalMethods.warningDialog(
-                                    title: 'Clear Cart',
+                                    title: appLocale.clear_cart,
                                     subtitle: 'Are you sure to clear the cart?',
                                     fct: () async {
                                       setState(() {
@@ -67,7 +68,7 @@ class _CartScreenState extends State<CartScreen> {
                                     context: context,
                                   );
                                 },
-                      tooltip: 'Clear cart',
+                      tooltip: appLocale.clear_cart,
                       icon: Icon(
                         Icons.delete_forever,
                         color: context.read<CartProvider>().cart!.items!.isEmpty
@@ -86,12 +87,12 @@ class _CartScreenState extends State<CartScreen> {
               : isCustomerAuth
                   ? (context.watch<CartProvider>().cart!.items!.isNotEmpty
                       ? const CartItems()
-                      : const EmptyCart(
-                          textTitle: 'Your Cart is Empty!',
-                          buttonTitle: 'Continue Shopping'))
-                  : const EmptyCart(
-                      textTitle: 'Sign in first to see your cart.',
-                      buttonTitle: 'Sign in',
+                      : EmptyCart(
+                          textTitle: appLocale.cart_empty,
+                          buttonTitle: appLocale.continue_shopping))
+                  : EmptyCart(
+                      textTitle: appLocale.login_to_see_cart,
+                      buttonTitle: appLocale.login,
                       isGuest: true,
                     ),
           bottomSheet: const BTMSheet(),

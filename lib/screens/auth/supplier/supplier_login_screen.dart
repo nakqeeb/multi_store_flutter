@@ -1,12 +1,13 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:multi_store_app/bottom_bar/supplier_bottom_bar.dart';
 import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
+import '../../../providers/locale_provider.dart';
 import '../../../services/utils.dart';
 import '../components/auth_header.dart';
 import '../components/auth_main_button.dart';
@@ -31,6 +32,7 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
   bool _isPasswordVisible = false;
 
   void login() async {
+    final appLocale = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;
     });
@@ -42,7 +44,7 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
         if (connectivityResult != ConnectivityResult.mobile &&
             connectivityResult != ConnectivityResult.wifi) {
           GlobalMethods.showSnackBar(
-              context, _scaffoldKey, 'Please check your internet connection.');
+              context, _scaffoldKey, appLocale!.noInternet);
           return;
         }
         // Check first if account is being activated by the admin (will be done later)
@@ -70,7 +72,7 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
     } else {
       print('Not valid');
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'Please fill all fields');
+          context, _scaffoldKey, appLocale!.fill_all_fields);
       setState(() {
         _isLoading = false;
       });
@@ -80,6 +82,8 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     return ScaffoldMessenger(
       // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
       key: _scaffoldKey,
@@ -96,7 +100,7 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      const AuthHeader(label: 'Login'),
+                      AuthHeader(label: appLocale!.login),
                       const SizedBox(
                         height: 50,
                       ),
@@ -107,9 +111,9 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                           // style: const TextStyle(color: Colors.deepPurpleAccent),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Email address is required';
+                              return appLocale.email_is_required;
                             } else if (value.isValidEmail() == false) {
-                              return 'Invalid email';
+                              return appLocale.invalid_email;
                             } else if (value.isValidEmail() == true) {
                               return null;
                             }
@@ -119,8 +123,8 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                             _email = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Email Address',
-                            hintText: 'Enter your email',
+                            labelText: appLocale.email,
+                            hintText: appLocale.enter_email,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -158,9 +162,9 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                           //style: const TextStyle(color: Colors.deepPurpleAccent),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Password field can not be empty';
+                              return appLocale.password_no_empty;
                             } else if (value.length < 6) {
-                              return 'Password must be at least 6 characters long';
+                              return appLocale.password_six_char;
                             }
                             return null;
                           },
@@ -168,8 +172,8 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                             _password = value;
                           },
                           decoration: textFormDecoration.copyWith(
-                            labelText: 'Password',
-                            hintText: 'Enter your password',
+                            labelText: appLocale.password,
+                            hintText: appLocale.enter_password,
                             labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -216,11 +220,13 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                         ),
                       ),
                       Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: isArabic
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            'Forget password?',
+                            appLocale.forgotPassword,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.secondary,
                               fontSize: 18,
@@ -230,8 +236,8 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                         ),
                       ),
                       HaveAccount(
-                        titleLabel: 'Don\'t have account?',
-                        btnLabel: 'Sign Up',
+                        titleLabel: appLocale.haveNoAccountYet,
+                        btnLabel: appLocale.signup,
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
@@ -247,7 +253,7 @@ class _SupplierLoginScreenState extends State<SupplierLoginScreen> {
                               size: 35,
                             )
                           : AuthMainButton(
-                              label: 'Login',
+                              label: appLocale.login,
                               onPressed: () {
                                 login();
                               },
