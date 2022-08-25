@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -67,6 +68,7 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -74,13 +76,13 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
           elevation: 0,
           centerTitle: true,
           leading: const AppBarBackButton(),
-          title: const AppBarTitle(
-            title: 'Orders',
+          title: AppBarTitle(
+            title: appLocale!.orders,
           ),
-          bottom: const TabBar(indicatorWeight: 1, tabs: [
-            SupplierOrderTab(label: 'Preparing'),
-            SupplierOrderTab(label: 'Shipping'),
-            SupplierOrderTab(label: 'Delivered'),
+          bottom: TabBar(indicatorWeight: 1, tabs: [
+            SupplierOrderTab(label: appLocale.preparing.toUpperCase()),
+            SupplierOrderTab(label: appLocale.shipping.toUpperCase()),
+            SupplierOrderTab(label: appLocale.delivered.toUpperCase()),
           ]),
         ),
         body: TabBarView(children: [

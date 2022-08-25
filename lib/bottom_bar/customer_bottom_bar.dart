@@ -44,7 +44,7 @@ class _CustomerBottomBarState extends State<CustomerBottomBar> {
             label: appLocale.category,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.shop),
+            icon: const Icon(Icons.store),
             label: appLocale.stores,
           ),
           BottomNavigationBarItem(
@@ -52,8 +52,14 @@ class _CustomerBottomBarState extends State<CustomerBottomBar> {
               builder: (ctx, cartProvider, _) => Badge(
                 badgeColor: Theme.of(context).colorScheme.primary,
                 badgeContent: cartProvider.cart?.items == null
-                    ? const Text('0')
-                    : Text(cartProvider.cart!.items!.length.toString()),
+                    ? const Text(
+                        '0',
+                        style: TextStyle(fontSize: 12),
+                      )
+                    : Text(
+                        cartProvider.cart!.items!.length.toString(),
+                        style: const TextStyle(fontSize: 12),
+                      ),
                 child: const Icon(Icons.shopping_cart),
               ),
             ),

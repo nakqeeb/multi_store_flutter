@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_store_app/models/category.dart';
 import 'package:multi_store_app/models/product.dart';
@@ -61,6 +63,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   }
 
   Widget _previewImages() {
+    final appLocale = AppLocalizations.of(context);
     if (_imagesFileList!.isNotEmpty) {
       return ListView.builder(
           itemCount: _imagesFileList!.length,
@@ -68,9 +71,10 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
             return Image.file(File(_imagesFileList![index].path));
           });
     } else {
-      return const Center(
-        child: Text('you have not \n \n picked images yet!',
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+      return Center(
+        child: Text(appLocale!.no_picked_images_yet,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, color: Colors.white)),
       );
     }
   }
@@ -96,6 +100,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   }
 
   Future<void> uploadImages() async {
+    final appLocale = AppLocalizations.of(context);
     if (_mainCategValue != null && _subCategValue != null) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
@@ -119,19 +124,20 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
           }
         } else {
           GlobalMethods.showSnackBar(
-              context, _scaffoldKey, 'please pick images first');
+              context, _scaffoldKey, appLocale!.pick_images_first);
         }
       } else {
         GlobalMethods.showSnackBar(
-            context, _scaffoldKey, 'please fill all fields');
+            context, _scaffoldKey, appLocale!.fill_all_fields);
       }
     } else {
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'please select category');
+          context, _scaffoldKey, appLocale!.please_select_category);
     }
   }
 
   void uploadData() async {
+    final appLocale = AppLocalizations.of(context);
     if (_imagesUrlList.isNotEmpty) {
       // CollectionReference productRef =
       //     FirebaseFirestore.instance.collection('products');
@@ -171,19 +177,30 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
         _imagesUrlList = [];
       });
       _formKey.currentState!.reset();
+
+      Fluttertoast.showToast(
+        msg: appLocale!.product_added_successfully,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black.withOpacity(0.8),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       // });
     } else {
       print('no images');
     }
   }
 
-  void _uploadProduct() async {
+  Future<void> _uploadProduct() async {
     await uploadImages().whenComplete(() => uploadData());
   }
 
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     final categories = Provider.of<CategoryProvider>(context).categories;
     // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
     return ScaffoldMessenger(
@@ -212,12 +229,11 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                             ? _previewImages()
                             : Center(
                                 child: Text(
-                                  'You have not \n\n picked any images yet!',
+                                  appLocale!.no_picked_images_yet,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -231,16 +247,19 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                           children: [
                             Column(
                               children: [
-                                const Text(
-                                  '* select main category',
-                                  style: TextStyle(color: Colors.red),
+                                Text(
+                                  '*${appLocale!.select_main_category}',
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                                 DropdownButton<Category>(
                                   iconSize: 40,
                                   iconEnabledColor: Colors.red,
                                   dropdownColor:
                                       Theme.of(context).colorScheme.primary,
-                                  hint: const Text('select category'),
+                                  hint: Text(
+                                    appLocale.select_category,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                   value: _mainCategValue,
                                   items: categories
                                       .map<DropdownMenuItem<Category>>((value) {
@@ -264,9 +283,9 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                             ),
                             Column(
                               children: [
-                                const Text(
-                                  '* select subcategory',
-                                  style: TextStyle(color: Colors.red),
+                                Text(
+                                  '*${appLocale.select_subcategory}',
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                                 SizedBox(
                                   width: size.width * 0.4,
@@ -280,7 +299,10 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                                     dropdownColor:
                                         Theme.of(context).colorScheme.primary,
                                     menuMaxHeight: 500,
-                                    hint: const Text('select subcategory'),
+                                    hint: Text(
+                                      appLocale.select_subcategory,
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
                                     value: _subCategValue,
                                     items: _subCategList
                                         .map<DropdownMenuItem<Subcategory>>(
@@ -325,9 +347,9 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Please enter the price';
+                                return appLocale.price_required;
                               } else if (value.isValidPrice() != true) {
-                                return 'Invalid price';
+                                return appLocale.invalid_price;
                               }
                               return null;
                             },
@@ -350,8 +372,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                                   r'^([1-9][0-9]*)([\.]{0,1})([0-9]{0,2})')) // I added this regExp for number with decimal point
                             ],
                             decoration: textFormDecoration(context).copyWith(
-                              labelText: 'Price',
-                              hintText: 'Price.. \$',
+                              labelText: appLocale.price,
+                              hintText: '${appLocale.price}.. \$',
                             ),
                           ),
                         ),
@@ -367,7 +389,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                               if (value!.isEmpty) {
                                 return null;
                               } else if (value.isValidDiscount() != true) {
-                                return 'Invalid discount';
+                                return appLocale.invalid_discount;
                               }
                               return null;
                             },
@@ -390,8 +412,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                                   r'^([1-9][0-9]*)([\.]{0,1})([0-9]{0,2})')) // I added this regExp for number with decimal point
                             ],
                             decoration: textFormDecoration(context).copyWith(
-                              labelText: 'Discount',
-                              hintText: 'discount.. %',
+                              labelText: appLocale.discount,
+                              hintText: '${appLocale.discount}.. %',
                             ),
                           ),
                         ),
@@ -405,9 +427,9 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       child: TextFormField(
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter the quantity';
+                            return appLocale.quantity_is_required;
                           } else if (value.isValidQuantity() != true) {
-                            return 'shouldn\'t start with 0 (zero)';
+                            return appLocale.no_start_with_zero;
                           }
                           return null;
                         },
@@ -426,8 +448,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                           FilteringTextInputFormatter.digitsOnly,
                         ],
                         decoration: textFormDecoration(context).copyWith(
-                          labelText: 'Quantity',
-                          hintText: 'Add quantity',
+                          labelText: appLocale.quantity,
+                          hintText: appLocale.add_quantity,
                         ),
                       ),
                     ),
@@ -439,7 +461,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       child: TextFormField(
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter the product name';
+                            return appLocale.product_name_required;
                           }
                           return null;
                         },
@@ -450,11 +472,11 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                           _proName = value!;
                         },
                         maxLength:
-                            100, // this automatically will add a small coutner length underneeth TextFormField
+                            150, // this automatically will add a small coutner length underneeth TextFormField
                         maxLines: 3,
                         decoration: textFormDecoration(context).copyWith(
-                          labelText: 'Product name',
-                          hintText: 'Enter product name',
+                          labelText: appLocale.product_name,
+                          hintText: appLocale.enter_product_name,
                         ),
                       ),
                     ),
@@ -466,7 +488,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                       child: TextFormField(
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter the product description';
+                            return appLocale.product_description_required;
                           }
                           return null;
                         },
@@ -479,8 +501,8 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                         maxLength: 800,
                         maxLines: 5,
                         decoration: textFormDecoration(context).copyWith(
-                          labelText: 'Product description',
-                          hintText: 'Enter product description',
+                          labelText: appLocale.product_description,
+                          hintText: appLocale.enter_product_description,
                         ),
                       ),
                     ),
@@ -494,7 +516,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10, left: 10),
               child: FloatingActionButton(
                 onPressed: () {
                   if (_imagesFileList!.isEmpty) {
@@ -505,7 +527,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                     });
                   }
                 },
-                backgroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
                 child: Icon(
                   _imagesFileList!.isEmpty
                       ? Icons.photo_library
@@ -515,8 +537,11 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
               ),
             ),
             FloatingActionButton(
-              onPressed: () {
-                _uploadProduct();
+              onPressed: () async {
+                GlobalMethods.loadingDialog(
+                    context: context, title: appLocale.please_wait);
+                await _uploadProduct();
+                Navigator.pop(context);
               },
               backgroundColor: Theme.of(context).colorScheme.secondary,
               child: _isLoading

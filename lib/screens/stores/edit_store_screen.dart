@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/components/default_button.dart';
 import 'package:multi_store_app/models/supplier.dart';
@@ -12,8 +13,8 @@ import 'package:multi_store_app/services/global_methods.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_supplier_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../services/utils.dart';
-import '../error/error_screen.dart';
 
 class EditStoreScreen extends StatefulWidget {
   const EditStoreScreen({super.key});
@@ -105,7 +106,8 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
     }
   }
 
-  _saveChanges(Supplier supplier) async {
+  Future _saveChanges(Supplier supplier) async {
+    final appLocale = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // save data into the variable
 
@@ -126,19 +128,30 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
           },
         ),
       );
+      Fluttertoast.showToast(
+        msg: appLocale!.store_updated_successfully,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black.withOpacity(0.8),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } else {
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'Please fill all required fields.');
+          context, _scaffoldKey, appLocale!.fill_all_fields);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     final supplier = Provider.of<AuthSupplierProvider>(context).supplier;
     return WillPopScope(
       onWillPop: () async {
-        Navigator.canPop(context) ? Navigator.pop(context, supplier) : null;
+        Navigator.canPop(context) ? Navigator.pop(context, true) : null;
         return true;
       },
       child: ScaffoldMessenger(
@@ -149,17 +162,17 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
               centerTitle: true,
               leading: IconButton(
                 icon: Icon(
-                  Icons.arrow_back_ios_new,
+                  isArabic ? Icons.arrow_back_ios : Icons.arrow_back_ios_new,
                   color: Theme.of(context).iconTheme.color,
                 ),
                 onPressed: () {
                   Navigator.canPop(context)
-                      ? Navigator.pop(context, supplier)
+                      ? Navigator.pop(context, true)
                       : null;
                 },
               ),
-              title: const AppBarTitle(
-                title: 'Edit Store',
+              title: AppBarTitle(
+                title: appLocale!.edit_store,
               ),
             ),
             body: SingleChildScrollView(
@@ -173,9 +186,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                       // Store logo image
                       Column(
                         children: [
-                          const Text(
-                            'Store Logo',
-                            style: TextStyle(
+                          Text(
+                            appLocale.store_logo,
+                            style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
@@ -215,11 +228,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                                     color:
                                         Theme.of(context).colorScheme.tertiary,
                                     widget: Text(
-                                      'Change',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                      appLocale.change,
+                                      style: const TextStyle(
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
@@ -238,11 +249,10 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                                               .colorScheme
                                               .tertiary,
                                           widget: Text(
-                                            'Reset',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                            appLocale.reset,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
                                             ),
                                           ),
                                         )
@@ -285,9 +295,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                       // Store Cover image
                       Column(
                         children: [
-                          const Text(
-                            'Cover Image',
-                            style: TextStyle(
+                          Text(
+                            appLocale.cover_image,
+                            style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
@@ -332,11 +342,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                                     color:
                                         Theme.of(context).colorScheme.tertiary,
                                     widget: Text(
-                                      'Change',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                      appLocale.change,
+                                      style: const TextStyle(
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
@@ -355,11 +363,10 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                                               .colorScheme
                                               .tertiary,
                                           widget: Text(
-                                            'Reset',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                            appLocale.reset,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
                                             ),
                                           ),
                                         )
@@ -406,7 +413,7 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                           initialValue: supplier.storeName,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter your store name';
+                              return appLocale.store_no_empty;
                             }
                             return null;
                           },
@@ -414,8 +421,8 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                             _storeName = value!;
                           },
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'Store Name',
-                            hintText: 'Enter store name',
+                            labelText: appLocale.store_name,
+                            hintText: appLocale.enter_store_name,
                           ),
                         ),
                       ),
@@ -429,17 +436,17 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                             _phone = value!;
                           },
                           decoration: textFormDecoration(context).copyWith(
-                            labelText: 'Phone Number',
-                            hintText: 'Enter your Phone/WhatsApp number',
+                            labelText: appLocale.phone,
+                            hintText: appLocale.enter_phone_whatsApp,
                           ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                         child: Text(
-                          '*Users can use this number and contact you via WhatsApp. So use your business number.',
-                          style:
-                              TextStyle(color: Colors.pinkAccent, fontSize: 12),
+                          '*${appLocale.warn_msg_for_store_phone}',
+                          style: const TextStyle(
+                              color: Colors.pinkAccent, fontSize: 12),
                         ),
                       ),
                       const Spacer(),
@@ -459,17 +466,17 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                             color: Colors.red,
                             widget: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
+                              children: [
+                                const Icon(
                                   Icons.close,
                                   color: Colors.white,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Text(
-                                  'Cancel',
-                                  style: TextStyle(
+                                  appLocale.cancel,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                   ),
                                 ),
@@ -503,9 +510,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                                               height: 15,
                                             ),
                                             // Some text
-                                            const Text(
-                                              'Updating...',
-                                              style: TextStyle(
+                                            Text(
+                                              appLocale.updating,
+                                              style: const TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold),
                                             )
@@ -517,9 +524,6 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                               await _saveChanges(supplier);
                               // Close the dialog programmatically
                               Navigator.of(context).pop();
-                              if (Navigator.canPop(context)) {
-                                Navigator.pop(context, _updatedSupplier);
-                              }
                             },
                             height: size.height * 0.06,
                             width: size.width * 0.5,
@@ -527,17 +531,17 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                             color: Colors.green,
                             widget: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(
+                              children: [
+                                const Icon(
                                   Icons.save,
                                   color: Colors.white,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Text(
-                                  'Save The Changes',
-                                  style: TextStyle(color: Colors.white),
+                                  appLocale.save_changes,
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ],
                             ),

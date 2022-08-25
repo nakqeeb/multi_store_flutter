@@ -1,6 +1,7 @@
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/models/order.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,20 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     final orderProvider = Provider.of<OrderProvider>(context);
+    final deliveryStatus = order.deliveryStatus.toString() == 'preparing'
+        ? appLocale!.preparing
+        : order.deliveryStatus.toString() == 'shipping'
+            ? appLocale!.shipping
+            : order.deliveryStatus.toString() == 'delivered'
+                ? appLocale!.delivered
+                : '';
+    final paymentStatus = order.paymentStatus == 'cash on delivery'
+        ? appLocale!.cash_on_delivery
+        : order.paymentStatus == 'paid by VISA'
+            ? appLocale!.paid_by_visa
+            : '';
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -107,7 +121,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
           subtitle: Row(
             children: [
               Text(
-                'Total Price:',
+                '${appLocale!.total_price}:',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 16,
@@ -126,7 +140,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                order.deliveryStatus.toString(),
+                deliveryStatus,
                 style: TextStyle(
                     color: order.deliveryStatus == 'preparing'
                         ? Colors.amber
@@ -152,57 +166,57 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${order.name}',
+                      '${appLocale.name}: ${order.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${order.phone}',
+                      '${appLocale.phone}: ${order.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Address: ${order.address}',
+                      '${appLocale.address}: ${order.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Landmark: ${order.landmark}',
+                      '${appLocale.landmark}: ${order.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'State: ${order.state}',
+                      '${appLocale.province}: ${order.state}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'City: ${order.city}',
+                      '${appLocale.city}: ${order.city}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Pincode: ${order.pincode}',
+                      '${appLocale.pincode}: ${order.pincode}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Row(
                       children: [
-                        const Text(
-                          'Payment status: ',
-                          style: TextStyle(
+                        Text(
+                          '${appLocale.payment_status}: ',
+                          style: const TextStyle(
                             fontSize: 15,
                           ),
                         ),
                         Text(
-                          '${order.paymentStatus}',
+                          paymentStatus,
                           style: const TextStyle(
                               fontSize: 15, color: Colors.purple),
                         ),
@@ -210,14 +224,14 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Text(
-                          'Delivery status: ',
-                          style: TextStyle(
+                        Text(
+                          '${appLocale.delivery_status}: ',
+                          style: const TextStyle(
                             fontSize: 15,
                           ),
                         ),
                         Text(
-                          '${order.deliveryStatus}',
+                          deliveryStatus,
                           style: TextStyle(
                               fontSize: 15,
                               color: order.deliveryStatus == 'preparing'
@@ -230,16 +244,16 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                     ),
                     order.deliveryStatus == 'shipping'
                         ? Text(
-                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                            '${appLocale.estimated_delivery_date}: ${_getFormattedDateFromFormattedString(value: order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
                             style: const TextStyle(
                                 fontSize: 15, color: Colors.blue),
                           )
                         : const SizedBox.shrink(),
                     Row(
                       children: [
-                        const Text(
-                          'Order date: ',
-                          style: TextStyle(
+                        Text(
+                          '${appLocale.order_date}: ',
+                          style: const TextStyle(
                             fontSize: 15,
                           ),
                         ),
@@ -255,18 +269,18 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                       ],
                     ),
                     order.deliveryStatus == 'delivered'
-                        ? const Text(
-                            'This order has already been delivered.',
-                            style: TextStyle(
+                        ? Text(
+                            appLocale.order_already_delivered,
+                            style: const TextStyle(
                               fontSize: 18,
                               color: Colors.teal,
                             ),
                           )
                         : Row(
                             children: [
-                              const Text(
-                                'Change Delivery Status To: ',
-                                style: TextStyle(
+                              Text(
+                                '${appLocale.change_delivery_status}: ',
+                                style: const TextStyle(
                                   fontSize: 15,
                                 ),
                               ),
@@ -300,9 +314,10 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                           ),
                                         );
                                       },
-                                      child: const Text(
-                                        'Shipping?',
-                                        style: TextStyle(color: Colors.blue),
+                                      child: Text(
+                                        '${appLocale.shipping}${appLocale.question_mark}',
+                                        style:
+                                            const TextStyle(color: Colors.blue),
                                       ),
                                     )
                                   : TextButton(
@@ -310,9 +325,10 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                         await orderProvider.updateOrder(
                                             order.id, 'delivered', null);
                                       },
-                                      child: const Text(
-                                        'Delivered?',
-                                        style: TextStyle(color: Colors.blue),
+                                      child: Text(
+                                        '${appLocale.delivered}${appLocale.question_mark}',
+                                        style:
+                                            const TextStyle(color: Colors.blue),
                                       ),
                                     )
                             ],

@@ -7,6 +7,7 @@ import 'package:multi_store_app/fetch_screen.dart';
 import 'package:multi_store_app/l10n/l10n.dart';
 import 'package:multi_store_app/models/cart.dart';
 import 'package:multi_store_app/models/address.dart';
+import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
@@ -68,12 +69,13 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => AuthCustomerProvider()),
           ChangeNotifierProvider(create: (_) => AuthSupplierProvider()),
           ChangeNotifierProxyProvider<AuthSupplierProvider, ProductProvider>(
-            create: (_) => ProductProvider(null, []),
+            create: (_) => ProductProvider(null, [], Product()),
             update: (BuildContext ctx, supplierAuth,
                     ProductProvider? previousProducts) =>
                 ProductProvider(
               supplierAuth.token,
               previousProducts == null ? [] : previousProducts.products,
+              previousProducts!.product,
             ),
           ),
           // since supplier is the only one who can update products, we dont need to use ChangeNotifierProxyProvider2. Hence we will use ChangeNotifierProxyProvider instead. If both supplier and customer can update the products then we can use ChangeNotifierProxyProvider2, because we will need the authToken of both supplier and customer. Though if we use ChangeNotifierProxyProvider2 here it'll work fine

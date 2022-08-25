@@ -272,11 +272,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             ),
                                           );
                                           if (response == 'deleted') {
-                                            Navigator.pop(context);
-                                          } else {
-                                            setState(() {
-                                              _product = response;
-                                            });
+                                            if (Navigator.canPop(context)) {
+                                              Navigator.pop(context);
+                                            }
                                           }
                                         },
                                         tooltip: appLocale.edit,

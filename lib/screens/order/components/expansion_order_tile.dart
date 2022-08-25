@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_store_app/models/order.dart';
-import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/screens/order/components/review_widget.dart';
-import 'package:provider/provider.dart';
 
 import '../../../services/utils.dart';
 
@@ -37,6 +36,19 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
+    final deliveryStatus = widget.order.deliveryStatus.toString() == 'preparing'
+        ? appLocale!.preparing
+        : widget.order.deliveryStatus.toString() == 'shipping'
+            ? appLocale!.shipping
+            : widget.order.deliveryStatus.toString() == 'delivered'
+                ? appLocale!.delivered
+                : '';
+    final paymentStatus = widget.order.paymentStatus == 'cash on delivery'
+        ? appLocale!.cash_on_delivery
+        : widget.order.paymentStatus == 'paid by VISA'
+            ? appLocale!.paid_by_visa
+            : '';
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -111,7 +123,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
           subtitle: Row(
             children: [
               Text(
-                'Total Price:',
+                '${appLocale!.total_price}:',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 16,
@@ -130,7 +142,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
               ),
               const Spacer(),
               Text(
-                widget.order.deliveryStatus.toString(),
+                deliveryStatus,
                 style: TextStyle(
                   color: widget.order.deliveryStatus == 'preparing'
                       ? Colors.amber
@@ -157,57 +169,57 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name: ${widget.order.name}',
+                      '${appLocale.name}: ${widget.order.name}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Phone No: ${widget.order.phone}',
+                      '${appLocale.phone}: ${widget.order.phone}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Address: ${widget.order.address}',
+                      '${appLocale.address}: ${widget.order.address}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Landmark: ${widget.order.landmark}',
+                      '${appLocale.landmark}: ${widget.order.landmark}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'State: ${widget.order.state}',
+                      '${appLocale.province}: ${widget.order.state}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'City: ${widget.order.city}',
+                      '${appLocale.city}: ${widget.order.city}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Text(
-                      'Pincode: ${widget.order.pincode}',
+                      '${appLocale.pincode}: ${widget.order.pincode}',
                       style: const TextStyle(
                         fontSize: 15,
                       ),
                     ),
                     Row(
                       children: [
-                        const Text(
-                          'Payment status: ',
-                          style: TextStyle(
+                        Text(
+                          '${appLocale.payment_status}: ',
+                          style: const TextStyle(
                             fontSize: 15,
                           ),
                         ),
                         Text(
-                          '${widget.order.paymentStatus}',
+                          paymentStatus,
                           style: const TextStyle(
                               fontSize: 15, color: Colors.purple),
                         ),
@@ -215,14 +227,14 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                     ),
                     Row(
                       children: [
-                        const Text(
-                          'Delivery status: ',
-                          style: TextStyle(
+                        Text(
+                          '${appLocale.delivery_status}: ',
+                          style: const TextStyle(
                             fontSize: 15,
                           ),
                         ),
                         Text(
-                          '${widget.order.deliveryStatus}',
+                          deliveryStatus,
                           style: TextStyle(
                             fontSize: 15,
                             color: widget.order.deliveryStatus == 'preparing'
@@ -236,7 +248,7 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                     ),
                     widget.order.deliveryStatus == 'shipping'
                         ? Text(
-                            'Estimated Delivey Date: ${_getFormattedDateFromFormattedString(value: widget.order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
+                            '${appLocale.estimated_delivery_date}: ${_getFormattedDateFromFormattedString(value: widget.order.deliveryDate, currentFormat: "yyyy-MM-ddTHH:mm:ssZ", desiredFormat: "yyyy-MM-dd").toString().split(' ')[0]}',
                             style: const TextStyle(
                                 fontSize: 15, color: Colors.blue),
                           )
@@ -276,9 +288,9 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                                 });
                               });
                             },
-                            child: const Text(
-                              'Write Review',
-                              style: TextStyle(
+                            child: Text(
+                              appLocale.write_review,
+                              style: const TextStyle(
                                 color: Colors.blue,
                               ),
                             ),
@@ -287,13 +299,13 @@ class _ExpansionOrderTileState extends State<ExpansionOrderTile> {
                     widget.order.deliveryStatus == 'delivered' &&
                             widget.order.orderReview == true
                         ? Row(
-                            children: const [
-                              Icon(
+                            children: [
+                              const Icon(
                                 Icons.check,
                               ),
                               Text(
-                                'Review Added',
-                                style: TextStyle(
+                                appLocale.review_added,
+                                style: const TextStyle(
                                     color: Colors.blue,
                                     fontStyle: FontStyle.italic),
                               )

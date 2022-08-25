@@ -9,10 +9,10 @@ import '../models/http_exception.dart';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _products = [];
-  late Product _product;
+  Product _product;
   final String? authToken;
 
-  ProductProvider(this.authToken, this._products);
+  ProductProvider(this.authToken, this._products, this._product);
 
   List<Product> get products {
     return [..._products];

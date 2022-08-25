@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,8 +34,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool _isLoading = false;
 
   Future<void> _placeOrder(List<CartItem>? cartItems) async {
+    final appLocale = AppLocalizations.of(context);
     GlobalMethods.loadingDialog(
-        title: 'Order is processing...', context: context);
+        title: appLocale!.order_is_processing, context: context);
     for (var item in cartItems!) {
       final newOrder = {
         "supplierId": item.cartProduct!.supplier,
@@ -72,15 +74,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.cart?.items;
     final totalPaid = cartProvider.totalPrice + 10.0;
-    final orderProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: const AppBarTitle(title: 'Payment'),
+        title: AppBarTitle(title: appLocale!.payment),
         leading: const AppBarBackButton(),
       ),
       body: Center(
@@ -90,7 +92,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             children: [
               Container(
                 width: double.infinity,
-                height: size.height * 0.14,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(15),
@@ -104,7 +105,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total',
+                              appLocale.total,
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             Text(
-                              '${totalPaid.toStringAsFixed(2)} USD',
+                              '${totalPaid.toStringAsFixed(2)} ${appLocale.usd}',
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -129,7 +130,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Order Total',
+                              appLocale.order_total,
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -137,7 +138,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             Text(
-                              '${cartProvider.totalPrice.toStringAsFixed(2)} USD',
+                              '${cartProvider.totalPrice.toStringAsFixed(2)} ${appLocale.usd}',
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -153,7 +154,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Shipping Cost',
+                              appLocale.shipping_cost,
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -161,7 +162,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                       Theme.of(context).colorScheme.secondary),
                             ),
                             Text(
-                              '10.00 USD',
+                              '10.00 ${appLocale.usd}',
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -198,8 +199,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             _selectedValue = value!;
                           });
                         },
-                        title: const Text('Cash On Delivery'),
-                        subtitle: const Text('Pay Cash At Home'),
+                        title: Text(appLocale.cashOnDelivery),
+                        subtitle: Text(appLocale.pay_cash_at_home),
                       ),
                       RadioListTile(
                         value: 2,
@@ -209,7 +210,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             _selectedValue = value!;
                           });
                         },
-                        title: const Text('Pay via visa / Master Card'),
+                        title: Text(appLocale.pay_via_visa_mastercard),
                         subtitle: Row(
                           children: const [
                             Icon(Icons.payment, color: Colors.blue),
@@ -222,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ],
                         ),
                       ),
-                      RadioListTile(
+                      /* RadioListTile(
                         value: 3,
                         groupValue: _selectedValue,
                         onChanged: (int? value) {
@@ -244,7 +245,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ],
                         ),
-                      ),
+                      ), */
                     ],
                   )),
               SizedBox(
@@ -272,7 +273,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Text(
-                                      'Pay At Home ${totalPaid.toStringAsFixed(2)} \$',
+                                      '${appLocale.pay_at_home} ${totalPaid.toStringAsFixed(2)} \$',
                                       style: TextStyle(
                                         fontSize: 24,
                                         color: Theme.of(context)
@@ -293,7 +294,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                             _isLoading = false;
                                           });
                                           Fluttertoast.showToast(
-                                              msg: "Order placed successfully.",
+                                              msg: appLocale
+                                                  .order_placed_successfully,
                                               toastLength: Toast.LENGTH_LONG,
                                               gravity: ToastGravity.BOTTOM,
                                               timeInSecForIosWeb: 1,
@@ -309,7 +311,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                             .colorScheme
                                             .primary,
                                         widget: Text(
-                                          'Confirm ${totalPaid.toStringAsFixed(2)} USD',
+                                          '${appLocale.confirm} ${totalPaid.toStringAsFixed(2)} ${appLocale.usd}',
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: Theme.of(context)
@@ -328,18 +330,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           int payment = totalPaid.round();
                           int pay = payment * 100;
                           await makePayment(cartItems!, pay.toString());
-
-                          Fluttertoast.showToast(
-                              msg: "Order placed successfully.",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.black.withOpacity(0.8),
-                              textColor: Colors.white,
-                              fontSize: 16.0);
-                        } else if (_selectedValue == 3) {
+                        } /* else if (_selectedValue == 3) {
                           print('PayPal');
-                        }
+                        } */
                       },
                 height: size.height * 0.06,
                 width: double.infinity,
@@ -351,7 +344,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         size: 18,
                       )
                     : Text(
-                        'Confirm ${totalPaid.toStringAsFixed(2)} USD',
+                        '${appLocale.confirm} ${totalPaid.toStringAsFixed(2)} ${appLocale.usd}',
                         style: TextStyle(
                           fontSize: 18,
                           color: Theme.of(context).colorScheme.secondary,
@@ -384,6 +377,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   displayPaymentSheet(List<CartItem> cartItems) async {
+    final appLocale = AppLocalizations.of(context);
     try {
       await Stripe.instance
           .presentPaymentSheet(
@@ -396,7 +390,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         print('paid');
 
         GlobalMethods.loadingDialog(
-            title: 'Order is processing...', context: context);
+            title: appLocale!.order_is_processing, context: context);
         for (var item in cartItems) {
           final newOrder = {
             "supplierId": item.cartProduct!.supplier,
@@ -430,6 +424,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
             builder: (ctx) => const CustomerBottomBar(),
           ),
         );
+
+        Fluttertoast.showToast(
+            msg: appLocale.order_placed_successfully,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black.withOpacity(0.8),
+            textColor: Colors.white,
+            fontSize: 16.0);
       });
     } catch (e) {
       print(e.toString());

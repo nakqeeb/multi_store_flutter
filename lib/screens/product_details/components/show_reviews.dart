@@ -1,5 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/review.dart';
@@ -30,6 +31,7 @@ class _ShowReviewsState extends State<ShowReviews> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return FutureBuilder(
         future: _futureReviews,
         builder: (context, AsyncSnapshot<List<Review>> snapshot) {
@@ -40,9 +42,9 @@ class _ShowReviewsState extends State<ShowReviews> {
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
-              return const ErrorScreen(
-                  title: 'Opps! Something went wrong',
-                  subTitle: 'Please try to reload the application!');
+              return ErrorScreen(
+                  title: appLocale!.opps_went_wrong,
+                  subTitle: appLocale.try_to_reload_app);
             } else if (snapshot.data!.isNotEmpty) {
               double averageRating = 0.0;
               for (var review in snapshot.data!) {
@@ -52,7 +54,7 @@ class _ShowReviewsState extends State<ShowReviews> {
                 header: Padding(
                   padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                   child: Text(
-                    'Reviews',
+                    appLocale!.reviews,
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 24,
@@ -70,13 +72,13 @@ class _ShowReviewsState extends State<ShowReviews> {
                         .toList()),
               );
             } else if (snapshot.data!.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.only(top: 15, bottom: 15),
+              return Padding(
+                padding: const EdgeInsets.only(top: 15, bottom: 15),
                 child: Center(
                   child: Text(
-                    'This product has not been reviewed yet!',
+                    appLocale!.product_no_reviewed_yet,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',
@@ -85,11 +87,11 @@ class _ShowReviewsState extends State<ShowReviews> {
                 ),
               );
             } else {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No ratings loaded!',
+                  appLocale!.no_ratings_loaded,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Acme',

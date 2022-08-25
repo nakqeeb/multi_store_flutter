@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
+import 'package:multi_store_app/screens/change_language/change_language_screen.dart';
 import 'package:multi_store_app/screens/stores/visit_store_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -21,20 +23,13 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  List<String> labels = [
-    'my store',
-    'orders',
-    'edit profile',
-    'manage products',
-    'balance',
-    'statics'
-  ];
+  List<String> labels = [];
 
   List<IconData> icons = [
     Icons.store,
     Icons.shop_2_outlined,
-    Icons.edit,
-    Icons.settings,
+    // Icons.edit,
+    // Icons.settings,
     Icons.attach_money,
     Icons.show_chart
   ];
@@ -49,8 +44,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Provider.of<AuthSupplierProvider>(context, listen: false).supplier!,
       ),
       const SupplierOrdersScreen(),
-      const EditBusinessScreen(),
-      const ManageProductsScreen(),
+      // const EditBusinessScreen(),
+      // const ManageProductsScreen(),
       const SupplierBalanceScreen(),
       const SupplierStaticsScreen()
     ];
@@ -59,39 +54,65 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
     var themeState = Provider.of<DarkThemeProvider>(context);
-    var _isDarkTheme = themeState.isDarkTheme;
+    var isDarkTheme = themeState.isDarkTheme;
+    labels = [
+      appLocale!.my_store,
+      appLocale.orders,
+      // 'edit profile',
+      // 'manage products',
+      appLocale.balance,
+      appLocale.statics
+    ];
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const AppBarTitle(
-          title: 'Dashboard',
+        leading: IconButton(
+          tooltip: appLocale.lang,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => const ChangeLanguageScreen(),
+              ),
+            );
+          },
+          icon: Icon(
+            Icons.translate,
+            color: Theme.of(context).iconTheme.color,
+          ),
+        ),
+        title: AppBarTitle(
+          title: appLocale.dashboard,
         ),
         actions: [
           IconButton(
-            tooltip: _isDarkTheme ? 'Dark mode' : 'Light mode',
+            tooltip: isDarkTheme ? appLocale.dark_mode : appLocale.light_mode,
             onPressed: () {
               setState(() {
                 themeState.setDarkTheme = !themeState.isDarkTheme;
               });
             },
             icon: Icon(
-              _isDarkTheme
+              isDarkTheme
                   ? Icons.dark_mode_outlined
                   : Icons.light_mode_outlined,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
           IconButton(
-            tooltip: 'Sign out',
+            tooltip: appLocale.logout,
             onPressed: () {
               GlobalMethods.warningDialog(
                 context: context,
-                title: 'Sign out',
-                subtitle: 'Do you really want to sign out?',
+                title: appLocale.logout,
+                subtitle: appLocale.are_you_sure_logout,
+                btnTitle: appLocale.yes,
+                cancelBtn: appLocale.cancel,
                 fct: () async {
                   await authSupplierProvider.logout();
                   if (Navigator.canPop(context)) {
@@ -120,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisSpacing: 50,
           crossAxisSpacing: 50,
           children: List.generate(
-              6,
+              4,
               (index) => InkWell(
                     onTap: () {
                       Navigator.push(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/models/supplier.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
@@ -12,6 +12,7 @@ import 'package:multi_store_app/services/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/product_grid_component_widget.dart';
+import '../../providers/locale_provider.dart';
 import '../error/error_screen.dart';
 
 class VisitStoreScreen extends StatefulWidget {
@@ -37,6 +38,8 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
+    final appLocale = AppLocalizations.of(context);
     final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
     final currentSupplier = authSupplierProvider.supplier;
     return WillPopScope(
@@ -49,15 +52,17 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
           elevation: 0,
           centerTitle: true,
           toolbarHeight: 100,
-          flexibleSpace: _supplier?.coverImageUrl == ''
-              ? Image.asset(
-                  'images/inapp/coverimage.jpg',
-                  fit: BoxFit.cover,
-                )
-              : Image.network(
-                  _supplier!.coverImageUrl.toString(),
-                  fit: BoxFit.cover,
-                ),
+          flexibleSpace:
+              _supplier?.coverImageUrl == '' || _supplier?.coverImageUrl == null
+                  ? Image.asset(
+                      'images/inapp/coverimage.jpg',
+                      fit: BoxFit.cover,
+                    )
+                  : FadeInImage.assetNetwork(
+                      placeholder: 'images/inapp/coverimage.jpg',
+                      image: _supplier?.coverImageUrl as String,
+                      fit: BoxFit.cover,
+                    ),
           title: Row(
             children: [
               Container(
@@ -72,12 +77,15 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
                   child: Hero(
+                    key: ValueKey(widget.supplier.id.toString()),
                     tag: widget.supplier.id.toString(),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'images/inapp/spinner.gif',
-                      image: _supplier!.storeLogoUrl.toString(),
-                      fit: BoxFit.cover,
-                    ),
+                    child: _supplier?.storeLogoUrl == null
+                        ? Image.asset('images/inapp/spinner.gif')
+                        : FadeInImage.assetNetwork(
+                            placeholder: 'images/inapp/spinner.gif',
+                            image: _supplier!.storeLogoUrl.toString(),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ),
@@ -125,22 +133,23 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                                         Theme.of(context).colorScheme.primary),
                                 borderRadius: BorderRadius.circular(25)),
                             child: MaterialButton(
-                              onPressed: () {
-                                Navigator.push(
+                              onPressed: () async {
+                                final response = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           const EditStoreScreen(),
-                                    )).then((value) => setState(() {
-                                      _supplier = value;
-                                    }));
+                                    ));
+                                if (response == true) {
+                                  _supplier = authSupplierProvider.supplier;
+                                }
                               },
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   Text(
-                                    'Edit',
+                                    appLocale!.edit,
                                     style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
@@ -173,12 +182,12 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                                 });
                               },
                               child: _isFollowing == true
-                                  ? Text('Following',
+                                  ? Text(appLocale!.following,
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
                                               .inversePrimary))
-                                  : Text('FOLLOW',
+                                  : Text(appLocale!.follow,
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -191,7 +200,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
           ),
           leading: IconButton(
             icon: Icon(
-              Icons.arrow_back_ios_new,
+              isArabic ? Icons.arrow_back_ios : Icons.arrow_back_ios_new,
               color: Theme.of(context).iconTheme.color,
             ),
             onPressed: () {
@@ -211,9 +220,9 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
               );
             } else if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
-                return const ErrorScreen(
-                    title: 'Opps! Something went wrong',
-                    subTitle: 'Please try to reload the application!');
+                return ErrorScreen(
+                    title: appLocale.opps_went_wrong,
+                    subTitle: appLocale.try_to_reload_app);
               } else if (snapshot.data!.isNotEmpty) {
                 return SingleChildScrollView(
                   child: MasonryGridView.count(
@@ -232,9 +241,9 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                   ),
                 );
               } else if (snapshot.data!.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'This store has no items yet!',
+                    appLocale.store_has_no_items_yet,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 26,
@@ -244,9 +253,9 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                   ),
                 );
               } else {
-                return const Center(
+                return Center(
                   child: Text(
-                    'No products loaded!',
+                    appLocale.no_products_loaded,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 26,

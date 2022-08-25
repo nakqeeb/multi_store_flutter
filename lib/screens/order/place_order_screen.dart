@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:collection/collection.dart'; // .firstWhereOrNull()
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
@@ -34,9 +35,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
-    final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
-    final name = authCustomerProvider.customer?.name;
-    final phone = authCustomerProvider.customer?.phone;
+    final appLocale = AppLocalizations.of(context);
     //final address = authCustomerProvider.customer?.address;
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.cart?.items;
@@ -51,8 +50,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
-          title: const AppBarTitle(
-            title: 'Place Order',
+          title: AppBarTitle(
+            title: appLocale!.place_order,
           ),
           leading: const AppBarBackButton(),
         ),
@@ -80,14 +79,14 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                         color: Theme.of(context).colorScheme.tertiary,
                         widget: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.location_on),
-                            SizedBox(
+                          children: [
+                            const Icon(Icons.location_on),
+                            const SizedBox(
                               width: 10,
                             ),
                             Text(
-                              'Add Address',
-                              style: TextStyle(
+                              appLocale.add_address,
+                              style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2),
@@ -272,7 +271,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   onPressed: () {
                     if (_address == null) {
                       GlobalMethods.showSnackBar(
-                          context, _scaffoldKey, 'Please pick an address');
+                          context, _scaffoldKey, appLocale.pick_address);
                       return;
                     }
                     Navigator.push(
@@ -287,7 +286,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   radius: 15,
                   color: Theme.of(context).colorScheme.secondary,
                   widget: Text(
-                    'Confirm ${cartProvider.totalPrice.toStringAsFixed(2)} USD',
+                    '${appLocale.confirm} ${cartProvider.totalPrice.toStringAsFixed(2)} ${appLocale.usd}',
                     style: TextStyle(
                       fontSize: 18,
                       color: Theme.of(context).colorScheme.primary,

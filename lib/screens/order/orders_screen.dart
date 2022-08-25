@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/order.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
@@ -29,12 +30,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: const AppBarBackButton(),
-        title: const AppBarTitle(
-          title: 'Orders',
+        title: AppBarTitle(
+          title: appLocale!.orders,
         ),
         centerTitle: true,
       ),
@@ -54,9 +56,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
               print('this is snapshot2 ${snapshot.data}');
               List<Order> orders = snapshot.data!.reversed.toList();
               if (snapshot.hasError) {
-                return const ErrorScreen(
-                    title: 'Opps! Something went wrong',
-                    subTitle: 'Please try to reload the application!');
+                return ErrorScreen(
+                    title: appLocale.opps_went_wrong,
+                    subTitle: appLocale.try_to_reload_app);
               } else if (snapshot.data!.isNotEmpty) {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
@@ -65,11 +67,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   },
                 );
               } else if (snapshot.data!.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'You haven\'t order anything yet!',
+                    appLocale.no_order_yet,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',
@@ -77,11 +79,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                 );
               } else {
-                return const Center(
+                return Center(
                   child: Text(
-                    'No Orders loaded!',
+                    appLocale.no_orders_loaded,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',

@@ -51,6 +51,7 @@ class _StoresScreenState extends State<StoresScreen> {
                   title: 'Opps! Something went wrong',
                   subTitle: 'Please try to reload the application!');
             } else if (snapshot.data!.isNotEmpty) {
+              snapshot.data!.shuffle();
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, crossAxisSpacing: 10),
@@ -88,6 +89,8 @@ class _StoresScreenState extends State<StoresScreen> {
                                 height: 48,
                                 width: 100,
                                 child: Hero(
+                                  key: ValueKey(
+                                      snapshot.data![index].id.toString()),
                                   tag: snapshot.data![index].id.toString(),
                                   child: FadeInImage.assetNetwork(
                                     placeholder: 'images/inapp/spinner.gif',

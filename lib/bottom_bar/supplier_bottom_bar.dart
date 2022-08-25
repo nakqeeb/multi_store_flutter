@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/screens/category/category_screen.dart';
 import 'package:multi_store_app/screens/dashboard/dashboard_screen.dart';
@@ -26,22 +27,23 @@ class _SupplierBottomBarState extends State<SupplierBottomBar> {
   ];
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       body: _tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: appLocale!.home,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Category',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.search),
+            label: appLocale.category,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.shop),
-            label: 'Stores',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.store),
+            label: appLocale.stores,
           ),
           BottomNavigationBarItem(
             icon: Consumer<OrderProvider>(builder: (ctx, orderProvider, _) {
@@ -53,16 +55,22 @@ class _SupplierBottomBarState extends State<SupplierBottomBar> {
               return Badge(
                 badgeColor: Theme.of(context).colorScheme.primary,
                 badgeContent: preparingOrder.isEmpty
-                    ? const Text('0')
-                    : Text(preparingOrder.length.toString()),
-                child: const Icon(Icons.shop),
+                    ? const Text(
+                        '0',
+                        style: TextStyle(fontSize: 12),
+                      )
+                    : Text(
+                        preparingOrder.length.toString(),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                child: const Icon(Icons.dashboard),
               );
             }),
-            label: 'Dashboard',
+            label: appLocale.dashboard,
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.upload),
-            label: 'Upload',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.upload),
+            label: appLocale.upload,
           ),
         ],
         onTap: (int index) {

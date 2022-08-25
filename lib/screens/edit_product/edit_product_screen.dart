@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/models/category.dart';
@@ -68,6 +70,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Widget _previewTheCurrentImages() {
+    final appLocale = AppLocalizations.of(context);
     if (_imagesUrlList.isNotEmpty) {
       return ListView.builder(
           itemCount: _imagesUrlList.length,
@@ -92,14 +95,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
             );
           });
     } else {
-      return const Center(
-        child: Text('you have not \n \n picked images yet!',
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+      return Center(
+        child: Text(appLocale!.no_picked_images_yet,
+            textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
       );
     }
   }
 
   Widget _previewTheNewImages() {
+    final appLocale = AppLocalizations.of(context);
     if (_imagesFileList!.isNotEmpty) {
       return ListView.builder(
           itemCount: _imagesFileList!.length,
@@ -110,9 +114,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
             );
           });
     } else {
-      return const Center(
-        child: Text('you have not \n \n picked images yet!',
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 16)),
+      return Center(
+        child: Text(appLocale!.no_picked_images_yet,
+            textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
       );
     }
   }
@@ -131,6 +135,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> uploadImages() async {
+    final appLocale = AppLocalizations.of(context);
     if (_mainCategValue != null && _subCategValue != null) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
@@ -154,19 +159,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
           }
         } else {
           GlobalMethods.showSnackBar(
-              context, _scaffoldKey, 'please pick images first');
+              context, _scaffoldKey, appLocale!.pick_images_first);
         }
       } else {
         GlobalMethods.showSnackBar(
-            context, _scaffoldKey, 'please fill all fields');
+            context, _scaffoldKey, appLocale!.fill_all_fields);
       }
     } else {
       GlobalMethods.showSnackBar(
-          context, _scaffoldKey, 'please select category');
+          context, _scaffoldKey, appLocale!.please_select_category);
     }
   }
 
   Future<void> uploadData() async {
+    final appLocale = AppLocalizations.of(context);
     if (_imagesUrlList.isNotEmpty) {
       Map updatedProduct = {
         'productName': _proName,
@@ -182,7 +188,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           .updateProduct(widget.productId, updatedProduct);
 
       // to pass it back to previous screen
-      _updatedProduct = Product(
+      /* _updatedProduct = Product(
         id: widget.productId,
         productName: updatedProduct['productName'],
         productDescription: updatedProduct['productDescription'],
@@ -193,7 +199,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         mainCategory: updatedProduct['mainCategory'],
         subCategory: updatedProduct['subCategory'],
         supplier: context.read<AuthSupplierProvider>().supplier!.id,
-      );
+      ); */
       setState(() {
         _isLoading = false;
         _imagesFileList = [];
@@ -203,6 +209,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
         _imagesUrlList = [];
       });
       _formKey.currentState!.reset();
+      Fluttertoast.showToast(
+        msg: appLocale!.product_updated_successfully,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black.withOpacity(0.8),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } else {
       print('no images');
     }
@@ -213,7 +228,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> _deleteProduct() async {
-    GlobalMethods.loadingDialog(title: 'Deleteing...', context: context);
+    final appLocale = AppLocalizations.of(context);
+    GlobalMethods.loadingDialog(title: appLocale!.deleteing, context: context);
     for (var image in _imagesUrlList) {
       try {
         await FirebaseStorage.instance.refFromURL(image).delete();
@@ -262,6 +278,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     final categories = Provider.of<CategoryProvider>(context).categories;
     // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
     return ScaffoldMessenger(
@@ -271,8 +288,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
           elevation: 0,
           centerTitle: true,
           leading: const AppBarBackButton(),
-          title: const AppBarTitle(
-            title: 'Edit Product',
+          title: AppBarTitle(
+            title: appLocale!.edit_product,
           ),
           actions: [
             IconButton(
@@ -281,16 +298,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
               tooltip: 'delete',
               onPressed: () async {
                 await GlobalMethods.warningDialog(
-                    title: 'Delete $_proName',
-                    subtitle:
-                        'Are you sure that you want to delete this product? ',
+                    title: appLocale.delete,
+                    subtitle: appLocale.are_you_sure_delete_product,
+                    btnTitle: appLocale.yes,
+                    cancelBtn: appLocale.cancel,
                     fct: () async {
                       await _deleteProduct();
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context, 'deleted');
+                      }
                     },
                     context: context);
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context, 'deleted');
-                }
               },
             )
           ],
@@ -324,7 +342,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ? _previewTheCurrentImages()
                                   : Center(
                                       child: Text(
-                                        'You have not \n\n picked any images yet!',
+                                        appLocale.no_picked_images_yet,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 16,
@@ -345,9 +363,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 children: [
                                   Column(
                                     children: [
-                                      const Text(
-                                        '* select main category',
-                                        style: TextStyle(color: Colors.red),
+                                      Text(
+                                        '*${appLocale.select_main_category}',
+                                        style:
+                                            const TextStyle(color: Colors.red),
                                       ),
                                       DropdownButton<Category>(
                                         iconSize: 40,
@@ -355,7 +374,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                         dropdownColor: Theme.of(context)
                                             .colorScheme
                                             .primary,
-                                        hint: const Text('select category'),
+                                        hint: Text(
+                                          appLocale.select_category,
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
                                         value: _mainCategValue,
                                         items: categories
                                             .map<DropdownMenuItem<Category>>(
@@ -380,9 +402,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ),
                                   Column(
                                     children: [
-                                      const Text(
-                                        '* select subcategory',
-                                        style: TextStyle(color: Colors.red),
+                                      Text(
+                                        '*${appLocale.select_subcategory}',
+                                        style:
+                                            const TextStyle(color: Colors.red),
                                       ),
                                       SizedBox(
                                         width: size.width * 0.4,
@@ -398,8 +421,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                               .colorScheme
                                               .primary,
                                           menuMaxHeight: 500,
-                                          hint:
-                                              const Text('select subcategory'),
+                                          hint: Text(
+                                            appLocale.select_subcategory,
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
                                           value: _subCategValue,
                                           items: _subCategList.map<
                                               DropdownMenuItem<
@@ -445,7 +471,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ? _previewTheNewImages()
                                   : Center(
                                       child: Text(
-                                        'You have not \n\n picked any images yet!',
+                                        appLocale.no_picked_images_yet,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 16,
@@ -472,18 +498,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       widget: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
-                                          Icon(
+                                        children: [
+                                          const Icon(
                                             Icons.image,
                                             color: Colors.white,
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 5,
                                           ),
                                           Text(
-                                            'Pick up Images',
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            appLocale.pick_images,
+                                            style: const TextStyle(
+                                                color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -508,17 +534,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                             widget: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
+                                              children: [
+                                                const Icon(
                                                   Icons.delete,
                                                   color: Colors.white,
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 5,
                                                 ),
                                                 Text(
-                                                  'Reset',
-                                                  style: TextStyle(
+                                                  appLocale.reset,
+                                                  style: const TextStyle(
                                                       color: Colors.white),
                                                 ),
                                               ],
@@ -547,9 +573,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   initialValue: _price.toString(),
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'Please enter the price';
+                                      return appLocale.price_required;
                                     } else if (value.isValidPrice() != true) {
-                                      return 'Invalid price';
+                                      return appLocale.invalid_price;
                                     }
                                     return null;
                                   },
@@ -567,8 +593,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ],
                                   decoration:
                                       textFormDecoration(context).copyWith(
-                                    labelText: 'Price',
-                                    hintText: 'Price.. \$',
+                                    labelText: appLocale.price,
+                                    hintText: '${appLocale.price}.. \$',
                                   ),
                                 ),
                               ),
@@ -585,7 +611,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       return null;
                                     } else if (value.isValidDiscount() !=
                                         true) {
-                                      return 'Invalid discount';
+                                      return appLocale.invalid_discount;
                                     }
                                     return null;
                                   },
@@ -602,8 +628,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ],
                                   decoration:
                                       textFormDecoration(context).copyWith(
-                                    labelText: 'Discount',
-                                    hintText: 'discount.. %',
+                                    labelText: appLocale.discount,
+                                    hintText: '${appLocale.discount}.. %',
                                   ),
                                 ),
                               ),
@@ -618,9 +644,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               initialValue: _quantity.toString(),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Please enter the quantity';
+                                  return appLocale.quantity_is_required;
                                 } else if (value.isValidQuantity() != true) {
-                                  return 'shouldn\'t start with 0 (zero)';
+                                  return appLocale.no_start_with_zero;
                                 }
                                 return null;
                               },
@@ -632,8 +658,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
                               decoration: textFormDecoration(context).copyWith(
-                                labelText: 'Quantity',
-                                hintText: 'Add quantity',
+                                labelText: appLocale.quantity,
+                                hintText: appLocale.add_quantity,
                               ),
                             ),
                           ),
@@ -646,7 +672,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               initialValue: _proName,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Please enter the product name';
+                                  return appLocale.product_name_required;
                                 }
                                 return null;
                               },
@@ -657,8 +683,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   100, // this automatically will add a small coutner length underneeth TextFormField
                               maxLines: 3,
                               decoration: textFormDecoration(context).copyWith(
-                                labelText: 'Product name',
-                                hintText: 'Enter product name',
+                                labelText: appLocale.product_name,
+                                hintText: appLocale.enter_product_name,
                               ),
                             ),
                           ),
@@ -671,7 +697,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               initialValue: _proDesc,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Please enter the product description';
+                                  return appLocale.product_description_required;
                                 }
                                 return null;
                               },
@@ -681,8 +707,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               maxLength: 800,
                               maxLines: 5,
                               decoration: textFormDecoration(context).copyWith(
-                                labelText: 'Product description',
-                                hintText: 'Enter product description',
+                                labelText: appLocale.product_description,
+                                hintText: appLocale.enter_product_description,
                               ),
                             ),
                           ),
@@ -705,17 +731,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 color: Colors.red,
                                 widget: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
+                                  children: [
+                                    const Icon(
                                       Icons.close,
                                       color: Colors.white,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      'Cancel',
-                                      style: TextStyle(
+                                      appLocale.cancel,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                       ),
                                     ),
@@ -726,13 +752,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 onPressed: () async {
                                   // show the loading dialog
                                   GlobalMethods.loadingDialog(
-                                      title: 'Updating...', context: context);
+                                      title: appLocale.updating,
+                                      context: context);
                                   await _uploadProduct();
                                   // Close the dialog programmatically
                                   Navigator.pop(context);
 
                                   if (Navigator.canPop(context)) {
-                                    Navigator.pop(context, _updatedProduct);
+                                    Navigator.pop(context, true);
                                   }
                                 },
                                 height: size.height * 0.06,
@@ -741,17 +768,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                 color: Colors.green,
                                 widget: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
+                                  children: [
+                                    const Icon(
                                       Icons.save,
                                       color: Colors.white,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      'Save The Changes',
-                                      style: TextStyle(color: Colors.white),
+                                      appLocale.save_changes,
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                   ],
                                 ),

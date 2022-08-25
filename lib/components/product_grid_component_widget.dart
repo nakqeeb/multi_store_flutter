@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
+import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/screens/edit_product/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/product_details/product_details_screen.dart';
 
 class ProductGridComponentWidget extends StatefulWidget {
-  Product product;
+  final Product product;
   ProductGridComponentWidget({super.key, required this.product});
 
   @override
@@ -17,17 +18,25 @@ class ProductGridComponentWidget extends StatefulWidget {
 
 class _ProductGridComponentWidgetState
     extends State<ProductGridComponentWidget> {
+  late Product _product;
+  @override
+  void initState() {
+    _product = widget.product;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final supplier = Provider.of<AuthSupplierProvider>(context).supplier;
-    final isOnSale = widget.product.discount! > 0;
+    final productProvider = Provider.of<ProductProvider>(context);
+    final isOnSale = _product.discount! > 0;
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ProductDetailsScreen(
-              productId: widget.product.id!,
+              productId: _product.id!,
             ),
           ),
         );
@@ -51,7 +60,7 @@ class _ProductGridComponentWidgetState
                         topRight: Radius.circular(15)),
                     child: FadeInImage.assetNetwork(
                       placeholder: 'images/inapp/spinner.gif',
-                      image: widget.product.productImages![0],
+                      image: _product.productImages!.first,
                     ),
                   ),
                 ),
@@ -60,7 +69,7 @@ class _ProductGridComponentWidgetState
                   child: Column(
                     children: [
                       Text(
-                        widget.product.productName.toString(),
+                        _product.productName.toString(),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -82,7 +91,7 @@ class _ProductGridComponentWidgetState
                                 ),
                               ),
                               Text(
-                                widget.product.price!.toStringAsFixed(2),
+                                _product.price!.toStringAsFixed(2),
                                 style: isOnSale
                                     ? TextStyle(
                                         color: Theme.of(context)
@@ -103,8 +112,8 @@ class _ProductGridComponentWidgetState
                               ),
                               isOnSale
                                   ? Text(
-                                      ((1 - (widget.product.discount! / 100)) *
-                                              widget.product.price!)
+                                      ((1 - (_product.discount! / 100)) *
+                                              _product.price!)
                                           .toStringAsFixed(2),
                                       style: const TextStyle(
                                         color: Colors.indigo,
@@ -116,23 +125,23 @@ class _ProductGridComponentWidgetState
                             ],
                           ),
                           // necessary to use ? instead of ! to avoid the error when guest or customer is useing the app instead of supplier
-                          widget.product.supplier == supplier?.id
+                          _product.supplier == supplier?.id
                               ? IconButton(
                                   onPressed: () async {
                                     final response = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => EditProductScreen(
-                                          productId: widget.product.id!,
+                                          productId: _product.id!,
                                         ),
                                       ),
                                     );
-                                    if (response == 'deleted') {
-                                      return;
-                                    } else if (response != null) {
+                                    if (response == true) {
                                       setState(() {
-                                        widget.product = response;
+                                        _product = productProvider.product;
                                       });
+                                    } else if (response == false) {
+                                      _product = Product();
                                     }
                                   },
                                   icon: const Icon(
@@ -174,7 +183,7 @@ class _ProductGridComponentWidgetState
                     ),
                     child: Center(
                       child: Text(
-                        'save ${widget.product.discount}%',
+                        'save ${_product.discount}%',
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,

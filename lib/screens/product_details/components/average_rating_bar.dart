@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/review.dart';
@@ -43,6 +44,7 @@ class _AverageRatingBarState extends State<AverageRatingBar> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return _isLoading
         ? SpinKitDancingSquare(
             color: Theme.of(context).colorScheme.secondary,
@@ -68,7 +70,7 @@ class _AverageRatingBarState extends State<AverageRatingBar> {
               const SizedBox(
                 width: 5,
               ),
-              Text('${reviews.length} Ratings')
+              Text('${reviews.length} ${appLocale!.ratings}')
             ],
           );
   }
