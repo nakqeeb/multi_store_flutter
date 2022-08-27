@@ -25,7 +25,7 @@ class SearchBar extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(25),
       child: Container(
-        height: 35,
+        height: size.height * 0.043,
         width: double.infinity,
         decoration: BoxDecoration(
           border: Border.all(
@@ -48,7 +48,8 @@ class SearchBar extends StatelessWidget {
             Text(
               appLocale!.what_looking_for,
               style: TextStyle(
-                  fontSize: 18,
+                  // fontSize: 18,
+                  fontSize: size.width * 0.04,
                   color: Theme.of(context).textTheme.bodyText1!.color),
             ),
             SizedBox(
@@ -66,6 +67,9 @@ class SearchBar extends StatelessWidget {
               child: Center(
                 child: Text(
                   appLocale.search,
+                  style: TextStyle(
+                    fontSize: size.width * 0.04,
+                  ),
                 ),
               ),
             )

@@ -225,7 +225,12 @@ class _BodyState extends State<Body> {
                               child: Center(
                                   child: Text(
                                 appLocale!.cart,
-                                style: Theme.of(context).textTheme.headline6,
+                                // style: Theme.of(context).textTheme.headline6,
+                                style: TextStyle(
+                                  fontSize: size.width * 0.05,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
                               )),
                             ),
                           ),
@@ -272,7 +277,12 @@ class _BodyState extends State<Body> {
                               child: Center(
                                   child: Text(
                                 appLocale.orders,
-                                style: Theme.of(context).textTheme.headline6,
+                                // style: Theme.of(context).textTheme.headline6,
+                                style: TextStyle(
+                                  fontSize: size.width * 0.05,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
                               )),
                             ),
                           ),
@@ -344,7 +354,12 @@ class _BodyState extends State<Body> {
                               child: Center(
                                 child: Text(
                                   appLocale.wishlist,
-                                  style: Theme.of(context).textTheme.headline6,
+                                  // style: Theme.of(context).textTheme.headline6,
+                                  style: TextStyle(
+                                    fontSize: size.width * 0.05,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
                                 ),
                               ),
                             ),
