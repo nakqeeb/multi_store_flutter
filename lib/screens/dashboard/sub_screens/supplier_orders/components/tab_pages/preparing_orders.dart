@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../../../../models/order.dart';
 import '../../../../../error/error_screen.dart';
@@ -15,6 +16,7 @@ class PreparingOrders extends StatefulWidget {
 class _PreparingOrdersState extends State<PreparingOrders> {
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return FutureBuilder<List<Order>>(
         //stream: Stream.fromFuture(widget.ordersFuture!),
         future: widget.ordersFuture,
@@ -31,9 +33,9 @@ class _PreparingOrdersState extends State<PreparingOrders> {
                 )
                 .toList();
             if (snapshot.hasError) {
-              return const ErrorScreen(
-                  title: 'Opps! Something went wrong',
-                  subTitle: 'Please try to reload the application!');
+              return ErrorScreen(
+                  title: appLocale!.opps_went_wrong,
+                  subTitle: appLocale.try_to_reload_app);
             } else if (orders.isNotEmpty) {
               return ListView.builder(
                 itemCount: orders.length,
@@ -43,11 +45,11 @@ class _PreparingOrdersState extends State<PreparingOrders> {
                 },
               );
             } else if (orders.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No orders are preparing yet!',
+                  appLocale!.no_orders_prepared,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Acme',
@@ -55,11 +57,11 @@ class _PreparingOrdersState extends State<PreparingOrders> {
                 ),
               );
             } else {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No Orders loaded!',
+                  appLocale!.no_orders_loaded,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Acme',

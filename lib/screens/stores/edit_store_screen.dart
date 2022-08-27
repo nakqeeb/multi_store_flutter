@@ -108,6 +108,7 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
 
   Future _saveChanges(Supplier supplier) async {
     final appLocale = AppLocalizations.of(context);
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // save data into the variable
 
@@ -128,6 +129,12 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
           },
         ),
       );
+      setState(() {
+        _imageFileLogo = null;
+        _imageFileCover = null;
+        _storeLogoUrl = '';
+        _storeCoverUrl = '';
+      });
       Fluttertoast.showToast(
         msg: appLocale!.store_updated_successfully,
         toastLength: Toast.LENGTH_LONG,

@@ -32,7 +32,25 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
     _supplier = widget.supplier;
     _supplierProducts = Provider.of<ProductProvider>(context, listen: false)
         .fetchProductsBySupplierId(widget.supplier.id.toString());
+    // _isProductDeleted = Provider.of<ProductProvider>(context, listen: false).isDeleted;
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    final productProvider = Provider.of<ProductProvider>(context);
+    if (productProvider.isDeleted == true ||
+        productProvider.isUpdated == true) {
+      print('Product is Deleted');
+      print('isDeleted == ${productProvider.isDeleted}');
+      _supplierProducts = Provider.of<ProductProvider>(context, listen: false)
+          .fetchProductsBySupplierId(widget.supplier.id.toString());
+    }
+    productProvider.isDeleted = false;
+    productProvider.isUpdated = false;
+
+    print('isDeleted == ${productProvider.isDeleted}');
+    super.didChangeDependencies();
   }
 
   @override
@@ -90,18 +108,19 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.1,
+                height: size.height * 0.11,
                 width: size.width * 0.5,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: isArabic
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Container(
-                          padding: const EdgeInsets.all(4.0),
                           decoration: BoxDecoration(
                             color: Theme.of(context)
                                 .colorScheme
@@ -141,7 +160,14 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                                           const EditStoreScreen(),
                                     ));
                                 if (response == true) {
-                                  _supplier = authSupplierProvider.supplier;
+                                  setState(() {
+                                    _supplier = authSupplierProvider.supplier;
+                                  });
+                                  _supplierProducts =
+                                      Provider.of<ProductProvider>(context,
+                                              listen: false)
+                                          .fetchProductsBySupplierId(
+                                              widget.supplier.id.toString());
                                 }
                               },
                               child: Row(
@@ -245,7 +271,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                   child: Text(
                     appLocale.store_has_no_items_yet,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',
@@ -257,7 +283,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                   child: Text(
                     appLocale.no_products_loaded,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',

@@ -25,11 +25,7 @@ class RepeatedListTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon),
         title: Text(title!),
-        subtitle: isClickable
-            ? null
-            : subtitle == null
-                ? null
-                : Text(subtitle!),
+        subtitle: subtitle == null ? null : Text(subtitle!),
         trailing: isClickable
             ? Icon(isArabic
                 ? Icons.keyboard_arrow_left

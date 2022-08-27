@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/subcat.dart';
 import '../../providers/category_provider.dart';
+import '../../providers/locale_provider.dart';
 import '../../services/utils.dart';
 
 class UploadProductScreen extends StatefulWidget {
@@ -100,6 +101,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   }
 
   Future<void> uploadImages() async {
+    FocusScope.of(context).unfocus();
     final appLocale = AppLocalizations.of(context);
     if (_mainCategValue != null && _subCategValue != null) {
       if (_formKey.currentState!.validate()) {
@@ -200,6 +202,7 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     final appLocale = AppLocalizations.of(context);
     final categories = Provider.of<CategoryProvider>(context).categories;
     // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
@@ -266,7 +269,9 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                                     return DropdownMenuItem(
                                       value: value,
                                       child: Text(
-                                        value.enName.toString(),
+                                        isArabic
+                                            ? value.arName.toString()
+                                            : value.enName.toString(),
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -309,7 +314,10 @@ class _UploadProductScreenState extends State<UploadProductScreen> {
                                             (value) {
                                       return DropdownMenuItem(
                                         value: value,
-                                        child: Text(value.enSubName.toString(),
+                                        child: Text(
+                                            isArabic
+                                                ? value.arSubName.toString()
+                                                : value.enSubName.toString(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                     .colorScheme

@@ -15,6 +15,7 @@ import 'package:multi_store_app/providers/category_provider.dart';
 import 'package:multi_store_app/providers/dark_theme_provider.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
+import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/utilities/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -75,7 +76,9 @@ class _MyAppState extends State<MyApp> {
                 ProductProvider(
               supplierAuth.token,
               previousProducts == null ? [] : previousProducts.products,
-              previousProducts!.product,
+              previousProducts?.product == null
+                  ? Product()
+                  : previousProducts!.product,
             ),
           ),
           // since supplier is the only one who can update products, we dont need to use ChangeNotifierProxyProvider2. Hence we will use ChangeNotifierProxyProvider instead. If both supplier and customer can update the products then we can use ChangeNotifierProxyProvider2, because we will need the authToken of both supplier and customer. Though if we use ChangeNotifierProxyProvider2 here it'll work fine
@@ -124,6 +127,15 @@ class _MyAppState extends State<MyApp> {
                     AddressProvider? previousaddresses) =>
                 AddressProvider(customerAuth.token,
                     previousaddresses!.addresses, previousaddresses.address!),
+          ),
+          ChangeNotifierProxyProvider<AuthCustomerProvider, WishlistProvider>(
+            create: (_) => WishlistProvider(null, []),
+            update: (BuildContext ctx, customerAuth,
+                    WishlistProvider? previousWishlist) =>
+                WishlistProvider(
+              customerAuth.token,
+              previousWishlist!.wishlistProducts,
+            ),
           ),
           ChangeNotifierProvider(create: (_) => themeChangeProvider),
           ChangeNotifierProvider(create: (_) => localeProvider),

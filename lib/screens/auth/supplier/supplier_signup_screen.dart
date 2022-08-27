@@ -77,6 +77,7 @@ class _SupplierSignupScreenState extends State<SupplierSignupScreen> {
   }
 
   void signup() async {
+    FocusScope.of(context).unfocus();
     final appLocale = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,6 +26,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     final reviewProvider = Provider.of<ReviewProvider>(context);
     final orderProvider = Provider.of<OrderProvider>(context);
     return Padding(
@@ -32,8 +34,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Text(
-            'Rate this product',
+          Text(
+            appLocale!.rate_this_product,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20),
           ),
@@ -59,8 +61,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             maxLength: 200,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: 'Review',
-              hintText: 'Enter your review',
+              labelText: appLocale.review,
+              hintText: appLocale.enter_your_review,
               labelStyle: TextStyle(
                   color: Theme.of(context).colorScheme.inversePrimary),
               hintStyle: TextStyle(
@@ -100,7 +102,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     await orderProvider.updateOrderReview(
                         widget.order.id, true);
                     Fluttertoast.showToast(
-                      msg: "Thanks! Your review is added.",
+                      msg: appLocale.your_review_is_added,
                       toastLength: Toast.LENGTH_LONG,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIosWeb: 1,
@@ -124,8 +126,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     color: Theme.of(context).colorScheme.secondary,
                     size: 18,
                   )
-                : const Text(
-                    'Add Review',
+                : Text(
+                    appLocale.add_review,
                     style: TextStyle(
                         color: Colors.white, fontSize: 18, letterSpacing: 1.5),
                   ),

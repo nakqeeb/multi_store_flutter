@@ -43,31 +43,34 @@ class _CartScreenState extends State<CartScreen> {
             actions: isCustomerAuth
                 ? [
                     IconButton(
-                      onPressed:
-                          context.read<CartProvider>().cart!.items!.isEmpty
-                              ? null
-                              : () {
-                                  GlobalMethods.warningDialog(
-                                    title: appLocale.clear_cart,
-                                    subtitle: 'Are you sure to clear the cart?',
-                                    fct: () async {
-                                      setState(() {
-                                        _isClearingCart = true;
-                                      });
-                                      if (Navigator.canPop(context)) {
-                                        Navigator.pop(context);
-                                      }
-                                      await Provider.of<CartProvider>(context,
-                                              listen: false)
-                                          .clearCart();
+                      onPressed: context
+                              .read<CartProvider>()
+                              .cart!
+                              .items!
+                              .isEmpty
+                          ? null
+                          : () {
+                              GlobalMethods.warningDialog(
+                                title: appLocale.clear_cart,
+                                subtitle: appLocale.are_you_sure_to_clear_cart,
+                                fct: () async {
+                                  setState(() {
+                                    _isClearingCart = true;
+                                  });
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  }
+                                  await Provider.of<CartProvider>(context,
+                                          listen: false)
+                                      .clearCart();
 
-                                      setState(() {
-                                        _isClearingCart = false;
-                                      });
-                                    },
-                                    context: context,
-                                  );
+                                  setState(() {
+                                    _isClearingCart = false;
+                                  });
                                 },
+                                context: context,
+                              );
+                            },
                       tooltip: appLocale.clear_cart,
                       icon: Icon(
                         Icons.delete_forever,

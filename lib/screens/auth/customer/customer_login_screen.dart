@@ -32,6 +32,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
   bool _isPasswordVisible = false;
 
   void login() async {
+    FocusScope.of(context).unfocus();
     final appLocale = AppLocalizations.of(context);
     setState(() {
       _isLoading = true;

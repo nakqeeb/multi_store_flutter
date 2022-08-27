@@ -9,8 +9,6 @@ import '../../providers/auth_supplier_provider.dart';
 import '../../providers/dark_theme_provider.dart';
 import '../../services/global_methods.dart';
 import '../welcome/welcome_screen.dart';
-import 'sub_screens/edit_business/edit_business_screen.dart';
-import 'sub_screens/manage_products/manage_products_screen.dart';
 import 'sub_screens/supplier_balance/supplier_balance_screen.dart';
 import 'sub_screens/supplier_orders/supplier_orders_screen.dart';
 import 'sub_screens/supplier_statics/supplier_statics_screen.dart';
@@ -31,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Icons.edit,
     // Icons.settings,
     Icons.attach_money,
-    Icons.show_chart
+    Icons.show_chart,
   ];
 
   List<Widget> pages = [];

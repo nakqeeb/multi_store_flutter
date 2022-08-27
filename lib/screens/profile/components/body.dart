@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
+import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/screens/address/address_screen.dart';
 import 'package:multi_store_app/screens/change_language/change_language_screen.dart';
+import 'package:multi_store_app/screens/change_password/change_password_screen.dart';
 import 'package:multi_store_app/screens/wishlist/wishlist_screen.dart';
 import 'package:multi_store_app/models/customer.dart';
 import 'package:multi_store_app/providers/auth_customer_provider.dart';
@@ -20,8 +23,21 @@ import '../../order/orders_screen.dart';
 import 'profile_header_label.dart';
 import 'repeated_list_tile.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({super.key});
+
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  final TextEditingController _phoneTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _phoneTextController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +53,14 @@ class Body extends StatelessWidget {
           email: null,
           phone: null,
         );
+
+    Future.delayed(Duration.zero, () async {
+      _phoneTextController.text = customer.phone ?? '';
+    });
     // to clear _cart when logout
     final cartProvider = Provider.of<CartProvider>(context);
+    // to clear _wishlistProducts when logout
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
     return Stack(
       children: [
         Container(
@@ -373,6 +395,32 @@ class Body extends StatelessWidget {
                                   icon: Icons.phone,
                                   title: appLocale.phone,
                                   subtitle: customer.phone,
+                                  isClickable: true,
+                                  onPressed: () async {
+                                    if (isAuth) {
+                                      await _showPhoneDialog();
+                                    } else {
+                                      GlobalMethods.warningDialog(
+                                        title: appLocale.login,
+                                        subtitle: appLocale.login_first,
+                                        btnTitle: appLocale.login,
+                                        cancelBtn: appLocale.cancel,
+                                        fct: () {
+                                          if (Navigator.canPop(context)) {
+                                            Navigator.pop(context);
+                                          }
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (ctx) =>
+                                                  const WelcomeScreen(),
+                                            ),
+                                          );
+                                        },
+                                        context: context,
+                                      );
+                                    }
+                                  },
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
@@ -430,18 +478,24 @@ class Body extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                RepeatedListTile(
+                                /* RepeatedListTile(
                                   title: appLocale.edit_profile,
                                   icon: Icons.edit,
                                   isClickable: true,
                                   onPressed: () {},
                                 ),
-                                listDivider(),
+                                listDivider(), */
                                 RepeatedListTile(
                                   title: appLocale.change_password,
                                   icon: Icons.lock,
                                   isClickable: true,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ChangePasswordScreen(),
+                                    ));
+                                  },
                                 ),
                                 listDivider(),
                                 RepeatedListTile(
@@ -478,6 +532,8 @@ class Body extends StatelessWidget {
                                         fct: () async {
                                           await authCustomerProvider.logout();
                                           cartProvider.cart?.items?.clear();
+                                          wishlistProvider.wishlistProducts =
+                                              [];
 
                                           if (Navigator.canPop(context)) {
                                             Navigator.pop(context);
@@ -524,6 +580,43 @@ class Body extends StatelessWidget {
       child: Divider(
         thickness: 1,
       ),
+    );
+  }
+
+  Future<void> _showPhoneDialog() {
+    final appLocale = AppLocalizations.of(context);
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(appLocale!.phone),
+          content: TextField(
+            controller: _phoneTextController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(hintText: appLocale.enter_phone),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                GlobalMethods.loadingDialog(
+                    title: appLocale.please_wait, context: context);
+                await Provider.of<AuthCustomerProvider>(context, listen: false)
+                    .updatePhone(_phoneTextController.text);
+
+                Navigator.pop(context);
+
+                Navigator.pop(context);
+              },
+              child: Text(appLocale.change,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary)),
+            )
+          ],
+        );
+      },
     );
   }
 }

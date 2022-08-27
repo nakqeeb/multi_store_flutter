@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/product.dart';
+import 'package:collection/collection.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
+import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/screens/edit_product/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +12,7 @@ import '../screens/product_details/product_details_screen.dart';
 
 class ProductGridComponentWidget extends StatefulWidget {
   final Product product;
-  ProductGridComponentWidget({super.key, required this.product});
+  const ProductGridComponentWidget({super.key, required this.product});
 
   @override
   State<ProductGridComponentWidget> createState() =>
@@ -19,6 +22,7 @@ class ProductGridComponentWidget extends StatefulWidget {
 class _ProductGridComponentWidgetState
     extends State<ProductGridComponentWidget> {
   late Product _product;
+  bool _isProcessing = false;
   @override
   void initState() {
     _product = widget.product;
@@ -27,9 +31,12 @@ class _ProductGridComponentWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final supplier = Provider.of<AuthSupplierProvider>(context).supplier;
+    final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
+    final supplier = authSupplierProvider.supplier;
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
     final productProvider = Provider.of<ProductProvider>(context);
     final isOnSale = _product.discount! > 0;
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -59,7 +66,7 @@ class _ProductGridComponentWidgetState
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15)),
                     child: FadeInImage.assetNetwork(
-                      placeholder: 'images/inapp/spinner.gif',
+                      placeholder: 'images/inapp/product-placeholder.png',
                       image: _product.productImages!.first,
                     ),
                   ),
@@ -149,13 +156,70 @@ class _ProductGridComponentWidgetState
                                     color: Colors.red,
                                   ),
                                 )
-                              : IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.favorite_border_outlined,
-                                    color: Colors.red,
-                                  ),
-                                )
+                              : !authSupplierProvider.isAuth
+                                  ? (_isProcessing
+                                      ? SizedBox(
+                                          width: 50,
+                                          height: 48,
+                                          child: SpinKitPulse(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 25,
+                                          ),
+                                        )
+                                      : IconButton(
+                                          onPressed: () async {
+                                            setState(() {
+                                              _isProcessing = true;
+                                            });
+                                            var existingItemWishlist = context
+                                                .read<WishlistProvider>()
+                                                .wishlistProducts
+                                                .firstWhereOrNull((product) =>
+                                                    product.id ==
+                                                    widget.product.id);
+
+                                            existingItemWishlist != null
+                                                ? await context
+                                                    .read<WishlistProvider>()
+                                                    .removeFromWishlist(widget
+                                                        .product.id
+                                                        .toString())
+                                                : await context
+                                                    .read<WishlistProvider>()
+                                                    .addToWishlist(widget
+                                                        .product.id
+                                                        .toString());
+                                            // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
+                                            if (!mounted) return;
+                                            setState(() {
+                                              _isProcessing = false;
+                                            });
+                                          },
+                                          icon: context
+                                                      .watch<WishlistProvider>()
+                                                      .wishlistProducts
+                                                      .firstWhereOrNull(
+                                                          (product) =>
+                                                              product.id ==
+                                                              widget.product
+                                                                  .id) !=
+                                                  null
+                                              ? const Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.red,
+                                                  size: 30,
+                                                )
+                                              : const Icon(
+                                                  Icons.favorite_outline,
+                                                  color: Colors.red,
+                                                  size: 30,
+                                                ),
+                                        ))
+                                  : const SizedBox(
+                                      height: 40,
+                                    )
                         ],
                       )
                     ],

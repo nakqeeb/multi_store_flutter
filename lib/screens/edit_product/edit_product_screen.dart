@@ -135,6 +135,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> uploadImages() async {
+    FocusScope.of(context).unfocus();
     final appLocale = AppLocalizations.of(context);
     if (_mainCategValue != null && _subCategValue != null) {
       if (_formKey.currentState!.validate()) {
@@ -280,6 +281,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final size = Utils(context).getScreenSize;
     final appLocale = AppLocalizations.of(context);
     final categories = Provider.of<CategoryProvider>(context).categories;
+    final productProvider = Provider.of<ProductProvider>(context);
     // to use snackBar, we need to wrap Scaffold with ScaffoldMessenger
     return ScaffoldMessenger(
       key: _scaffoldKey,
@@ -303,12 +305,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     btnTitle: appLocale.yes,
                     cancelBtn: appLocale.cancel,
                     fct: () async {
-                      await _deleteProduct();
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context, 'deleted');
-                      }
+                      await _deleteProduct()
+                          .whenComplete(() => productProvider.isDeleted = true);
                     },
                     context: context);
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
               },
             )
           ],
@@ -754,12 +757,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   GlobalMethods.loadingDialog(
                                       title: appLocale.updating,
                                       context: context);
-                                  await _uploadProduct();
+                                  await _uploadProduct().whenComplete(
+                                      () => productProvider.isUpdated = true);
                                   // Close the dialog programmatically
                                   Navigator.pop(context);
 
                                   if (Navigator.canPop(context)) {
-                                    Navigator.pop(context, true);
+                                    Navigator.pop(context);
                                   }
                                 },
                                 height: size.height * 0.06,

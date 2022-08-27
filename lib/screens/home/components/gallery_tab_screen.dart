@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:multi_store_app/components/product_grid_component_widget.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../error/error_screen.dart';
 
 class GalleryTabScreen extends StatefulWidget {
   const GalleryTabScreen({super.key, required this.categoryId});
@@ -15,63 +18,110 @@ class GalleryTabScreen extends StatefulWidget {
 }
 
 class _GalleryTabScreenState extends State<GalleryTabScreen> {
-  List<Product> _products = [];
+  //List<Product> _products = [];
+  late Future<List<Product>> _productsCategoryFuture;
   bool _isFavorite = false;
 
   currentCategoryProduct() {
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
     productProvider.fetchProducts();
-    List<Product> products = productProvider.products;
-    /* for (int i = 0; i < products.length; i++) {
-      if (products[i].mainCategory == widget.categoryId) {
-        _products.add(products[i]);
-      }
-    } */
-    _products = products
+    _productsCategoryFuture =
+        productProvider.fetchProductsByCategoryId(widget.categoryId);
+    /* _products = products
         .where((element) => element.mainCategory == widget.categoryId)
-        .toList();
+        .toList(); */
   }
 
   @override
   void initState() {
     print('This is category Id  ${widget.categoryId}');
     currentCategoryProduct();
-    print('This is products length for current cat Id  ${_products.length}');
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    final productProvider = Provider.of<ProductProvider>(context);
+    if (productProvider.isDeleted == true ||
+        productProvider.isUpdated == true) {
+      print('Product is Deleted');
+      print('isDeleted == ${productProvider.isDeleted}');
+      _productsCategoryFuture =
+          productProvider.fetchProductsByCategoryId(widget.categoryId);
+    }
+    productProvider.isDeleted = false;
+    productProvider.isUpdated = false;
+
+    print('isDeleted == ${productProvider.isDeleted}');
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final appLocale = AppLocalizations.of(context);
-    return _products.isEmpty
-        ? Center(
-            child: Text(
-              appLocale!.category_no_item,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Acme',
-                  letterSpacing: 1.5),
-            ),
-          )
-        : SingleChildScrollView(
-            child: MasonryGridView.count(
-              itemCount: _products.length,
-              crossAxisCount: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              padding: const EdgeInsets.all(10),
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return ProductGridComponentWidget(
-                  product: _products[index],
-                );
-              },
-            ),
+    return FutureBuilder<List<Product>>(
+      future: _productsCategoryFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SpinKitFadingFour(
+            color: Theme.of(context).colorScheme.secondary,
+            size: 35,
           );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return ErrorScreen(
+                title: appLocale!.opps_went_wrong,
+                subTitle: appLocale.try_to_reload_app);
+          } else if (snapshot.data!.isNotEmpty) {
+            List<Product> products =
+                snapshot.data!.where((prod) => prod.inStock! > 0).toList();
+            return SingleChildScrollView(
+              child: MasonryGridView.count(
+                itemCount: products.length,
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                padding: const EdgeInsets.all(10),
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  return ProductGridComponentWidget(
+                    product: products[index],
+                  );
+                },
+              ),
+            );
+          } else if (snapshot.data!.isEmpty) {
+            return Center(
+              child: Text(
+                appLocale!.store_has_no_items_yet,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Acme',
+                    letterSpacing: 1.5),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                appLocale!.no_products_loaded,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Acme',
+                    letterSpacing: 1.5),
+              ),
+            );
+          }
+        } else {
+          return Center(child: Text('State: ${snapshot.connectionState}'));
+        }
+      },
+    );
   }
 
   /* Container gridComponent(BuildContext context, int index) {

@@ -3,6 +3,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:multi_store_app/components/default_button.dart';
@@ -21,6 +22,7 @@ import '../../components/app_bar_back_button.dart';
 import '../../components/product_grid_component_widget.dart';
 import '../../models/supplier.dart';
 import '../../providers/locale_provider.dart';
+import '../../providers/wishlist_provider.dart';
 import '../../services/utils.dart';
 import '../cart/cart_screen.dart';
 import '../edit_product/edit_product_screen.dart';
@@ -47,6 +49,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Supplier? supplier;
   late Supplier currentProductSuppliers;
   late List<Product> similarProducts;
+  // _isProcessing for wishlist
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -73,6 +77,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final productProvider = Provider.of<ProductProvider>(context);
     List<Product> allProducts = productProvider.products;
     final cartProvider = Provider.of<CartProvider>(context);
+    final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
     if (_isInit == false) {
       similarProducts = allProducts
           .where((element) =>
@@ -80,7 +85,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               element.subCategory == _product.subCategory)
           .toList();
       similarProducts.removeWhere((element) => element.id == _product.id);
-      final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
       supplier = authSupplierProvider.supplier;
       suppliers = authSupplierProvider.suppliers;
       currentProductSuppliers = suppliers.firstWhere(
@@ -155,13 +159,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 backgroundColor:
                                     Theme.of(context).colorScheme.primary,
                                 child: IconButton(
-                                  onPressed: _isLoading
-                                      ? null
-                                      : () {
-                                          Navigator.canPop(context)
-                                              ? Navigator.pop(context)
-                                              : null;
-                                        },
+                                  onPressed: () {
+                                    Navigator.canPop(context)
+                                        ? Navigator.pop(context)
+                                        : null;
+                                  },
                                   icon: Icon(
                                     isArabic
                                         ? Icons.arrow_back_ios
@@ -262,7 +264,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 supplier?.id == _product.supplier
                                     ? IconButton(
                                         onPressed: () async {
-                                          final response = await Navigator.push(
+                                          await Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
@@ -271,10 +273,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               ),
                                             ),
                                           );
-                                          if (response == 'deleted') {
+
+                                          if (productProvider.isDeleted ==
+                                              true) {
                                             if (Navigator.canPop(context)) {
                                               Navigator.pop(context);
                                             }
+                                          } else if (productProvider
+                                                  .isUpdated ==
+                                              true) {
+                                            await productProvider
+                                                .fetchProductsById(
+                                                    widget.productId);
+                                            _product = productProvider.product;
                                           }
                                         },
                                         tooltip: appLocale.edit,
@@ -283,14 +294,76 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           color: Colors.red,
                                         ),
                                       )
-                                    : IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          Icons.favorite_border_outlined,
-                                          color: Colors.red,
-                                          size: 30,
-                                        ),
-                                      )
+                                    : !authSupplierProvider.isAuth
+                                        ? (_isProcessing
+                                            ? SizedBox(
+                                                width: 50,
+                                                height: 48,
+                                                child: SpinKitPulse(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  size: 25,
+                                                ),
+                                              )
+                                            : IconButton(
+                                                onPressed: () async {
+                                                  setState(() {
+                                                    _isProcessing = true;
+                                                  });
+                                                  var existingItemWishlist =
+                                                      context
+                                                          .read<
+                                                              WishlistProvider>()
+                                                          .wishlistProducts
+                                                          .firstWhereOrNull(
+                                                              (prod) =>
+                                                                  prod.id ==
+                                                                  _product.id);
+
+                                                  existingItemWishlist != null
+                                                      ? await context
+                                                          .read<
+                                                              WishlistProvider>()
+                                                          .removeFromWishlist(
+                                                              _product.id
+                                                                  .toString())
+                                                      : await context
+                                                          .read<
+                                                              WishlistProvider>()
+                                                          .addToWishlist(
+                                                              _product.id
+                                                                  .toString());
+                                                  // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
+                                                  if (!mounted) return;
+                                                  setState(() {
+                                                    _isProcessing = false;
+                                                  });
+                                                },
+                                                icon: context
+                                                            .watch<
+                                                                WishlistProvider>()
+                                                            .wishlistProducts
+                                                            .firstWhereOrNull(
+                                                                (prod) =>
+                                                                    prod.id ==
+                                                                    _product
+                                                                        .id) !=
+                                                        null
+                                                    ? const Icon(
+                                                        Icons.favorite,
+                                                        color: Colors.red,
+                                                        size: 30,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.favorite_outline,
+                                                        color: Colors.red,
+                                                        size: 30,
+                                                      ),
+                                              ))
+                                        : const SizedBox(
+                                            height: 40,
+                                          ),
                               ],
                             ),
                             InkWell(
@@ -464,6 +537,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             });
                                             await cartProvider
                                                 .addToCart(_product.id!);
+                                            // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
+                                            if (!mounted) return;
                                             setState(() {
                                               _isLoading = false;
                                             });

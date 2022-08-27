@@ -12,6 +12,9 @@ class ProductProvider with ChangeNotifier {
   Product _product;
   final String? authToken;
 
+  bool _isUpdated = false;
+  bool _isDeleted = false;
+
   ProductProvider(this.authToken, this._products, this._product);
 
   List<Product> get products {
@@ -25,6 +28,22 @@ class ProductProvider with ChangeNotifier {
   set setProduct(Product newProduct) {
     _products.add(newProduct);
     notifyListeners();
+  }
+
+  bool get isUpdated {
+    return _isUpdated;
+  }
+
+  set isUpdated(bool value) {
+    _isUpdated = value;
+  }
+
+  bool get isDeleted {
+    return _isDeleted;
+  }
+
+  set isDeleted(bool value) {
+    _isDeleted = value;
   }
 
   List<Product> searchQuery(String searchText) {
@@ -114,7 +133,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchProductsByCategoryId(String catId) async {
+  Future<List<Product>> fetchProductsByCategoryId(String catId) async {
     final url = Uri.http(API_URL, '/products/category/$catId');
     try {
       var response = await http.get(
@@ -136,6 +155,7 @@ class ProductProvider with ChangeNotifier {
       // print(loadedProducts[0].productName);
       _products = loadedProducts;
       notifyListeners();
+      return loadedProducts;
     } catch (err) {
       throw err;
     }
@@ -183,6 +203,7 @@ class ProductProvider with ChangeNotifier {
         throw HttpException('Could not update this product.');
       }
       await fetchProductsById(prodId);
+      _isUpdated = true;
       notifyListeners();
     } catch (err) {
       print(err);
@@ -213,6 +234,7 @@ class ProductProvider with ChangeNotifier {
         throw HttpException('Could not delete this product.');
       }
       existingProduct = null;
+      _isDeleted = true;
       notifyListeners();
     } catch (err) {
       print(err);

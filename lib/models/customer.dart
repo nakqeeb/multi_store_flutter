@@ -44,6 +44,8 @@
 }
  */
 
+import 'package:multi_store_app/models/product.dart';
+
 import 'cart.dart';
 
 class Customer {
@@ -53,6 +55,7 @@ class Customer {
   String? profileImageUrl;
   String? phone;
   Cart? cart;
+  List<dynamic>? wishlist;
   String? createdAt;
   String? updatedAt;
 
@@ -63,6 +66,7 @@ class Customer {
     this.profileImageUrl,
     this.phone,
     this.cart,
+    this.wishlist,
     this.createdAt,
     this.updatedAt,
   });
@@ -76,6 +80,21 @@ class Customer {
     phone = json['phone'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    if (wishlist is Product) {
+      if (json['wishlist'] != null) {
+        wishlist = <Product>[];
+        json['wishlist'].forEach((v) {
+          wishlist!.add(Product.fromJson(v));
+        });
+      }
+    } else if (wishlist is String) {
+      if (json['wishlist'] != null) {
+        wishlist = <String>[];
+        json['wishlist'].forEach((v) {
+          wishlist!.add(v);
+        });
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -90,6 +109,9 @@ class Customer {
     data['phone'] = phone;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
+    if (wishlist != null) {
+      data['wishlist'] = wishlist!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

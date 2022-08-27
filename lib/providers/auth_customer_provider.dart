@@ -11,9 +11,14 @@ import '../models/http_exception.dart';
 class AuthCustomerProvider with ChangeNotifier {
   String? _token;
   Customer? _customer;
+  bool _passwordsDoesNotMatched = false;
 
   bool get isAuth {
     return _token != null;
+  }
+
+  bool get passwordsDoesNotMatched {
+    return _passwordsDoesNotMatched;
   }
 
   String? get token {
@@ -114,5 +119,65 @@ class AuthCustomerProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('customerData'); // this will clear 'customerData' key only
     // prefs.clear(); // this will clear all SharedPreferences keys including the theme key
+  }
+
+  Future<void> resetPassword(String oldPassword, String newPassword) async {
+    Map passwordData = {'oldPassword': oldPassword, 'newPassword': newPassword};
+    final url = Uri.http(API_URL, '/customers/resetpassword');
+    try {
+      _passwordsDoesNotMatched = false;
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer ${token!}',
+        },
+        body: json.encode(passwordData),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        if (responseData['message'] == 'passwords_are_not_matched') {
+          _passwordsDoesNotMatched = true;
+          notifyListeners();
+          return;
+        }
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // update phone number
+  Future<void> updatePhone(String phone) async {
+    Map phoneNo = {'phone': phone};
+    final url = Uri.http(API_URL, '/customers/phone');
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer ${token!}',
+        },
+        body: json.encode(phoneNo),
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      _customer?.phone = phone;
+      notifyListeners();
+      final prefs = await SharedPreferences.getInstance();
+      final customerData = json.encode({
+        'token': _token,
+        'customer': _customer,
+      });
+      prefs.setString('customerData', customerData);
+    } catch (err) {
+      throw err;
+    }
   }
 }

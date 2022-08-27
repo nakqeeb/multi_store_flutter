@@ -11,6 +11,7 @@ import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
+import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -83,12 +84,6 @@ class _FetchScreenState extends State<FetchScreen> {
         ));
         return;
       }
-      await Provider.of<ProductProvider>(context, listen: false)
-          .fetchProducts()
-          .catchError((err) {
-        print(err);
-        timeoutError = err;
-      });
 
       if (timeoutError != null) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -101,6 +96,8 @@ class _FetchScreenState extends State<FetchScreen> {
       }
       if (isCusAuth && !isSubAuth) {
         await Provider.of<CartProvider>(context, listen: false).fetchCart();
+        await Provider.of<WishlistProvider>(context, listen: false)
+            .fetchWishlist();
         await Provider.of<AddressProvider>(context, listen: false)
             .fetchAddresses();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
