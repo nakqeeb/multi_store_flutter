@@ -23,9 +23,11 @@ import '../../components/product_grid_component_widget.dart';
 import '../../models/supplier.dart';
 import '../../providers/locale_provider.dart';
 import '../../providers/wishlist_provider.dart';
+import '../../services/global_methods.dart';
 import '../../services/utils.dart';
 import '../cart/cart_screen.dart';
 import '../edit_product/edit_product_screen.dart';
+import '../welcome/welcome_screen.dart';
 import 'components/full_screen_view.dart';
 import 'components/product_details_header_label.dart';
 
@@ -308,37 +310,65 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               )
                                             : IconButton(
                                                 onPressed: () async {
-                                                  setState(() {
-                                                    _isProcessing = true;
-                                                  });
-                                                  var existingItemWishlist =
-                                                      context
-                                                          .read<
-                                                              WishlistProvider>()
-                                                          .wishlistProducts
-                                                          .firstWhereOrNull(
-                                                              (prod) =>
-                                                                  prod.id ==
-                                                                  _product.id);
+                                                  if (isCustomerAuth) {
+                                                    setState(() {
+                                                      _isProcessing = true;
+                                                    });
+                                                    var existingItemWishlist =
+                                                        context
+                                                            .read<
+                                                                WishlistProvider>()
+                                                            .wishlistProducts
+                                                            .firstWhereOrNull(
+                                                                (prod) =>
+                                                                    prod.id ==
+                                                                    _product
+                                                                        .id);
 
-                                                  existingItemWishlist != null
-                                                      ? await context
-                                                          .read<
-                                                              WishlistProvider>()
-                                                          .removeFromWishlist(
-                                                              _product.id
-                                                                  .toString())
-                                                      : await context
-                                                          .read<
-                                                              WishlistProvider>()
-                                                          .addToWishlist(
-                                                              _product.id
-                                                                  .toString());
-                                                  // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
-                                                  if (!mounted) return;
-                                                  setState(() {
-                                                    _isProcessing = false;
-                                                  });
+                                                    existingItemWishlist != null
+                                                        ? await context
+                                                            .read<
+                                                                WishlistProvider>()
+                                                            .removeFromWishlist(
+                                                                _product.id
+                                                                    .toString())
+                                                        : await context
+                                                            .read<
+                                                                WishlistProvider>()
+                                                            .addToWishlist(
+                                                                _product.id
+                                                                    .toString());
+                                                    // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
+                                                    if (!mounted) return;
+                                                    setState(() {
+                                                      _isProcessing = false;
+                                                    });
+                                                  } else {
+                                                    GlobalMethods.warningDialog(
+                                                      title: appLocale.login,
+                                                      subtitle:
+                                                          appLocale.login_first,
+                                                      btnTitle: appLocale.login,
+                                                      cancelBtn:
+                                                          appLocale.cancel,
+                                                      fct: () {
+                                                        if (Navigator.canPop(
+                                                            context)) {
+                                                          Navigator.pop(
+                                                              context);
+                                                        }
+                                                        Navigator
+                                                            .pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (ctx) =>
+                                                                const WelcomeScreen(),
+                                                          ),
+                                                        );
+                                                      },
+                                                      context: context,
+                                                    );
+                                                  }
                                                 },
                                                 icon: context
                                                             .watch<

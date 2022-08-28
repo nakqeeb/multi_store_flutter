@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:multi_store_app/models/address.dart';
 import 'package:multi_store_app/providers/address_provider.dart';
 import 'package:multi_store_app/screens/address/edit_address_screen.dart';
@@ -111,7 +112,13 @@ class _AddressTileState extends State<AddressTile> {
                                   .map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
-                                  child: Text(value),
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                        color: value == appLocale.delete
+                                            ? Colors.red
+                                            : null),
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (theValue) async {
@@ -129,20 +136,31 @@ class _AddressTileState extends State<AddressTile> {
                                             address.id.toString());
                                   }
                                 } else if (theValue == appLocale.delete) {
-                                  GlobalMethods.warningDialog(
+                                  print('delete');
+                                  await GlobalMethods.warningDialog(
                                     title: appLocale.delete_address,
                                     subtitle: appLocale.do_you_delete_address,
                                     btnTitle: appLocale.yes,
                                     cancelBtn: appLocale.cancel,
                                     fct: () async {
-                                      await addressProvider
+                                      addressProvider
                                           .deleteAddress(widget.addressId);
+                                      if (Navigator.canPop(context)) {
+                                        Navigator.pop(context);
+                                      }
+                                      Fluttertoast.showToast(
+                                        msg: appLocale.address_has_deleted,
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor:
+                                            Colors.black.withOpacity(0.8),
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
                                     },
                                     context: context,
                                   );
-                                  if (Navigator.canPop(context)) {
-                                    Navigator.pop(context);
-                                  }
                                 }
                               },
                             )

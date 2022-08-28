@@ -60,10 +60,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     title: appLocale.opps_went_wrong,
                     subTitle: appLocale.try_to_reload_app);
               } else if (snapshot.data!.isNotEmpty) {
+                List<Order> orders = snapshot.data!.reversed.toList();
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (ctx, index) {
-                    return ExpansionOrderTile(order: snapshot.data![index]);
+                    return ExpansionOrderTile(order: orders[index]);
                   },
                 );
               } else if (snapshot.data!.isEmpty) {

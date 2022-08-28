@@ -140,7 +140,7 @@ class _MyAppState extends State<MyApp> {
                     WishlistProvider? previousWishlist) =>
                 WishlistProvider(
               customerAuth.token,
-              previousWishlist!.wishlistProducts,
+              previousWishlist == null ? [] : previousWishlist.wishlistProducts,
             ),
           ),
           ChangeNotifierProvider(create: (_) => themeChangeProvider),

@@ -6,6 +6,8 @@ import 'package:multi_store_app/models/order.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../providers/auth_customer_provider.dart';
+import '../../../../../services/push_notification.dart';
 import '../../../../../services/utils.dart';
 
 class ExpansionSupplierOrderTile extends StatelessWidget {
@@ -35,6 +37,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
     final size = Utils(context).getScreenSize;
     final appLocale = AppLocalizations.of(context);
     final orderProvider = Provider.of<OrderProvider>(context);
+    final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
     final deliveryStatus = order.deliveryStatus.toString() == 'preparing'
         ? appLocale!.preparing
         : order.deliveryStatus.toString() == 'shipping'
@@ -294,8 +297,24 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                             const Duration(days: 365),
                                           ),
                                           onConfirm: (date) async {
-                                            await orderProvider.updateOrder(
-                                                order.id, 'shipping', date);
+                                            await orderProvider
+                                                .updateOrder(
+                                                    order.id, 'shipping', date)
+                                                .whenComplete(() async {
+                                              final customer =
+                                                  await authCustomerProvider
+                                                      .fetchCustomerById(
+                                                          order.customer!.id!);
+                                              // print('This is order customer name ${customer.name}');
+                                              PushNotification
+                                                  .sendNotificationToDriverNow(
+                                                deviceRegistrationToken:
+                                                    customer.fcmToken!,
+                                                title: appLocale.order_shipped,
+                                                body: appLocale
+                                                    .your_order_shipped,
+                                              );
+                                            });
                                           },
                                           theme: DatePickerTheme(
                                             backgroundColor: Theme.of(context)

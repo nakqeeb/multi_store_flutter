@@ -22,6 +22,7 @@
   "add_to_cart": "ADD TO CART",
   "address": "Address",
   "address_book": "Address Book",
+  "address_has_deleted": "Address has been deleted successfully",
   "address_house_building": "Address, House No, Building Name",
   "address_required": "address is required",
   "alreadyHaveAccount": "Already Have Account?",
@@ -113,6 +114,7 @@
   "my_store": "My store",
   "name": "Name",
   "name_no_empty": "Please enter your name",
+  "new_order": "New order",
   "new_password": "New Password",
   "noInternet": "No Internet Connection!",
   "no_address_yet": "You have not added any address yet!",
@@ -135,6 +137,7 @@
   "order_date": "Order date",
   "order_is_processing": "Order is processing...",
   "order_placed_successfully": "Order placed successfully.",
+  "order_shipped": "Order shipped",
   "order_total": "Order Total",
   "orders": "Orders",
   "out_of_stock": "Out Of Stock",
@@ -218,5 +221,7 @@
   "wishlist": "Wishlist",
   "write_review": "Write Review",
   "yes": "Yes",
+  "you_have_new_order": "You have a new order 😃",
+  "your_order_shipped": "Your order has been shipped 😀",
   "your_review_is_added": "Thanks! Your review is added."
 }

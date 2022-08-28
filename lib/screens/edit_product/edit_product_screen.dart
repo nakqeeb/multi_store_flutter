@@ -44,7 +44,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Category? _mainCategValue;
   Subcategory? _subCategValue;
   List<Subcategory> _subCategList = [];
-  bool _isLoading = false;
   bool _isinit = true;
   Product? _updatedProduct;
 
@@ -141,9 +140,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
         if (_imagesFileList!.isNotEmpty || _imagesUrlList.isNotEmpty) {
-          setState(() {
-            _isLoading = true;
-          });
           try {
             for (var image in _imagesFileList!) {
               Reference ref = FirebaseStorage.instance
@@ -201,14 +197,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
         subCategory: updatedProduct['subCategory'],
         supplier: context.read<AuthSupplierProvider>().supplier!.id,
       ); */
-      setState(() {
+      /* setState(() {
         _isLoading = false;
         _imagesFileList = [];
         _mainCategValue = null;
 
         _subCategList = [];
         _imagesUrlList = [];
-      });
+      }); */
       _formKey.currentState!.reset();
       Fluttertoast.showToast(
         msg: appLocale!.product_updated_successfully,
@@ -648,9 +644,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return appLocale.quantity_is_required;
-                                } else if (value.isValidQuantity() != true) {
+                                } /*  else if (value.isValidQuantity() != true) {
                                   return appLocale.no_start_with_zero;
-                                }
+                                } */
                                 return null;
                               },
                               onSaved: (value) {

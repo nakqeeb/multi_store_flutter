@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:multi_store_app/utilities/global_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -21,13 +22,13 @@ class SupplierOrdersScreen extends StatefulWidget {
 
 class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
   late Future<List<Order>> _ordersFuture;
-  final _sockerURL = 'http://192.168.0.111:3000';
+  // final _sockerURL = 'http://192.168.0.111:3000';
   IO.Socket? _socket;
 
   static const _socketEvent = 'event_1';
 
   void connect() {
-    _socket = IO.io(_sockerURL, <String, dynamic>{
+    _socket = IO.io(SOCKET_URL, <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
     });

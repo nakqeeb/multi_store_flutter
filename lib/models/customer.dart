@@ -54,6 +54,7 @@ class Customer {
   String? email;
   String? profileImageUrl;
   String? phone;
+  String? fcmToken;
   Cart? cart;
   List<dynamic>? wishlist;
   String? createdAt;
@@ -65,6 +66,7 @@ class Customer {
     this.email,
     this.profileImageUrl,
     this.phone,
+    this.fcmToken,
     this.cart,
     this.wishlist,
     this.createdAt,
@@ -78,6 +80,7 @@ class Customer {
     email = json['email'];
     profileImageUrl = json['profileImageUrl'];
     phone = json['phone'];
+    fcmToken = json['fcmToken'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     if (wishlist is Product) {
@@ -107,6 +110,7 @@ class Customer {
     data['email'] = email;
     data['profileImageUrl'] = profileImageUrl;
     data['phone'] = phone;
+    data['fcmToken'] = fcmToken;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     if (wishlist != null) {

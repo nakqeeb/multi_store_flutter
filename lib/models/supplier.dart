@@ -5,6 +5,7 @@ class Supplier {
   String? storeLogoUrl;
   String? coverImageUrl;
   String? phone;
+  String? fcmToken;
   bool? isActivated;
   String? createdAt;
   String? updatedAt;
@@ -16,6 +17,7 @@ class Supplier {
       this.storeLogoUrl,
       this.coverImageUrl,
       this.phone,
+      this.fcmToken,
       this.isActivated,
       this.createdAt,
       this.updatedAt});
@@ -27,6 +29,7 @@ class Supplier {
     storeLogoUrl = json['storeLogoUrl'];
     coverImageUrl = json['coverImageUrl'];
     phone = json['phone'];
+    fcmToken = json['fcmToken'];
     isActivated = json['isActivated'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -40,6 +43,7 @@ class Supplier {
     data['storeLogoUrl'] = storeLogoUrl;
     data['coverImageUrl'] = coverImageUrl;
     data['phone'] = phone;
+    data['fcmToken'] = fcmToken;
     data['isActivated'] = isActivated;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;

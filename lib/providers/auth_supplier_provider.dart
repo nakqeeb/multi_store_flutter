@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:multi_store_app/models/supplier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,7 @@ class AuthSupplierProvider with ChangeNotifier {
   String? _token;
   Supplier? _supplier;
   List<Supplier> _suppliers = []; // to fetch stores and other supliers info
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   bool get isAuth {
     return _token != null;
@@ -32,6 +34,22 @@ class AuthSupplierProvider with ChangeNotifier {
   List<Supplier> get suppliers {
     return [..._suppliers];
   }
+
+  /* Future generateAndGetToken() async {
+    String? registrationToken = await messaging.getToken();
+    print("FCM Registration Token: ");
+    print(registrationToken);
+
+    FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentFirebaseUser!.uid)
+        .child("token")
+        .set(registrationToken);
+
+    messaging.subscribeToTopic("allDrivers");
+    messaging.subscribeToTopic("allUsers");
+  } */
 
   Future<void> signup(Supplier newSupplier, String password) async {
     Map<String, dynamic> supplierData = {
@@ -65,12 +83,20 @@ class AuthSupplierProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    Map<String, String> data = {
-      'email': email,
-      'password': password,
-    };
     final url = Uri.http(API_URL, '/suppliers/login');
     try {
+      String? registrationToken = await messaging.getToken();
+      print("FCM Registration Token: ");
+      print(registrationToken);
+
+      messaging.subscribeToTopic("orderSupplier");
+      /* messaging.unsubscribeFromTopic("allDrivers");
+      messaging.unsubscribeFromTopic("allUsers"); */
+      Map<String, String> data = {
+        'email': email,
+        'password': password,
+        'fcmToken': registrationToken!,
+      };
       final response = await http.post(
         url,
         headers: {"Content-type": "application/json"},

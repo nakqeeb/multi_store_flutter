@@ -34,7 +34,7 @@ class _ShippingOrdersState extends State<ShippingOrders> {
               size: 35,
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
-            List<Order> orders = snapshot.data!
+            List<Order> orders = snapshot.data!.reversed
                 .where(
                   (element) => element.deliveryStatus == 'shipping',
                 )

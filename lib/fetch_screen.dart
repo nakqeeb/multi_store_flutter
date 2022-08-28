@@ -1,6 +1,4 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
@@ -10,13 +8,10 @@ import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/cart_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
-import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'models/cart.dart';
-import 'models/customer.dart';
 import 'providers/address_provider.dart';
 import 'screens/error/error_screen.dart';
 

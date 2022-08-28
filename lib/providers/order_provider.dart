@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:multi_store_app/models/order.dart';
+import 'package:multi_store_app/services/push_notification.dart';
 
 import '../models/http_exception.dart';
 import '../utilities/global_variables.dart';
@@ -24,7 +25,11 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> placeOrder(Map order) async {
+  Future<void> placeOrder(
+      {required Map order,
+      required String supplierDeviceToken,
+      required String title,
+      required String body}) async {
     final url = Uri.http(API_URL, '/orders');
     try {
       final response = await http.post(
@@ -35,10 +40,16 @@ class OrderProvider with ChangeNotifier {
         },
         body: json.encode(order),
       );
-      if (response.statusCode >= 400) {
+      final responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
         notifyListeners();
-        throw HttpException('Could not place Order.');
+        throw HttpException(responseData['message']);
       }
+      PushNotification.sendNotificationToDriverNow(
+        deviceRegistrationToken: supplierDeviceToken,
+        title: title,
+        body: body,
+      );
       //final extractedData = json.decode(response.body);
       //print(extractedData);
 

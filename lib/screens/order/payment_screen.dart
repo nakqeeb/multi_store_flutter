@@ -9,6 +9,7 @@ import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
 import 'package:multi_store_app/components/app_bar_back_button.dart';
 import 'package:multi_store_app/components/app_bar_title.dart';
 import 'package:multi_store_app/models/address.dart';
+import 'package:multi_store_app/models/supplier.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/services/global_methods.dart';
 import 'package:multi_store_app/utilities/global_variables.dart';
@@ -18,6 +19,7 @@ import 'package:http/http.dart' as http;
 
 import '../../components/default_button.dart';
 import '../../models/cart_item.dart';
+import '../../providers/auth_supplier_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../services/utils.dart';
 
@@ -32,12 +34,19 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   int _selectedValue = 1;
   bool _isLoading = false;
+  String? _supplierDeviceToken;
 
   Future<void> _placeOrder(List<CartItem>? cartItems) async {
+    final authSupplierProvider =
+        Provider.of<AuthSupplierProvider>(context, listen: false);
     final appLocale = AppLocalizations.of(context);
     GlobalMethods.loadingDialog(
         title: appLocale!.order_is_processing, context: context);
     for (var item in cartItems!) {
+      _supplierDeviceToken = authSupplierProvider.suppliers
+          .firstWhere((element) => element.id == item.cartProduct!.supplier)
+          .fcmToken;
+      print('This is device  token $_supplierDeviceToken');
       final newOrder = {
         "supplierId": item.cartProduct!.supplier,
         "addressId": widget.address.id,
@@ -58,7 +67,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
         "deliveryDate": '',
         "orderDate": DateTime.now().toIso8601String()
       };
-      await context.read<OrderProvider>().placeOrder(newOrder);
+      await context.read<OrderProvider>().placeOrder(
+          order: newOrder,
+          supplierDeviceToken: _supplierDeviceToken!,
+          title: appLocale.new_order,
+          body: appLocale.you_have_new_order);
     }
     await context.read<CartProvider>().clearCart();
     // close loading dialog
@@ -377,6 +390,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   displayPaymentSheet(List<CartItem> cartItems) async {
+    final authSupplierProvider =
+        Provider.of<AuthSupplierProvider>(context, listen: false);
     final appLocale = AppLocalizations.of(context);
     try {
       await Stripe.instance
@@ -392,6 +407,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         GlobalMethods.loadingDialog(
             title: appLocale!.order_is_processing, context: context);
         for (var item in cartItems) {
+          _supplierDeviceToken = authSupplierProvider.suppliers
+              .firstWhere((element) => element.id == item.cartProduct!.supplier)
+              .fcmToken;
           final newOrder = {
             "supplierId": item.cartProduct!.supplier,
             "addressId": widget.address.id,
@@ -412,7 +430,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
             "deliveryDate": '',
             "orderDate": DateTime.now().toIso8601String()
           };
-          await context.read<OrderProvider>().placeOrder(newOrder);
+          await context.read<OrderProvider>().placeOrder(
+              order: newOrder,
+              supplierDeviceToken: _supplierDeviceToken!,
+              title: appLocale.new_order,
+              body: appLocale.you_have_new_order);
         }
         await context.read<CartProvider>().clearCart();
 

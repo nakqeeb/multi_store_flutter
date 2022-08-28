@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:collection/collection.dart';
@@ -8,7 +9,10 @@ import 'package:multi_store_app/providers/wishlist_provider.dart';
 import 'package:multi_store_app/screens/edit_product/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth_customer_provider.dart';
 import '../screens/product_details/product_details_screen.dart';
+import '../screens/welcome/welcome_screen.dart';
+import '../services/global_methods.dart';
 
 class ProductGridComponentWidget extends StatefulWidget {
   final Product product;
@@ -31,11 +35,14 @@ class _ProductGridComponentWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
+    final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
     final supplier = authSupplierProvider.supplier;
     final wishlistProvider = Provider.of<WishlistProvider>(context);
     final productProvider = Provider.of<ProductProvider>(context);
     final isOnSale = _product.discount! > 0;
+    final isAuthCustomer = authCustomerProvider.isAuth;
 
     return InkWell(
       onTap: () {
@@ -170,32 +177,55 @@ class _ProductGridComponentWidgetState
                                         )
                                       : IconButton(
                                           onPressed: () async {
-                                            setState(() {
-                                              _isProcessing = true;
-                                            });
-                                            var existingItemWishlist = context
-                                                .read<WishlistProvider>()
-                                                .wishlistProducts
-                                                .firstWhereOrNull((product) =>
-                                                    product.id ==
-                                                    widget.product.id);
+                                            if (isAuthCustomer) {
+                                              setState(() {
+                                                _isProcessing = true;
+                                              });
+                                              var existingItemWishlist = context
+                                                  .read<WishlistProvider>()
+                                                  .wishlistProducts
+                                                  .firstWhereOrNull((product) =>
+                                                      product.id ==
+                                                      widget.product.id);
 
-                                            existingItemWishlist != null
-                                                ? await context
-                                                    .read<WishlistProvider>()
-                                                    .removeFromWishlist(widget
-                                                        .product.id
-                                                        .toString())
-                                                : await context
-                                                    .read<WishlistProvider>()
-                                                    .addToWishlist(widget
-                                                        .product.id
-                                                        .toString());
-                                            // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
-                                            if (!mounted) return;
-                                            setState(() {
-                                              _isProcessing = false;
-                                            });
+                                              existingItemWishlist != null
+                                                  ? await context
+                                                      .read<WishlistProvider>()
+                                                      .removeFromWishlist(widget
+                                                          .product.id
+                                                          .toString())
+                                                  : await context
+                                                      .read<WishlistProvider>()
+                                                      .addToWishlist(widget
+                                                          .product.id
+                                                          .toString());
+                                              // to avoid error [FlutterError (setState() called after dispose(): (lifecycle state: defunct, not mounted)]
+                                              if (!mounted) return;
+                                              setState(() {
+                                                _isProcessing = false;
+                                              });
+                                            } else {
+                                              GlobalMethods.warningDialog(
+                                                title: appLocale!.login,
+                                                subtitle: appLocale.login_first,
+                                                btnTitle: appLocale.login,
+                                                cancelBtn: appLocale.cancel,
+                                                fct: () {
+                                                  if (Navigator.canPop(
+                                                      context)) {
+                                                    Navigator.pop(context);
+                                                  }
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (ctx) =>
+                                                          const WelcomeScreen(),
+                                                    ),
+                                                  );
+                                                },
+                                                context: context,
+                                              );
+                                            }
                                           },
                                           icon: context
                                                       .watch<WishlistProvider>()

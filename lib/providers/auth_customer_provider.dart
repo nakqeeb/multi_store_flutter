@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_store_app/models/customer.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ class AuthCustomerProvider with ChangeNotifier {
   String? _token;
   Customer? _customer;
   bool _passwordsDoesNotMatched = false;
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   bool get isAuth {
     return _token != null;
@@ -62,12 +64,19 @@ class AuthCustomerProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    Map<String, String> data = {
-      'email': email,
-      'password': password,
-    };
     final url = Uri.http(API_URL, '/customers/login');
     try {
+      String? registrationToken = await messaging.getToken();
+      print("FCM Registration Token: ");
+      print(registrationToken);
+
+      messaging.subscribeToTopic("orderCustomer");
+
+      Map<String, String> data = {
+        'email': email,
+        'password': password,
+        'fcmToken': registrationToken!,
+      };
       final response = await http.post(
         url,
         headers: {"Content-type": "application/json"},
@@ -119,6 +128,30 @@ class AuthCustomerProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('customerData'); // this will clear 'customerData' key only
     // prefs.clear(); // this will clear all SharedPreferences keys including the theme key
+  }
+
+  // fetch single customer by id
+  Future<Customer> fetchCustomerById(String customerId) async {
+    final url = Uri.http(API_URL, '/customers/$customerId');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      );
+      var responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      Customer loadedCustomer = Customer.fromJson(responseData['customer']);
+      _customer = loadedCustomer;
+      notifyListeners();
+      return loadedCustomer;
+    } catch (err) {
+      throw err;
+    }
   }
 
   Future<void> resetPassword(String oldPassword, String newPassword) async {
