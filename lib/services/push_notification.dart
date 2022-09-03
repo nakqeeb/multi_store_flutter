@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../utilities/global_variables.dart';
 
 class PushNotification {
-  static Future<void> sendNotificationToDriverNow(
+  static Future<void> sendNotificationNow(
       {required String deviceRegistrationToken,
       required String title,
       required String body}) async {

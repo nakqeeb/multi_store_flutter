@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/components/default_button.dart';
 import 'package:provider/provider.dart';
@@ -17,13 +18,14 @@ class SupplierBalanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         leading: const AppBarBackButton(),
-        title: const AppBarTitle(
-          title: 'Balance',
+        title: AppBarTitle(
+          title: appLocale!.balance,
         ),
       ),
       body: FutureBuilder<List<Order>>(
@@ -43,27 +45,27 @@ class SupplierBalanceScreen extends StatelessWidget {
                 totalPrice += item.orderPrice!;
               }
               if (snapshot.hasError) {
-                return const ErrorScreen(
-                    title: 'Opps! Something went wrong',
-                    subTitle: 'Please try to reload the application!');
+                return ErrorScreen(
+                    title: appLocale.opps_went_wrong,
+                    subTitle: appLocale.try_to_reload_app);
               } else if (orders.isNotEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       StaticsWidget(
-                        label: 'TOTAL BALANCE',
+                        label: appLocale.total_balance.toString().toUpperCase(),
                         value: totalPrice,
                         decimal: 2,
                       ),
                       DefaultButton(
                         onPressed: () {},
-                        height: size.height * 0.05,
+                        height: size.height * 0.06,
                         width: size.width * 0.7,
                         radius: 25,
                         color: Theme.of(context).colorScheme.tertiary,
-                        widget: const Text(
-                          'Collect My Money',
+                        widget: Text(
+                          appLocale.collect_my_money,
                           style: TextStyle(fontSize: 18, color: Colors.white70),
                         ),
                       ),
@@ -71,11 +73,11 @@ class SupplierBalanceScreen extends StatelessWidget {
                   ),
                 );
               } else if (orders.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'No orders has been delivered yet!',
+                    appLocale.no_balance,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',
@@ -83,11 +85,11 @@ class SupplierBalanceScreen extends StatelessWidget {
                   ),
                 );
               } else {
-                return const Center(
+                return Center(
                   child: Text(
-                    'No Orders loaded!',
+                    appLocale.opps_went_wrong,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Acme',

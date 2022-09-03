@@ -10,14 +10,17 @@ class CartItem {
   CartItem.fromJson(Map<String, dynamic> json) {
     cartProduct =
         json['productId'] != null ? Product.fromJson(json['productId']) : null;
+
     quantity = json['quantity'];
     id = json['_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    if (cartProduct != null) {
+    if (cartProduct != null && cartProduct is Product) {
       data['productId'] = cartProduct!.toJson();
+    } else {
+      data['productId'] = cartProduct;
     }
     data['quantity'] = quantity;
     data['_id'] = id;

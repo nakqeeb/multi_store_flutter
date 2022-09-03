@@ -1,5 +1,5 @@
-/* String API_URL = '192.168.0.111:3000';
-String SOCKET_URL = 'http://192.168.0.111:3000'; */
+/* String API_URL = '192.168.0.118:3000';
+String SOCKET_URL = 'http://192.168.0.118:3000'; */
 String API_URL = 'multi-store-app.herokuapp.com';
 String SOCKET_URL = 'https://multi-store-app.herokuapp.com';
 

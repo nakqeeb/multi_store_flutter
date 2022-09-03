@@ -41,7 +41,9 @@ class _PreparingOrdersState extends State<PreparingOrders> {
                 itemCount: orders.length,
                 itemBuilder: (ctx, index) {
                   return ExpansionSupplierOrderTile(
-                      key: ValueKey(orders[index].id), order: orders[index]);
+                    key: ValueKey(orders[index].id),
+                    order: orders[index],
+                  );
                 },
               );
             } else if (orders.isEmpty) {

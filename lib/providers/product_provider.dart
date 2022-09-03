@@ -111,7 +111,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchProductsById(String prodId) async {
+  Future<Product> fetchProductsById(String prodId) async {
     final url = Uri.http(API_URL, '/products/$prodId');
     try {
       var response = await http.get(
@@ -126,8 +126,12 @@ class ProductProvider with ChangeNotifier {
         throw HttpException(responseData['message']);
       }
       // print(loadedProducts[0].productName);
-      _product = Product.fromJson(responseData['product']);
-      notifyListeners();
+      Product loadedProduct = Product.fromJson(responseData['product']);
+      _product = loadedProduct;
+      /* comment notifyListeners() to avoid error FlutterError (A ProductProvider was used after being disposed.
+        Once you have called dispose() on a ProductProvider, it can no longer be used.) */
+      // notifyListeners();
+      return loadedProduct;
     } catch (err) {
       throw err;
     }

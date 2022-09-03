@@ -112,7 +112,7 @@ class _ProductGridComponentWidgetState
                                             .colorScheme
                                             .secondary
                                             .withOpacity(0.5),
-                                        fontSize: 13,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         decoration: TextDecoration.lineThrough)
                                     : const TextStyle(
@@ -131,7 +131,7 @@ class _ProductGridComponentWidgetState
                                           .toStringAsFixed(2),
                                       style: const TextStyle(
                                         color: Colors.indigo,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     )

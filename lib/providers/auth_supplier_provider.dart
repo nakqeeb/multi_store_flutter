@@ -13,6 +13,7 @@ import '../utilities/global_variables.dart';
 class AuthSupplierProvider with ChangeNotifier {
   String? _token;
   Supplier? _supplier;
+  Supplier? _productSupplier;
   List<Supplier> _suppliers = []; // to fetch stores and other supliers info
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -29,6 +30,10 @@ class AuthSupplierProvider with ChangeNotifier {
 
   Supplier? get supplier {
     return _supplier;
+  }
+
+  Supplier? get productSupplier {
+    return _productSupplier;
   }
 
   List<Supplier> get suppliers {
@@ -201,6 +206,29 @@ class AuthSupplierProvider with ChangeNotifier {
       _supplier = loadedSupplier;
       notifyListeners();
       return loadedSupplier; // return it to use this method in FutureBuilder()
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // fetch product supplier by id
+  Future<void> fetchProductSupplierById(String supplierId) async {
+    final url = Uri.http(API_URL, '/suppliers/$supplierId');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      );
+      var responseData = json.decode(response.body);
+      if (responseData['success'] == false) {
+        notifyListeners();
+        throw HttpException(responseData['message']);
+      }
+      Supplier loadedSupplier = Supplier.fromJson(responseData['supplier']);
+      _productSupplier = loadedSupplier;
+      notifyListeners();
     } catch (err) {
       throw err;
     }

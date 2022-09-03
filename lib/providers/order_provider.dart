@@ -25,11 +25,7 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> placeOrder(
-      {required Map order,
-      required String supplierDeviceToken,
-      required String title,
-      required String body}) async {
+  Future<void> placeOrder(Map order) async {
     final url = Uri.http(API_URL, '/orders');
     try {
       final response = await http.post(
@@ -45,15 +41,12 @@ class OrderProvider with ChangeNotifier {
         notifyListeners();
         throw HttpException(responseData['message']);
       }
-      PushNotification.sendNotificationToDriverNow(
-        deviceRegistrationToken: supplierDeviceToken,
-        title: title,
-        body: body,
-      );
+
       //final extractedData = json.decode(response.body);
       //print(extractedData);
-
-      notifyListeners();
+      /* no need to use notifyListeners() here as it causes this error [FlutterError (A OrderProvider was used after being disposed.
+        Once you have called dispose() on a OrderProvider, it can no longer be used.)] */
+      // notifyListeners();
     } catch (err) {
       throw err;
     }
@@ -114,7 +107,7 @@ class OrderProvider with ChangeNotifier {
       //final extractedData = json.decode(response.body);
       //print(extractedData);
 
-      notifyListeners();
+      //notifyListeners();
     } catch (err) {
       print(err);
       throw err;

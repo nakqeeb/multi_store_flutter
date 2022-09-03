@@ -5,14 +5,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/models/order.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../../../providers/auth_customer_provider.dart';
+import '../../../../../providers/locale_provider.dart';
+import '../../../../../services/global_methods.dart';
 import '../../../../../services/push_notification.dart';
 import '../../../../../services/utils.dart';
 
 class ExpansionSupplierOrderTile extends StatelessWidget {
   final Order order;
-  const ExpansionSupplierOrderTile({super.key, required this.order});
+  ExpansionSupplierOrderTile({super.key, required this.order});
 
   // https://peaku.co/questions/25591-el-analisis-de-la-fecha-de-mongodb-en-flutter-siempre-falla
   _getFormattedDateFromFormattedString(
@@ -35,9 +38,9 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = Utils(context).getScreenSize;
+    final isArabic = Provider.of<LocaleProvider>(context).isArabic;
     final appLocale = AppLocalizations.of(context);
-    final orderProvider = Provider.of<OrderProvider>(context);
-    final authCustomerProvider = Provider.of<AuthCustomerProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     final deliveryStatus = order.deliveryStatus.toString() == 'preparing'
         ? appLocale!.preparing
         : order.deliveryStatus.toString() == 'shipping'
@@ -290,8 +293,89 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                               order.deliveryStatus == 'preparing'
                                   ? TextButton(
                                       onPressed: () {
-                                        DatePicker.showDatePicker(
+                                        showDialog<Widget>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        20, 150, 20, 150),
+                                                child: SfDateRangePicker(
+                                                  minDate: DateTime.now(),
+                                                  maxDate: DateTime.now().add(
+                                                    const Duration(days: 365),
+                                                  ),
+                                                  monthCellStyle:
+                                                      DateRangePickerMonthCellStyle(
+                                                    todayTextStyle: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .inversePrimary),
+                                                    cellDecoration:
+                                                        BoxDecoration(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary),
+                                                  ),
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                  selectionColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .inversePrimary,
+                                                  showActionButtons: true,
+                                                  confirmText: appLocale.ok,
+                                                  cancelText: appLocale.cancel,
+                                                  // controller: _dateRangePickerController,
+                                                  onSubmit: (date) async {
+                                                    if (date == null) {
+                                                      return;
+                                                    }
+
+                                                    GlobalMethods.loadingDialog(
+                                                        title: appLocale
+                                                            .please_wait,
+                                                        context: context);
+                                                    await orderProvider
+                                                        .updateOrder(
+                                                            order.id,
+                                                            'shipping',
+                                                            date as DateTime);
+                                                    final customer = await Provider
+                                                            .of<AuthCustomerProvider>(
+                                                                context,
+                                                                listen: false)
+                                                        .fetchCustomerById(order
+                                                            .customer!.id!);
+                                                    // print('This is order customer name ${customer.name}');
+                                                    await PushNotification
+                                                        .sendNotificationNow(
+                                                      deviceRegistrationToken:
+                                                          customer.fcmToken!,
+                                                      title: appLocale
+                                                          .order_shipped,
+                                                      body: appLocale
+                                                          .your_order_shipped,
+                                                    );
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                  },
+                                                  onCancel: () {
+                                                    // _dateRangePickerController
+                                                    //     .selectedDate = null;
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              );
+                                            });
+                                        /* DatePicker.showDatePicker(
                                           context,
+                                          locale: isArabic
+                                              ? LocaleType.ar
+                                              : LocaleType.en,
                                           minTime: DateTime.now(),
                                           maxTime: DateTime.now().add(
                                             const Duration(days: 365),
@@ -307,7 +391,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                                           order.customer!.id!);
                                               // print('This is order customer name ${customer.name}');
                                               PushNotification
-                                                  .sendNotificationToDriverNow(
+                                                  .sendNotificationNow(
                                                 deviceRegistrationToken:
                                                     customer.fcmToken!,
                                                 title: appLocale.order_shipped,
@@ -331,7 +415,7 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                                     .colorScheme
                                                     .surface),
                                           ),
-                                        );
+                                        ); */
                                       },
                                       child: Text(
                                         '${appLocale.shipping}${appLocale.question_mark}',
@@ -341,8 +425,12 @@ class ExpansionSupplierOrderTile extends StatelessWidget {
                                     )
                                   : TextButton(
                                       onPressed: () async {
+                                        GlobalMethods.loadingDialog(
+                                            title: appLocale.please_wait,
+                                            context: context);
                                         await orderProvider.updateOrder(
                                             order.id, 'delivered', null);
+                                        Navigator.pop(context);
                                       },
                                       child: Text(
                                         '${appLocale.delivered}${appLocale.question_mark}',

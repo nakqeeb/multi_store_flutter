@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +14,14 @@ class SupplierStaticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         leading: const AppBarBackButton(),
-        title: const AppBarTitle(
-          title: 'My Statics',
+        title: AppBarTitle(
+          title: appLocale!.my_statistics,
         ),
       ),
       body: FutureBuilder<List<Order>>(
@@ -39,26 +41,26 @@ class SupplierStaticsScreen extends StatelessWidget {
                 totalPrice += item.orderPrice!;
               }
               if (snapshot.hasError) {
-                return const ErrorScreen(
-                    title: 'Opps! Something went wrong',
-                    subTitle: 'Please try to reload the application!');
+                return ErrorScreen(
+                    title: appLocale.opps_went_wrong,
+                    subTitle: appLocale.try_to_reload_app);
               } else if (orders.isNotEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       StaticsWidget(
-                        label: 'SOLD OUT',
+                        label: appLocale.sold_out.toString().toUpperCase(),
                         value: orders.length,
                         decimal: 0,
                       ),
                       StaticsWidget(
-                        label: 'ITEM COUNT',
+                        label: appLocale.item_count,
                         value: itemCount,
                         decimal: 0,
                       ),
                       StaticsWidget(
-                        label: 'TOTAL BALANCE',
+                        label: appLocale.total_balance.toString().toUpperCase(),
                         value: totalPrice,
                         decimal: 2,
                       ),

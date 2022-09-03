@@ -8,6 +8,7 @@ import '../../../../components/app_bar_back_button.dart';
 import '../../../../components/app_bar_title.dart';
 import '../../../../models/order.dart';
 import '../../../../providers/order_provider.dart';
+import '../../../../services/socket_service.dart';
 import 'components/supplier_order_tab.dart';
 import 'components/tab_pages/delivered_orders.dart';
 import 'components/tab_pages/preparing_orders.dart';
@@ -40,30 +41,55 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
       // print(data['action']);
       if (data['action'] == 'updateOrder') {
         Order updatedOrder = Order.fromJson(data['order']);
-        Provider.of<OrderProvider>(context, listen: false).setOrder =
-            updatedOrder;
 
         /* _ordersFuture =
-            Provider.of<OrderProvider>(context, listen: true).fetchOrders(); */
+            Provider.of<OrderProvider>(context, listen: false).fetchOrders(); */
         //print(Provider.of<OrderProvider>(context, listen: true).orders);
-        print('This is updated order: ${updatedOrder.deliveryDate}');
-        setState(() {});
+        //print('This is updated order: ${updatedOrder.deliveryDate}');
+
+        if (!mounted) {
+          _ordersFuture =
+              Provider.of<OrderProvider>(context, listen: false).fetchOrders();
+          return;
+        }
+        setState(() {
+          Provider.of<OrderProvider>(context, listen: false).setOrder =
+              updatedOrder;
+        });
       }
-    }); // 'products' in .on() is the event name that I use in the backend
+    }); // 'orders' in .on() is the event name that I use in the backend
   }
 
   @override
   void initState() {
     _ordersFuture =
         Provider.of<OrderProvider>(context, listen: false).fetchOrders();
-    connect();
+    SocketService.connect();
+    SocketService.socket.on("orders", (data) {
+      print(data.toString());
+      print(data);
+      // print(data['action']);
+      if (data['action'] == 'updateOrder') {
+        Order updatedOrder = Order.fromJson(data['order']);
+        if (!mounted) {
+          _ordersFuture =
+              Provider.of<OrderProvider>(context, listen: false).fetchOrders();
+          return;
+        }
+        setState(() {
+          Provider.of<OrderProvider>(context, listen: false).setOrder =
+              updatedOrder;
+        });
+      }
+    });
     // connect();
     super.initState();
   }
 
   @override
   void dispose() {
-    _socket?.disconnect();
+    SocketService.disConnect();
+    // _socket?.dispose();
     super.dispose();
   }
 
@@ -73,6 +99,7 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        //key: _scaffoldKey,
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
@@ -87,7 +114,9 @@ class _SupplierOrdersScreenState extends State<SupplierOrdersScreen> {
           ]),
         ),
         body: TabBarView(children: [
-          PreparingOrders(ordersFuture: _ordersFuture),
+          PreparingOrders(
+            ordersFuture: _ordersFuture,
+          ),
           ShippingOrders(ordersFuture: _ordersFuture),
           DeliveredOrders(
             ordersFuture: _ordersFuture,

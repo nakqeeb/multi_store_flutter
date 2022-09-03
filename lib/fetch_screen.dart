@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:multi_store_app/bottom_bar/customer_bottom_bar.dart';
 import 'package:multi_store_app/bottom_bar/supplier_bottom_bar.dart';
@@ -43,23 +44,23 @@ class _FetchScreenState extends State<FetchScreen> {
         Provider.of<AuthSupplierProvider>(context, listen: false);
 
     Future.delayed(const Duration(microseconds: 5), () async {
+      final appLocale = AppLocalizations.of(context);
       //check network availability
       var connectivityResult = await Connectivity().checkConnectivity();
       // check if the user is not connected to mobile network and wifi.
       if (connectivityResult != ConnectivityResult.mobile &&
           connectivityResult != ConnectivityResult.wifi) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (ctx) => const ErrorScreen(
-            title: "No internet connection",
-            subTitle:
-                "Please check your internet connection first and try again !",
+          builder: (ctx) => ErrorScreen(
+            title: appLocale!.noInternet,
+            subTitle: appLocale.check_your_connection,
           ),
         ));
         return;
       }
       await authCustomerProvider.tryAutoLogin();
       await authSupplierProvider.tryAutoLogin();
-      await authSupplierProvider.fetchSuppliers();
+      // await authSupplierProvider.fetchSuppliers();
       final isCusAuth = authCustomerProvider.isAuth;
       final isSubAuth = authSupplierProvider.isAuth;
       var timeoutError;
@@ -72,9 +73,9 @@ class _FetchScreenState extends State<FetchScreen> {
 
       if (timeoutError != null) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (ctx) => const ErrorScreen(
-            title: "Opps",
-            subTitle: "Something went wrong !",
+          builder: (ctx) => ErrorScreen(
+            title: appLocale!.opps_went_wrong,
+            subTitle: appLocale.try_to_reload_app,
           ),
         ));
         return;
@@ -82,9 +83,9 @@ class _FetchScreenState extends State<FetchScreen> {
 
       if (timeoutError != null) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (ctx) => const ErrorScreen(
-            title: "Oops",
-            subTitle: "Something went wrong, please try again later!",
+          builder: (ctx) => ErrorScreen(
+            title: appLocale!.opps_went_wrong,
+            subTitle: appLocale.try_to_reload_app,
           ),
         ));
         return;

@@ -49,7 +49,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   late bool isOnSale;
   late List<Supplier> suppliers;
   Supplier? supplier;
-  late Supplier currentProductSuppliers;
+  late Supplier currentProductSupplier;
   late List<Product> similarProducts;
   // _isProcessing for wishlist
   bool _isProcessing = false;
@@ -63,9 +63,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   void didChangeDependencies() async {
     if (_isInit) {
-      final productProvider = Provider.of<ProductProvider>(context);
+      final productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
+      final authSupplierProvider =
+          Provider.of<AuthSupplierProvider>(context, listen: false);
       await productProvider.fetchProductsById(widget.productId);
       _product = productProvider.product;
+      await authSupplierProvider.fetchProductSupplierById(_product.supplier!);
+      currentProductSupplier = authSupplierProvider.productSupplier!;
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -89,9 +94,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       similarProducts.removeWhere((element) => element.id == _product.id);
       supplier = authSupplierProvider.supplier;
       suppliers = authSupplierProvider.suppliers;
-      currentProductSuppliers = suppliers.firstWhere(
-        (element) => element.id == _product.supplier,
-      );
       // isCustomerAuth used with the cart to avoid error (Null check operator used on a null value) when supplier open the product
 
       if (isCustomerAuth) {
@@ -402,12 +404,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (ctx) => VisitStoreScreen(
-                                        supplier: currentProductSuppliers),
+                                        supplier: currentProductSupplier),
                                   ),
                                 );
                               },
                               child: Text(
-                                '${appLocale.seller}: ${currentProductSuppliers.storeName}',
+                                '${appLocale.seller}: ${currentProductSupplier.storeName}',
                                 style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.blueAccent,
@@ -508,8 +510,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (ctx) => VisitStoreScreen(
-                                              supplier:
-                                                  currentProductSuppliers),
+                                              supplier: currentProductSupplier),
                                         ),
                                       );
                                     },

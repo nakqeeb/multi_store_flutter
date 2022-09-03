@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
@@ -32,3 +32,4 @@ void connectAndListen() {
   socket.on('products', (data) => streamSocket.addResponse);
   socket.onDisconnect((_) => print('disconnect'));
 }
+ */

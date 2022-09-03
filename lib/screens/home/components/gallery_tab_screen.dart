@@ -95,7 +95,7 @@ class _GalleryTabScreenState extends State<GalleryTabScreen> {
           } else if (snapshot.data!.isEmpty) {
             return Center(
               child: Text(
-                appLocale!.store_has_no_items_yet,
+                appLocale!.category_no_item,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 26,

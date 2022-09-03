@@ -5,10 +5,8 @@ import 'package:multi_store_app/services/global_methods.dart';
 
 class AddressInfo extends StatelessWidget {
   final String name, phone, address, landmark, city, state, pincode;
-  final VoidCallback onPressed;
   const AddressInfo({
     Key? key,
-    required this.onPressed,
     required this.name,
     required this.phone,
     required this.address,
@@ -30,40 +28,43 @@ class AddressInfo extends StatelessWidget {
             Radius.circular(15),
           ),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Text(
-                name.toUpperCase().toString(),
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AddressScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.edit)),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text('$address, $landmark, $city, $state - $pincode',
-              style: const TextStyle(fontSize: 16)),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            phone.toString(),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          )
-        ]),
+        child: SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(
+              children: [
+                Text(
+                  name.toUpperCase().toString(),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddressScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.edit)),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text('$address, $landmark, $city, $state - $pincode',
+                style: const TextStyle(fontSize: 16)),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              phone.toString(),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            )
+          ]),
+        ),
       ),
     );
   }

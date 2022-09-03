@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -439,9 +440,13 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           initialValue: supplier.phone,
+                          keyboardType: TextInputType.number,
                           onSaved: (value) {
                             _phone = value!;
                           },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           decoration: textFormDecoration(context).copyWith(
                             labelText: appLocale.phone,
                             hintText: appLocale.enter_phone_whatsApp,
@@ -463,9 +468,9 @@ class _EditStoreScreenState extends State<EditStoreScreen> {
                         children: [
                           DefaultButton(
                             onPressed: () {
-                              if (Navigator.canPop(context)) {
-                                Navigator.pop(context, supplier);
-                              }
+                              Navigator.canPop(context)
+                                  ? Navigator.pop(context, true)
+                                  : null;
                             },
                             height: size.height * 0.06,
                             width: size.width * 0.3,

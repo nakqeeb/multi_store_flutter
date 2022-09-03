@@ -21,6 +21,7 @@ import '../../components/default_button.dart';
 import '../../models/cart_item.dart';
 import '../../providers/auth_supplier_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../services/push_notification.dart';
 import '../../services/utils.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -43,9 +44,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     GlobalMethods.loadingDialog(
         title: appLocale!.order_is_processing, context: context);
     for (var item in cartItems!) {
-      _supplierDeviceToken = authSupplierProvider.suppliers
-          .firstWhere((element) => element.id == item.cartProduct!.supplier)
-          .fcmToken;
+      await authSupplierProvider
+          .fetchProductSupplierById(item.cartProduct!.supplier!);
+      _supplierDeviceToken = authSupplierProvider.productSupplier!.fcmToken;
       print('This is device  token $_supplierDeviceToken');
       final newOrder = {
         "supplierId": item.cartProduct!.supplier,
@@ -67,15 +68,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
         "deliveryDate": '',
         "orderDate": DateTime.now().toIso8601String()
       };
-      await context.read<OrderProvider>().placeOrder(
-          order: newOrder,
-          supplierDeviceToken: _supplierDeviceToken!,
-          title: appLocale.new_order,
-          body: appLocale.you_have_new_order);
+      await context.read<OrderProvider>().placeOrder(newOrder);
+      await PushNotification.sendNotificationNow(
+        deviceRegistrationToken: _supplierDeviceToken!,
+        title: appLocale.new_order,
+        body: appLocale.you_have_new_order,
+      );
     }
     await context.read<CartProvider>().clearCart();
     // close loading dialog
     Navigator.canPop(context) ? Navigator.pop(context) : null;
+    // cloase showModalBottomSheet (to not allow user navigate to payment screen when return back)
+    Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -407,9 +411,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         GlobalMethods.loadingDialog(
             title: appLocale!.order_is_processing, context: context);
         for (var item in cartItems) {
-          _supplierDeviceToken = authSupplierProvider.suppliers
-              .firstWhere((element) => element.id == item.cartProduct!.supplier)
-              .fcmToken;
+          await authSupplierProvider
+              .fetchProductSupplierById(item.cartProduct!.supplier!);
+          _supplierDeviceToken = authSupplierProvider.productSupplier!.fcmToken;
           final newOrder = {
             "supplierId": item.cartProduct!.supplier,
             "addressId": widget.address.id,
@@ -430,16 +434,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
             "deliveryDate": '',
             "orderDate": DateTime.now().toIso8601String()
           };
-          await context.read<OrderProvider>().placeOrder(
-              order: newOrder,
-              supplierDeviceToken: _supplierDeviceToken!,
-              title: appLocale.new_order,
-              body: appLocale.you_have_new_order);
+
+          await context.read<OrderProvider>().placeOrder(newOrder);
+          await PushNotification.sendNotificationNow(
+            deviceRegistrationToken: _supplierDeviceToken!,
+            title: appLocale.new_order,
+            body: appLocale.you_have_new_order,
+          );
         }
         await context.read<CartProvider>().clearCart();
 
         // close loading dialog
         Navigator.canPop(context) ? Navigator.pop(context) : null;
+        // cloase showModalBottomSheet (to not allow user navigate to payment screen when return back)
+        Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
