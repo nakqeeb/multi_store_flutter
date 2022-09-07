@@ -74,7 +74,8 @@ class _ProductGridComponentWidgetState
                         topRight: Radius.circular(15)),
                     child: FadeInImage.assetNetwork(
                       placeholder: 'images/inapp/product-placeholder.png',
-                      image: _product.productImages!.first,
+                      image: _product.productImages?.first ??
+                          'images/inapp/product-placeholder.png',
                     ),
                   ),
                 ),

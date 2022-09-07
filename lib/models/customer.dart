@@ -57,6 +57,7 @@ class Customer {
   String? fcmToken;
   Cart? cart;
   List<dynamic>? wishlist;
+  List<String>? followingStores;
   String? createdAt;
   String? updatedAt;
 
@@ -69,6 +70,7 @@ class Customer {
     this.fcmToken,
     this.cart,
     this.wishlist,
+    this.followingStores,
     this.createdAt,
     this.updatedAt,
   });
@@ -98,6 +100,12 @@ class Customer {
         });
       }
     }
+    if (json['followingStores'] != null) {
+      followingStores = <String>[];
+      json['followingStores'].forEach((v) {
+        followingStores!.add(v);
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -116,6 +124,7 @@ class Customer {
     if (wishlist != null) {
       data['wishlist'] = wishlist!.map((v) => v.toJson()).toList();
     }
+    data['followingStores'] = followingStores;
     return data;
   }
 }

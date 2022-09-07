@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:multi_store_app/models/product.dart';
 import 'package:multi_store_app/models/supplier.dart';
+import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/screens/stores/edit_store_screen.dart';
@@ -12,6 +14,7 @@ import 'package:multi_store_app/services/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/product_grid_component_widget.dart';
+import '../../providers/following_store_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../error/error_screen.dart';
 
@@ -26,7 +29,6 @@ class VisitStoreScreen extends StatefulWidget {
 class _VisitStoreScreenState extends State<VisitStoreScreen> {
   Future<List<Product>>? _supplierProducts;
   Supplier? _supplier;
-  bool _isFollowing = false;
   @override
   void initState() {
     _supplier = widget.supplier;
@@ -60,9 +62,10 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
     final appLocale = AppLocalizations.of(context);
     final authSupplierProvider = Provider.of<AuthSupplierProvider>(context);
     final currentSupplier = authSupplierProvider.supplier;
+    final followingStoreProvider = Provider.of<FollowingStoreProvider>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.canPop(context) ? Navigator.pop(context, _supplier) : null;
+        Navigator.canPop(context) ? Navigator.pop(context) : null;
         return true;
       },
       child: Scaffold(
@@ -94,17 +97,14 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                     borderRadius: BorderRadius.circular(15)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
-                  child: Hero(
-                    key: ValueKey(widget.supplier.id.toString()),
-                    tag: widget.supplier.id.toString(),
-                    child: _supplier?.storeLogoUrl == null
-                        ? Image.asset('images/inapp/spinner.gif')
-                        : FadeInImage.assetNetwork(
-                            placeholder: 'images/inapp/spinner.gif',
-                            image: _supplier!.storeLogoUrl.toString(),
-                            fit: BoxFit.cover,
-                          ),
-                  ),
+                  child: _supplier?.storeLogoUrl == null ||
+                          _supplier?.storeLogoUrl == ''
+                      ? Image.asset('images/inapp/spinner.gif')
+                      : FadeInImage.assetNetwork(
+                          placeholder: 'images/inapp/spinner.gif',
+                          image: _supplier?.storeLogoUrl as String,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
               SizedBox(
@@ -191,34 +191,51 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
                               ),
                             ),
                           )
-                        : Container(
-                            height: 30,
-                            width: size.width * 0.3,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                border: Border.all(
-                                    width: 3,
+                        : context.read<AuthCustomerProvider>().isAuth
+                            ? Container(
+                                height: 30,
+                                width: size.width * 0.3,
+                                decoration: BoxDecoration(
                                     color:
-                                        Theme.of(context).colorScheme.primary),
-                                borderRadius: BorderRadius.circular(25)),
-                            child: MaterialButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isFollowing = !_isFollowing;
-                                });
-                              },
-                              child: _isFollowing == true
-                                  ? Text(appLocale!.following,
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary))
-                                  : Text(appLocale!.follow,
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary)),
-                            ))
+                                        Theme.of(context).colorScheme.surface,
+                                    border: Border.all(
+                                        width: 3,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                    borderRadius: BorderRadius.circular(25)),
+                                child: MaterialButton(
+                                  onPressed: () async {
+                                    if (followingStoreProvider.followingStores
+                                            .firstWhereOrNull((store) =>
+                                                store.id ==
+                                                widget.supplier.id) ==
+                                        null) {
+                                      await followingStoreProvider
+                                          .followStore(_supplier!.id!);
+                                    } else {
+                                      await followingStoreProvider
+                                          .unfollowStore(_supplier!.id!);
+                                    }
+                                  },
+                                  child: followingStoreProvider.followingStores
+                                              .firstWhereOrNull((store) =>
+                                                  store.id ==
+                                                  widget.supplier.id) !=
+                                          null
+                                      ? Text(appLocale!.following,
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .inversePrimary))
+                                      : Text(appLocale!.follow,
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .inversePrimary)),
+                                ),
+                              )
+                            : const SizedBox.shrink()
                   ],
                 ),
               )
@@ -230,9 +247,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
               color: Theme.of(context).iconTheme.color,
             ),
             onPressed: () {
-              Navigator.canPop(context)
-                  ? Navigator.pop(context, _supplier)
-                  : null;
+              Navigator.canPop(context) ? Navigator.pop(context) : null;
             },
           ),
         ),
@@ -247,7 +262,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
             } else if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasError) {
                 return ErrorScreen(
-                    title: appLocale.opps_went_wrong,
+                    title: appLocale!.opps_went_wrong,
                     subTitle: appLocale.try_to_reload_app);
               } else if (snapshot.data!.isNotEmpty) {
                 return SingleChildScrollView(
@@ -269,7 +284,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
               } else if (snapshot.data!.isEmpty) {
                 return Center(
                   child: Text(
-                    appLocale.store_has_no_items_yet,
+                    appLocale!.store_has_no_items_yet,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 26,
@@ -281,7 +296,7 @@ class _VisitStoreScreenState extends State<VisitStoreScreen> {
               } else {
                 return Center(
                   child: Text(
-                    appLocale.no_products_loaded,
+                    appLocale!.no_products_loaded,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 26,

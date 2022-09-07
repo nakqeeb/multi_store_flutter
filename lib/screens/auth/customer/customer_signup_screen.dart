@@ -176,7 +176,7 @@ class _CustomerSignupScreenState extends State<CustomerSignupScreen> {
               reverse:
                   true, // to show signup button in the screen when keyboard is openning
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                 child: Form(
                   key: _formKey,
                   child: Column(

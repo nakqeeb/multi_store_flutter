@@ -14,6 +14,7 @@ import 'package:multi_store_app/providers/auth_customer_provider.dart';
 import 'package:multi_store_app/providers/auth_supplier_provider.dart';
 import 'package:multi_store_app/providers/category_provider.dart';
 import 'package:multi_store_app/providers/dark_theme_provider.dart';
+import 'package:multi_store_app/providers/following_store_provider.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
 import 'package:multi_store_app/providers/product_provider.dart';
 import 'package:multi_store_app/providers/wishlist_provider.dart';
@@ -141,6 +142,16 @@ class _MyAppState extends State<MyApp> {
                 WishlistProvider(
               customerAuth.token,
               previousWishlist == null ? [] : previousWishlist.wishlistProducts,
+            ),
+          ),
+          ChangeNotifierProxyProvider<AuthCustomerProvider,
+              FollowingStoreProvider>(
+            create: (_) => FollowingStoreProvider(null, []),
+            update: (BuildContext ctx, customerAuth,
+                    FollowingStoreProvider? previousWishlist) =>
+                FollowingStoreProvider(
+              customerAuth.token,
+              previousWishlist == null ? [] : previousWishlist.followingStores,
             ),
           ),
           ChangeNotifierProvider(create: (_) => themeChangeProvider),
