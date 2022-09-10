@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../fetch_screen.dart';
@@ -12,6 +13,7 @@ class ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocale = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -47,7 +49,7 @@ class ErrorScreen extends StatelessWidget {
                   shape: const StadiumBorder(),
                 ),
                 child: Text(
-                  "Load",
+                  appLocale!.reload,
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
