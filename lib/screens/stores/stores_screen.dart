@@ -131,9 +131,14 @@ class _StoresScreenState extends State<StoresScreen> {
               future: _suppliers,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SpinKitFadingFour(
-                    color: Theme.of(context).colorScheme.secondary,
-                    size: 35,
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(
+                      child: SpinKitFadingFour(
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 35,
+                      ),
+                    ),
                   );
                 } else if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
