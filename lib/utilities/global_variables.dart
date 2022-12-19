@@ -1,7 +1,9 @@
 /* String API_URL = '192.168.0.106:3000';
 String SOCKET_URL = 'http://192.106.0.118:3000'; */
-String API_URL = 'multi-store-app.herokuapp.com';
-String SOCKET_URL = 'https://multi-store-app.herokuapp.com';
+/* String API_URL = 'multi-store-app.herokuapp.com';
+String SOCKET_URL = 'https://multi-store-app.herokuapp.com'; */
+String API_URL = 'multistore-app.onrender.com';
+String SOCKET_URL = 'https://multistore-app.onrender.com';
 
 const stripePublishableKey =
     'pk_test_51Jk4YkSBupUdL6tUoRNqnW6Uz5h8pCjvjP8aQbq9MuKOZcqOYr9xlKJsWPvFPJtOf69uSXGZ5ZA3mF5jQA7zwwn500n4opFAod';

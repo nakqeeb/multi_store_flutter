@@ -26,7 +26,7 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<void> placeOrder(Map order) async {
-    final url = Uri.http(API_URL, '/orders');
+    final url = Uri.https(API_URL, '/orders');
     try {
       final response = await http.post(
         url,
@@ -53,7 +53,7 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<List<Order>> fetchOrders() async {
-    final url = Uri.http(API_URL, '/orders');
+    final url = Uri.https(API_URL, '/orders');
     try {
       final response = await http.get(
         url,
@@ -90,7 +90,7 @@ class OrderProvider with ChangeNotifier {
       "deliveryDate": deliveryDate?.toIso8601String(),
       "deliveryStatus": deliveryStatus
     };
-    final url = Uri.http(API_URL, '/orders/$orderId');
+    final url = Uri.https(API_URL, '/orders/$orderId');
     try {
       final response = await http.put(
         url,
@@ -117,7 +117,7 @@ class OrderProvider with ChangeNotifier {
   // set orderReview feild to true
   Future<void> updateOrderReview(String? orderId, bool orderReview) async {
     final data = {'orderReview': orderReview};
-    final url = Uri.http(API_URL, '/orders/orderreview/$orderId');
+    final url = Uri.https(API_URL, '/orders/orderreview/$orderId');
     try {
       final response = await http.put(
         url,

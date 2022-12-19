@@ -32,7 +32,7 @@ class WishlistProvider with ChangeNotifier {
 
   Future<void> addToWishlist(String productId) async {
     Map prodId = {'productId': productId};
-    final url = Uri.http(API_URL, '/customers/specific/wishlist');
+    final url = Uri.https(API_URL, '/customers/specific/wishlist');
     try {
       final response = await http.put(
         url,
@@ -55,7 +55,7 @@ class WishlistProvider with ChangeNotifier {
   }
 
   Future<List<Product>> fetchWishlist() async {
-    final url = Uri.http(API_URL, '/customers/specific/wishlist');
+    final url = Uri.https(API_URL, '/customers/specific/wishlist');
     try {
       final response = await http.get(
         url,
@@ -86,7 +86,7 @@ class WishlistProvider with ChangeNotifier {
   }
 
   Future<void> removeFromWishlist(String productId) async {
-    final url = Uri.http(API_URL, '/customers/specific/wishlist/$productId');
+    final url = Uri.https(API_URL, '/customers/specific/wishlist/$productId');
     try {
       final existingProductIndex =
           _wishlistProducts.indexWhere((p) => p.id == productId);

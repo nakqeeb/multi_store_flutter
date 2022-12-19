@@ -21,7 +21,7 @@ class ReviewProvider with ChangeNotifier {
   }
 
   Future<void> addReview(Map review) async {
-    final url = Uri.http(API_URL, '/reviews');
+    final url = Uri.https(API_URL, '/reviews');
     try {
       final response = await http.post(
         url,
@@ -42,7 +42,7 @@ class ReviewProvider with ChangeNotifier {
   }
 
   Future<List<Review>> fetchReviewsByProductId(String productId) async {
-    final url = Uri.http(API_URL, '/reviews/$productId');
+    final url = Uri.https(API_URL, '/reviews/$productId');
     try {
       final response = await http.get(
         url,

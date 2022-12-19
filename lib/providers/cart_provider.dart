@@ -38,7 +38,7 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<void> fetchCart() async {
-    final url = Uri.http(API_URL, '/carts');
+    final url = Uri.https(API_URL, '/carts');
     try {
       var response = await http.get(
         url,
@@ -65,7 +65,7 @@ class CartProvider with ChangeNotifier {
   // I will use {isCartPage} is used to avoid the error (RangeError (RangeError (index): Invalid value: Only valid value is 0: -1)) when add the product to cart first time
   Future<void> addToCart(String productId, {isCartPage = false}) async {
     final prodId = {"productId": productId};
-    final url = Uri.http(API_URL, '/carts/increase-quantity-by-one');
+    final url = Uri.https(API_URL, '/carts/increase-quantity-by-one');
     try {
       int? currentQtyIndex, existingQty;
       if (isCartPage) {
@@ -111,7 +111,7 @@ class CartProvider with ChangeNotifier {
   // reduce quantity by one
   Future<void> reduceByOne(String productId) async {
     final prodId = {"productId": productId};
-    final url = Uri.http(API_URL, '/carts/reduce-quantity-by-one');
+    final url = Uri.https(API_URL, '/carts/reduce-quantity-by-one');
     try {
       final currentQtyIndex =
           _cart?.items?.indexWhere((e) => e.cartProduct?.id == productId);
@@ -142,7 +142,7 @@ class CartProvider with ChangeNotifier {
 
   // delete one item
   Future<void> removeItem(String productId) async {
-    final url = Uri.http(API_URL, '/carts/$productId');
+    final url = Uri.https(API_URL, '/carts/$productId');
     try {
       final existingQtyIndex =
           _cart?.items?.indexWhere((e) => e.cartProduct?.id == productId);
@@ -172,7 +172,7 @@ class CartProvider with ChangeNotifier {
 
   // clear cart
   Future<void> clearCart() async {
-    final url = Uri.http(API_URL, '/carts/');
+    final url = Uri.https(API_URL, '/carts/');
     try {
       final response = await http.delete(
         url,
@@ -195,7 +195,7 @@ class CartProvider with ChangeNotifier {
   }
 
   /*  Future<void> addToCart(Cart newProduct) async {
-    final url = Uri.http(API_URL, '/products');
+    final url = Uri.https(API_URL, '/products');
     try {
       final response = await http.post(
         url,

@@ -58,7 +58,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product newProduct) async {
-    final url = Uri.http(API_URL, '/products');
+    final url = Uri.https(API_URL, '/products');
     try {
       final response = await http.post(
         url,
@@ -83,7 +83,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
-    final url = Uri.http(API_URL, '/products');
+    final url = Uri.https(API_URL, '/products');
     try {
       var response = await http.get(
         url,
@@ -112,7 +112,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<Product> fetchProductsById(String prodId) async {
-    final url = Uri.http(API_URL, '/products/$prodId');
+    final url = Uri.https(API_URL, '/products/$prodId');
     try {
       var response = await http.get(
         url,
@@ -138,7 +138,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<List<Product>> fetchProductsByCategoryId(String catId) async {
-    final url = Uri.http(API_URL, '/products/category/$catId');
+    final url = Uri.https(API_URL, '/products/category/$catId');
     try {
       var response = await http.get(
         url,
@@ -166,7 +166,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<List<Product>> fetchProductsBySupplierId(String id) async {
-    final url = Uri.http(API_URL, '/products/supplierproducts/$id');
+    final url = Uri.https(API_URL, '/products/supplierproducts/$id');
     try {
       var response = await http.get(
         url,
@@ -192,7 +192,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> updateProduct(String prodId, Map updatedProduct) async {
-    final url = Uri.http(API_URL, '/products/$prodId');
+    final url = Uri.https(API_URL, '/products/$prodId');
     try {
       final response = await http.put(
         url,
@@ -216,7 +216,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String prodId) async {
-    final url = Uri.http(API_URL, '/products/$prodId');
+    final url = Uri.https(API_URL, '/products/$prodId');
     try {
       final existingProductIndex =
           _products.indexWhere((prod) => prod.id == prodId);

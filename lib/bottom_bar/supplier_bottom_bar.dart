@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/providers/order_provider.dart';
@@ -52,7 +52,7 @@ class _SupplierBottomBarState extends State<SupplierBottomBar> {
                     (element) => element.deliveryStatus == 'preparing',
                   )
                   .toList();
-              return Badge(
+              return badge.Badge(
                 badgeColor: Theme.of(context).colorScheme.primary,
                 badgeContent: preparingOrder.isEmpty
                     ? const Text(

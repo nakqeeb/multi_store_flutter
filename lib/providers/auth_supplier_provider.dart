@@ -67,7 +67,7 @@ class AuthSupplierProvider with ChangeNotifier {
       "isActivated": newSupplier.isActivated
     };
     // print(supplierData);
-    final url = Uri.http(API_URL, '/suppliers/signup');
+    final url = Uri.https(API_URL, '/suppliers/signup');
     try {
       final response = await http.post(
         url,
@@ -88,7 +88,7 @@ class AuthSupplierProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    final url = Uri.http(API_URL, '/suppliers/login');
+    final url = Uri.https(API_URL, '/suppliers/login');
     try {
       String? registrationToken = await messaging.getToken();
       print("FCM Registration Token: ");
@@ -160,7 +160,7 @@ class AuthSupplierProvider with ChangeNotifier {
 
   // fetch all suppliers
   Future<List<Supplier>> fetchSuppliers() async {
-    final url = Uri.http(API_URL, '/suppliers');
+    final url = Uri.https(API_URL, '/suppliers');
     try {
       var response = await http.get(
         url,
@@ -189,7 +189,7 @@ class AuthSupplierProvider with ChangeNotifier {
 
   // fetch single supplier by id
   Future<Supplier> fetchSupplierById(String supplierId) async {
-    final url = Uri.http(API_URL, '/suppliers/$supplierId');
+    final url = Uri.https(API_URL, '/suppliers/$supplierId');
     try {
       var response = await http.get(
         url,
@@ -213,7 +213,7 @@ class AuthSupplierProvider with ChangeNotifier {
 
   // fetch product supplier by id
   Future<void> fetchProductSupplierById(String supplierId) async {
-    final url = Uri.http(API_URL, '/suppliers/$supplierId');
+    final url = Uri.https(API_URL, '/suppliers/$supplierId');
     try {
       var response = await http.get(
         url,
@@ -236,7 +236,7 @@ class AuthSupplierProvider with ChangeNotifier {
 
   // update supplier store info
   Future<void> updateStoreInfo(Supplier updatedSupplier) async {
-    final url = Uri.http(API_URL, '/suppliers');
+    final url = Uri.https(API_URL, '/suppliers');
     try {
       final response = await http.put(
         url,

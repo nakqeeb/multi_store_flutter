@@ -15,7 +15,7 @@ class CategoryProvider with ChangeNotifier {
   }
 
   Future<void> fetchCategories() async {
-    final url = Uri.http(API_URL, '/categories');
+    final url = Uri.https(API_URL, '/categories');
     try {
       var response = await http.get(
         url,

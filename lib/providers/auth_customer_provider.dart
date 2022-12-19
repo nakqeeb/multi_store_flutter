@@ -43,7 +43,7 @@ class AuthCustomerProvider with ChangeNotifier {
       "phone": newCustomer.phone,
     };
     // print(customerData);
-    final url = Uri.http(API_URL, '/customers/signup');
+    final url = Uri.https(API_URL, '/customers/signup');
     try {
       final response = await http.post(
         url,
@@ -64,7 +64,7 @@ class AuthCustomerProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    final url = Uri.http(API_URL, '/customers/login');
+    final url = Uri.https(API_URL, '/customers/login');
     try {
       String? registrationToken = await messaging.getToken();
       print("FCM Registration Token: ");
@@ -132,7 +132,7 @@ class AuthCustomerProvider with ChangeNotifier {
 
   // fetch single customer by id
   Future<Customer> fetchCustomerById(String customerId) async {
-    final url = Uri.http(API_URL, '/customers/$customerId');
+    final url = Uri.https(API_URL, '/customers/$customerId');
     try {
       var response = await http.get(
         url,
@@ -156,7 +156,7 @@ class AuthCustomerProvider with ChangeNotifier {
 
   Future<void> resetPassword(String oldPassword, String newPassword) async {
     Map passwordData = {'oldPassword': oldPassword, 'newPassword': newPassword};
-    final url = Uri.http(API_URL, '/customers/resetpassword');
+    final url = Uri.https(API_URL, '/customers/resetpassword');
     try {
       _passwordsDoesNotMatched = false;
       final response = await http.put(
@@ -186,7 +186,7 @@ class AuthCustomerProvider with ChangeNotifier {
   // update phone number
   Future<void> updatePhone(String phone) async {
     Map phoneNo = {'phone': phone};
-    final url = Uri.http(API_URL, '/customers/phone');
+    final url = Uri.https(API_URL, '/customers/phone');
     try {
       final response = await http.put(
         url,

@@ -32,7 +32,7 @@ class FollowingStoreProvider with ChangeNotifier {
 
   Future<void> followStore(String supplierId) async {
     Map supId = {'supplierId': supplierId};
-    final url = Uri.http(API_URL, '/customers/specific/followingstores');
+    final url = Uri.https(API_URL, '/customers/specific/followingstores');
     try {
       final response = await http.put(
         url,
@@ -55,7 +55,7 @@ class FollowingStoreProvider with ChangeNotifier {
   }
 
   Future<List<Supplier>> fetchFollowingStores() async {
-    final url = Uri.http(API_URL, '/customers/specific/followingstores');
+    final url = Uri.https(API_URL, '/customers/specific/followingstores');
     try {
       final response = await http.get(
         url,
@@ -83,7 +83,7 @@ class FollowingStoreProvider with ChangeNotifier {
 
   Future<void> unfollowStore(String supplierId) async {
     final url =
-        Uri.http(API_URL, '/customers/specific/followingstores/$supplierId');
+        Uri.https(API_URL, '/customers/specific/followingstores/$supplierId');
     try {
       final existingStoreIndex =
           _followingStores.indexWhere((p) => p.id == supplierId);

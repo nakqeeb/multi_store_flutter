@@ -23,7 +23,7 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> addAddress(AddressData newAddress) async {
-    final url = Uri.http(API_URL, '/addresses');
+    final url = Uri.https(API_URL, '/addresses');
     try {
       final response = await http.post(
         url,
@@ -45,7 +45,7 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<List<AddressData>> fetchAddresses() async {
-    final url = Uri.http(API_URL, '/addresses');
+    final url = Uri.https(API_URL, '/addresses');
     try {
       final response = await http.get(
         url,
@@ -72,7 +72,7 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<AddressData> fetchAddressById(String addressId) async {
-    final url = Uri.http(API_URL, '/addresses/$addressId');
+    final url = Uri.https(API_URL, '/addresses/$addressId');
     try {
       final response = await http.get(
         url,
@@ -98,7 +98,7 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> updateAddress(String addressId, Map updatedAddress) async {
-    final url = Uri.http(API_URL, '/addresses/$addressId');
+    final url = Uri.https(API_URL, '/addresses/$addressId');
     try {
       final response = await http.put(
         url,
@@ -122,7 +122,7 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> deleteAddress(String addressId) async {
-    final url = Uri.http(API_URL, '/addresses/$addressId');
+    final url = Uri.https(API_URL, '/addresses/$addressId');
     try {
       final existingAddressIndex =
           _addresses.indexWhere((ad) => ad.id == addressId);

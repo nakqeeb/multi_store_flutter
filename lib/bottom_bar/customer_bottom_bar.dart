@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:multi_store_app/screens/cart/cart_screen.dart';
@@ -49,7 +49,7 @@ class _CustomerBottomBarState extends State<CustomerBottomBar> {
           ),
           BottomNavigationBarItem(
             icon: Consumer<CartProvider>(
-              builder: (ctx, cartProvider, _) => Badge(
+              builder: (ctx, cartProvider, _) => badge.Badge(
                 badgeColor: Theme.of(context).colorScheme.primary,
                 badgeContent: cartProvider.cart?.items == null
                     ? const Text(

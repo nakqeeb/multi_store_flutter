@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:card_swiper/card_swiper.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -537,7 +537,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     },
                                     tooltip: appLocale.cart,
                                     icon: Consumer<AuthCustomerProvider>(
-                                      builder: (context, auth, child) => Badge(
+                                      builder: (context, auth, child) =>
+                                          badge.Badge(
                                         badgeColor: Theme.of(context)
                                             .colorScheme
                                             .surface,
