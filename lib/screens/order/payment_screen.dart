@@ -398,13 +398,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Provider.of<AuthSupplierProvider>(context, listen: false);
     final appLocale = AppLocalizations.of(context);
     try {
-      await Stripe.instance
-          .presentPaymentSheet(
-              parameters: PresentPaymentSheetParameters(
-        clientSecret: paymentIntentData!['client_secret'],
-        confirmPayment: true,
-      ))
-          .then((value) async {
+      await Stripe.instance.presentPaymentSheet().then((value) async {
         paymentIntentData = null;
         print('paid');
 
